@@ -9,7 +9,7 @@
  *   node {{scripts_path}}/cleanup-deprecated.mjs
  *
  * What it does:
- *   1. Finds every plasmind-specific skills directory (.claude/skills,
+ *   1. Finds every testbed-specific skills directory (.claude/skills,
  *      .cursor/skills, .agents/skills, etc.).
  *   2. For each deprecated skill name (with and without i- prefix),
  *      checks if the directory exists and its SKILL.md mentions
@@ -51,8 +51,8 @@ const DEPRECATED_NAMES = [
   'typeset',
 ];
 
-// All known plasmind directories that may contain a skills/ subfolder.
-const plasmind_DIRS = [
+// All known testbed directories that may contain a skills/ subfolder.
+const testbed_DIRS = [
   '.claude', '.cursor', '.gemini', '.codex', '.agents',
   '.trae', '.trae-cn', '.pi', '.opencode', '.kiro', '.rovodev',
 ];
@@ -149,13 +149,13 @@ export function buildTargetNames() {
 }
 
 /**
- * Find every skills directory across all plasmind dirs in the project.
+ * Find every skills directory across all testbed dirs in the project.
  * Returns absolute paths that exist on disk.
  */
 export function findSkillsDirs(projectRoot) {
   const dirs = [];
-  for (const plasmind of plasmind_DIRS) {
-    const candidate = join(projectRoot, plasmind, 'skills');
+  for (const testbed of testbed_DIRS) {
+    const candidate = join(projectRoot, testbed, 'skills');
     if (existsSync(candidate)) {
       dirs.push(candidate);
     }
@@ -164,7 +164,7 @@ export function findSkillsDirs(projectRoot) {
 }
 
 /**
- * Remove deprecated skill directories/symlinks from all plasmind dirs.
+ * Remove deprecated skill directories/symlinks from all testbed dirs.
  * Reads skills-lock.json so the authoritative "source" field can
  * drive deletion even when SKILL.md never mentions impeccable.
  * Returns an array of paths that were deleted.

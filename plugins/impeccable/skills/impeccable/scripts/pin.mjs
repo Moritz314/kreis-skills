@@ -9,7 +9,7 @@
  * `pin audit` creates a lightweight /audit skill that redirects to /impeccable audit.
  * `unpin audit` removes that shortcut.
  *
- * The script discovers plasmind directories (.claude/skills, .cursor/skills, etc.)
+ * The script discovers testbed directories (.claude/skills, .cursor/skills, etc.)
  * in the project root and creates/removes the pin in all of them.
  */
 
@@ -19,8 +19,8 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// All known plasmind directories
-const plasmind_DIRS = [
+// All known testbed directories
+const testbed_DIRS = [
   '.claude', '.cursor', '.gemini', '.codex', '.agents',
   '.trae', '.trae-cn', '.pi', '.opencode', '.kiro', '.rovodev',
 ];
@@ -58,13 +58,13 @@ function findProjectRoot(startDir = process.cwd()) {
 }
 
 /**
- * Find plasmind skill directories that have an impeccable skill installed.
+ * Find testbed skill directories that have an impeccable skill installed.
  */
-function findplasmindDirs(projectRoot) {
+function findtestbedDirs(projectRoot) {
   const dirs = [];
-  for (const plasmind of plasmind_DIRS) {
-    const skillsDir = join(projectRoot, plasmind, 'skills');
-    // Only pin in plasmind dirs that already have impeccable installed
+  for (const testbed of testbed_DIRS) {
+    const skillsDir = join(projectRoot, testbed, 'skills');
+    // Only pin in testbed dirs that already have impeccable installed
     const impeccableDir = join(skillsDir, 'impeccable');
     if (existsSync(impeccableDir) || existsSync(join(skillsDir, 'i-impeccable'))) {
       dirs.push(skillsDir);
@@ -107,21 +107,21 @@ Invoke {{command_prefix}}impeccable ${command}, passing along any arguments prov
 }
 
 /**
- * Pin a command: create shortcut skill in all plasmind dirs.
+ * Pin a command: create shortcut skill in all testbed dirs.
  */
 function pin(command, projectRoot) {
   const metadata = loadCommandMetadata();
-  const plasmindDirs = findplasmindDirs(projectRoot);
+  const testbedDirs = findtestbedDirs(projectRoot);
 
-  if (plasmindDirs.length === 0) {
-    console.log('No plasmind directories with impeccable installed found.');
+  if (testbedDirs.length === 0) {
+    console.log('No testbed directories with impeccable installed found.');
     return false;
   }
 
   const content = generatePinnedSkill(command, metadata);
   let created = 0;
 
-  for (const skillsDir of plasmindDirs) {
+  for (const skillsDir of testbedDirs) {
     // Check if skill already exists (and isn't a pin)
     const skillDir = join(skillsDir, command);
     if (existsSync(skillDir)) {
@@ -150,13 +150,13 @@ function pin(command, projectRoot) {
 }
 
 /**
- * Unpin a command: remove shortcut skill from all plasmind dirs.
+ * Unpin a command: remove shortcut skill from all testbed dirs.
  */
 function unpin(command, projectRoot) {
-  const plasmindDirs = findplasmindDirs(projectRoot);
+  const testbedDirs = findtestbedDirs(projectRoot);
   let removed = 0;
 
-  for (const skillsDir of plasmindDirs) {
+  for (const skillsDir of testbedDirs) {
     const skillDir = join(skillsDir, command);
     if (!existsSync(skillDir)) continue;
 

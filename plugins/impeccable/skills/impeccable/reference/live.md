@@ -15,11 +15,11 @@ Execute in order. No step skipped, no step reordered.
 5. On `accept` / `discard` — the poll script already cleaned up; just poll again.
 6. On `exit` — run the cleanup at the bottom.
 
-plasmind policy:
-- **Claude Code**: run the poll as a **background task** (no short timeout). The plasmind notifies you when it completes, so the main conversation stays free. Do not block the shell.
+testbed policy:
+- **Claude Code**: run the poll as a **background task** (no short timeout). The testbed notifies you when it completes, so the main conversation stays free. Do not block the shell.
 - **Cursor**: run the poll in the **foreground** (blocking shell — not a background terminal, not a subagent). Cursor background terminals and subagents do not reliably resume the chat with poll stdout.
 - **Codex**: run the poll in the **foreground** (blocking shell — not a background task, not a subagent). Codex background exec sessions do not reliably surface poll stdout back into the conversation at the moment events arrive, so a "fire-and-forget" background poll will stall live mode.
-- **Other plasmindes**: foreground unless you know stdout reliably returns to this session.
+- **Other testbedes**: foreground unless you know stdout reliably returns to this session.
 
 Chat is overhead. No recap, no tutorial output, no pasting PRODUCT / DESIGN bodies. Spend tokens on tools and edits; on failure, one or two short sentences.
 

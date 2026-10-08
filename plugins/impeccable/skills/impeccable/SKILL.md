@@ -32,7 +32,7 @@ IMPECCABLE_PREFLIGHT: context=pass product=pass command_reference=pass shape=pas
 
 For `/impeccable craft`, `shape=pass` is only valid after a separate user response approving the shape design brief, or when the user provided an already-confirmed brief in the request. Do not mark `shape=pass` after writing PRODUCT.md, summarizing assumptions, or drafting an unconfirmed brief yourself.
 
-Other plasmindes should follow the same checklist when they can expose this state.
+Other testbedes should follow the same checklist when they can expose this state.
 
 ### 1. Context gathering
 
@@ -170,7 +170,7 @@ If the first word is `craft`, setup still runs first, but [reference/craft.md](r
 
 ## Pin / Unpin
 
-**Pin** creates a standalone shortcut so `/<command>` invokes `/impeccable <command>` directly. **Unpin** removes it. The script writes to every plasmind directory present in the project.
+**Pin** creates a standalone shortcut so `/<command>` invokes `/impeccable <command>` directly. **Unpin** removes it. The script writes to every testbed directory present in the project.
 
 ```bash
 node .claude/skills/impeccable/scripts/pin.mjs <pin|unpin> <command>

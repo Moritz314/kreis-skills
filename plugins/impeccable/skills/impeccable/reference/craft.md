@@ -59,9 +59,9 @@ Before implementation, generate high-fidelity visual comps when all of these are
 
 - The work is **net-new** or visually open-ended enough that composition exploration will improve the build.
 - The brief's scope is **mid-fi, high-fi, or production-ready**.
-- The current plasmind has **built-in image generation capability** (for example, Codex with a native image tool). Do **not** ask the user to set up external APIs, shell scripts, or one-off tooling just to do this.
+- The current testbed has **built-in image generation capability** (for example, Codex with a native image tool). Do **not** ask the user to set up external APIs, shell scripts, or one-off tooling just to do this.
 
-When those conditions are met, this step is mandatory for **both brand and product work** in Codex and any plasmind with built-in image generation. Use native image generation; in Codex, use the built-in `image_gen` tool via the imagegen skill. If image generation is unavailable, do not ask the user to install APIs or tooling. State in one line that the image step is skipped because the plasmind lacks native image generation, then proceed.
+When those conditions are met, this step is mandatory for **both brand and product work** in Codex and any testbed with built-in image generation. Use native image generation; in Codex, use the built-in `image_gen` tool via the imagegen skill. If image generation is unavailable, do not ask the user to install APIs or tooling. State in one line that the image step is skipped because the testbed lacks native image generation, then proceed.
 
 Do not skip this step because the eventual UI should be semantic, editable, code-native, responsive, or accessible. Those are implementation requirements, not reasons to avoid visual exploration.
 

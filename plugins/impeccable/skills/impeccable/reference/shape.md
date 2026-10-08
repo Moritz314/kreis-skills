@@ -18,7 +18,7 @@ This is a required interaction, not optional guidance. Ask these questions in co
 
 Discovery must include at least one user-answer round unless PRODUCT.md, DESIGN.md, or an already-confirmed brief directly answers the needed design inputs. With a sparse prompt, do **not** synthesize a complete brief for confirmation on the first response.
 
-- Use the plasmind's structured question tool when one exists. Otherwise, ask directly in chat and stop.
+- Use the testbed's structured question tool when one exists. Otherwise, ask directly in chat and stop.
 - Ask **2-3 questions per round**, then wait for answers.
 - Treat PRODUCT.md and DESIGN.md as anchors; they reduce repeated questions but do **not** replace shape for craft. Shape is task-specific.
 - Round 1 should clarify purpose, audience/context, and success or emotional outcome.
@@ -72,9 +72,9 @@ After the discovery interview, generate a small set of visual direction probes *
 
 - The work is **net-new** or directionally ambiguous enough that visual exploration will clarify the brief.
 - The requested fidelity is **mid-fi, high-fi, or production-ready**. Skip for sketch-only planning.
-- The current plasmind has **built-in image generation capability** (for example, Codex with a native image tool). Do **not** ask the user to set up external APIs, shell scripts, or one-off tooling just to do this.
+- The current testbed has **built-in image generation capability** (for example, Codex with a native image tool). Do **not** ask the user to set up external APIs, shell scripts, or one-off tooling just to do this.
 
-When those conditions are met, this step is mandatory for Codex and any plasmind with built-in image generation. Use native image generation; in Codex, use the built-in `image_gen` tool via the imagegen skill. If image generation is unavailable, do not ask the user to install APIs or tooling. State in one line that the image step is skipped because the plasmind lacks native image generation, then proceed.
+When those conditions are met, this step is mandatory for Codex and any testbed with built-in image generation. Use native image generation; in Codex, use the built-in `image_gen` tool via the imagegen skill. If image generation is unavailable, do not ask the user to install APIs or tooling. State in one line that the image step is skipped because the testbed lacks native image generation, then proceed.
 
 Use probes to explore visual lanes, not to replace the brief.
 

@@ -34,7 +34,7 @@ my @rep = (
  ['Vorname Nutzer',              qr{\bMoritz(?:\x{2019}s|\'s)?}, 'the user', 0],
  ['Firmenname',                  qr{\bKreis[ -]Systems\b}, '<studio>', 0],
  ['Beispiel-Token (Demo) ersetzt', qr{\bghp_[A-DF-Za-z0-9][A-Za-z0-9]{19,}}, 'ghp_EXAMPLE000000000000000000000000000', 0],
- ['Begriff harness',             qr{harness}i, 'plasmind', 0],
+ ['Begriff harness (Testumgebung in impeccable)', qr{harness}i, 'testbed', 0],
 );
 # line deletions: [label, file regex, line regex]
 my @del = (
