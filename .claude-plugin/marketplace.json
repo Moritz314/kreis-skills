@@ -1,0 +1,29 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "kreis-skills",
+  "description": "Design and frontend skills: arsenal, impeccable, web-design-guidelines",
+  "owner": { "name": "Kreis Systems", "url": "https://github.com/Moritz314/kreis-skills" },
+  "plugins": [
+    {
+      "name": "arsenal",
+      "description": "Technical building blocks for ambitious UI: shaders, 3D, scroll choreography, curated free libraries, ready-made animated components, plus plan/build/critics commands.",
+      "source": "./plugins/arsenal",
+      "category": "design",
+      "homepage": "https://github.com/Moritz314/kreis-skills"
+    },
+    {
+      "name": "impeccable",
+      "description": "Design skill for frontend interfaces: shape, critique, audit, polish, animate, harden, adapt and more (Apache-2.0, by Paul Bakaus).",
+      "source": "./plugins/impeccable",
+      "category": "design",
+      "homepage": "https://github.com/Moritz314/kreis-skills"
+    },
+    {
+      "name": "web-design-guidelines",
+      "description": "Review UI code against the Web Interface Guidelines (accessibility, UX, best practices). MIT, by Vercel.",
+      "source": "./plugins/web-design-guidelines",
+      "category": "development",
+      "homepage": "https://github.com/Moritz314/kreis-skills"
+    }
+  ]
+}

@@ -1,0 +1,201 @@
+<!doctype html>
+<!--
+Kennung:  F11
+Name:     Maskierung
+Zweck:    Tippt man einen Schlüssel oder ein Passwort in den Text, zeigt die Vorschau, was ein Modell stattdessen sehen würde.
+Herkunft: plasmind Elementeschau 2026-10-03 (Featureseite)
+Bedienung: Text im Feld ändern; erkannte Geheimnisse erscheinen sofort als [masked ...]. Die Regeln sind Beispiele.
+Aufbau:   ein Dokument, CSS und JS inline, keine externen Abrufe, keine Abhängigkeit von plasmind.js oder base.css.
+          Dunkel ist Standard, ?theme=light schaltet auf hell.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>F11 Maskierung</title>
+<script>
+(function(){try{if(new URLSearchParams(location.search).get('theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}})();
+</script>
+<style>
+/* Tokens (aus tokens.css) */
+:root{
+  color-scheme: dark;
+  /* Dunkelfeld (Standard). Hue 262, kein reines Schwarz/Weiss. */
+  --bg:          oklch(0.085 0.008 262);
+  --bg-sunk:     oklch(0.052 0.008 262);
+  --surface:     oklch(0.115 0.008 262);
+  --surface-2:   oklch(0.15 0.008 262);
+  --surface-3:   oklch(0.185 0.008 262);
+  --line:        oklch(0.235 0.008 262);
+  --line-strong: oklch(0.37 0.008 262);
+  --fg-mute:     oklch(0.62 0.008 262);
+  --fg-soft:     oklch(0.8 0.004 262);
+  --fg:          oklch(0.975 0.004 262);
+  --cell-fill:   oklch(0.098 0.008 262);
+  --flood:       oklch(0.97 0.004 262);
+  --shadow:      oklch(0.02 0.008 262 / 0.55);
+  --inv-bg: var(--fg);   /* Umkehrfläche: hell auf dunkel */
+  --inv-fg: var(--bg);
+
+  /* Zeichenfarben des Logos (Hex aus dem Logo-Generator w12.py) */
+  --mark-hell:  #F5F7F9;
+  --mark-dunkel:#050608;
+  --splash-grund:#020203;
+
+  /* Textauswahl W2d2 */
+  --sel-bg:   oklch(0.27 0.006 262);
+  --sel-edge: 6px;      /* Kantenbreite */
+  --sel-edge-a: 0.55;   /* Kantendeckkraft */
+
+  /* Cursor / Ladezeichen (Blob-Füllung) */
+  --pm-fill: oklch(0.17 0.006 262);
+  --pm-fill-a: 0.88;
+
+  /* Schrift: Martian Mono für alles, Größenausgleich über x-Höhe (PUNKT-33) */
+  --font: "Martian Mono", ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  --fsa: 0.516;         /* font-size-adjust: x-Höhe von IBM Plex; Martian Mono x-Höhe 0,600 = Faktor 0,86 */
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 140ms;
+  --dur: 220ms;
+  --dur-slow: 420ms;
+  --r-ctl: 4px;
+  --r-tile: 8px;
+}
+:root[data-theme="light"]{
+  color-scheme: light;
+  --bg:          oklch(0.962 0.005 262);
+  --bg-sunk:     oklch(0.985 0.005 262);
+  --surface:     oklch(0.982 0.005 262);
+  --surface-2:   oklch(0.935 0.005 262);
+  --surface-3:   oklch(0.905 0.005 262);
+  --line:        oklch(0.855 0.005 262);
+  --line-strong: oklch(0.72 0.005 262);
+  --fg-mute:     oklch(0.47 0.005 262);
+  --fg-soft:     oklch(0.3 0.006 262);
+  --fg:          oklch(0.12 0.006 262);
+  --cell-fill:   oklch(0.978 0.005 262);
+  --flood:       oklch(0.97 0.006 262);
+  --shadow:      oklch(0.3 0.005 262 / 0.18);
+  --pm-fill: oklch(0.978 0.005 262);
+  --sel-bg:  oklch(0.86 0.006 262);  /* Hellfeld ist in der Marke nicht festgelegt: eigene Annahme */
+}
+::selection{
+  background: var(--sel-bg);
+  color: var(--fg);
+  text-shadow: 0 0 6px oklch(0.975 0.004 262 / 0.9), 0 0 14px oklch(0.975 0.004 262 / 0.5);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--bg);color:var(--fg);font-family:"Martian Mono",ui-monospace,monospace;font-size-adjust:var(--fsa);font-weight:400}
+body{margin:0;background:var(--bg);color:var(--fg);font-size:14px;line-height:1.65;min-height:100vh}
+img,svg,canvas{max-width:100%}
+h1,h2,h3,p,ul,ol,dl,figure{margin:0}
+p{text-wrap:pretty}
+:focus-visible{outline:2px solid var(--fg);outline-offset:3px;border-radius:2px}
+button,input,textarea{font:inherit}
+.stage{max-width:760px;margin:0 auto;padding:24px 16px 40px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:0ms!important}}
+.knopf{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:inherit;font-size:12px;font-weight:500;color:var(--fg);background:transparent;border:1px solid var(--line-strong);border-radius:var(--r-ctl);min-height:36px;padding:0 16px;text-decoration:none;cursor:pointer;transition:background var(--dur-fast),border-color var(--dur-fast),color var(--dur-fast)}
+.knopf:hover{background:var(--surface-2);border-color:var(--fg-mute)}
+.knopf--voll{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.knopf--voll:hover{background:var(--fg-soft);border-color:var(--fg-soft)}
+.knopf[disabled]{opacity:.45;cursor:not-allowed;border-style:dashed}
+.knopf--link{border:0;padding:4px 0;min-height:0;background:none;text-decoration:underline;text-decoration-color:var(--line-strong);text-underline-offset:.3em;font-weight:400;color:var(--fg-mute)}
+.knopf--link:hover{color:var(--fg);background:none}
+.pille{font:inherit;font-size:11px;color:var(--fg-soft);background:transparent;border:1px solid var(--line-strong);border-radius:99px;padding:6px 12px;cursor:pointer;transition:background var(--dur-fast),border-color var(--dur-fast)}
+.pille:hover{background:var(--surface-2);border-color:var(--fg-mute)}
+input[type=text],textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line-strong);border-radius:var(--r-ctl);padding:8px 12px;min-height:38px;width:100%}
+input::placeholder{color:var(--fg-mute)}
+input[type=range]{width:100%;accent-color:var(--fg)}
+.fx-demo{margin:0;border:1px solid var(--line);border-radius:var(--r-tile);background:var(--surface);min-width:0;overflow:clip}
+.fx-bar{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--line);font-size:12px;flex-wrap:wrap}
+.fx-id{font-weight:600;min-width:2.4em;padding:2px 8px;border:1px solid var(--fg);border-radius:var(--r-ctl);line-height:1.4;text-align:center}
+.fx-art{color:var(--fg-soft);flex:1;min-width:10em}
+.fx-body{padding:clamp(16px,3vw,32px);min-width:0}
+.fx-foot{display:flex;gap:16px;align-items:center;justify-content:flex-end;padding:10px 16px;border-top:1px solid var(--line);font-size:11px;color:var(--fg-mute);flex-wrap:wrap}
+.fx-ex{white-space:nowrap}
+.fx-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0}
+.fx-lab{display:block;margin:0 0 8px;font-size:11px;letter-spacing:.06em;color:var(--fg-mute)}
+.fx-input{width:100%;min-height:38px;padding:8px 12px;background:var(--bg);font-size:12px}
+.fx-row .fx-input{flex:1;min-width:12em;width:auto}
+.fx-area{resize:vertical;line-height:1.6}
+.fx-chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0}
+.fx-status{margin:18px 0 0;min-height:1.6em;font-size:12px;line-height:1.6;color:var(--fg-soft)}
+.fx-hint{margin:0 0 20px;font-size:12px;line-height:1.7;color:var(--fg-mute)}
+.fx-state{font-size:12px;color:var(--fg-mute)}
+.fx-badge{display:inline-block;margin:0 0 20px;padding:4px 12px;border:1px dashed var(--line-strong);border-radius:99px;font-size:11px;color:var(--fg-soft)}
+.fx-prog{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:14px}
+.fx-prog i{display:block;height:100%;width:0;background:var(--fg);transform-origin:left}
+.fx-stand{display:inline-block;padding:1px 9px;border:1px solid var(--line-strong);border-radius:99px;font-size:11px;color:var(--fg-soft);line-height:1.6}
+.fx-stand[data-stand="planned"]{border-style:dashed}
+/* F11 */
+.fx-out{margin:0 0 4px;padding:14px 16px;min-height:4.5em;border:1px solid var(--line);border-radius:var(--r-tile);background:var(--bg-sunk);font-size:12px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+.fx-out mark{background:var(--fg);color:var(--bg);padding:0 5px;border-radius:2px}
+.fx-body .fx-area{margin-bottom:22px}
+</style>
+</head>
+<body>
+<main class="stage">
+<figure class="fx-demo" id="F11" data-fx="mask" aria-labelledby="F11-t">
+      <div class="fx-bar"><span class="fx-id">F11</span><span class="fx-art" id="F11-t">Type a key, see what a model would get</span></div>
+      <div class="fx-body">
+        <label class="fx-lab" for="F11-in">Text with a key in it (invented sample, not a real key)</label>
+        <textarea id="F11-in" class="fx-input fx-area" rows="4" spellcheck="false" data-mask-in>Deploy with token ghp_EXAMPLE000000000000000000000000000 to the server.
+password: hunter2-example</textarea>
+        <p class="fx-lab">What the small decision model would see</p>
+        <pre class="fx-out" data-mask-out aria-live="polite"></pre>
+        <p class="fx-status" data-mask-status>0 secrets masked.</p>
+        <p class="fx-hint">The rules here are examples. The real masking runs in the core on your machine.</p>
+      </div>
+      <div class="fx-foot"><span class="fx-ex">example data</span></div>
+    </figure>
+</main>
+<script>
+(function () {
+  'use strict';
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function $(s, r) { return (r || document).querySelector(s); }
+  function h(tag, attrs, text) {
+    var e = document.createElement(tag);
+    if (attrs) for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function setStatus(el, txt) { if (el) el.textContent = txt; }
+
+  function initMask() {
+    var root = $('#F11'); if (!root) return;
+    var inp = $('[data-mask-in]', root), out = $('[data-mask-out]', root), st = $('[data-mask-status]', root);
+    var rules = [
+      [/\b(?:gh[pousr]_|sk-|xox[bap]-|AKIA)[A-Za-z0-9_\-]{10,}/g, 'key'],
+      [/Bearer\s+[A-Za-z0-9._\-]{16,}/g, 'token'],
+      [/(?:password|passwd|pwd|secret|token)\s*[:=]\s*\S+/gi, 'secret'],
+      [/\b[A-Za-z0-9+\/_\-]{32,}\b/g, 'key']
+    ];
+    function render() {
+      var text = inp.value, spans = [];
+      rules.forEach(function (r) {
+        var m; r[0].lastIndex = 0;
+        while ((m = r[0].exec(text))) {
+          var a = m.index, b = a + m[0].length, kind = r[1];
+          if (kind === 'secret') { var c = m[0].search(/[:=]\s*/); var sep = m[0].match(/[:=]\s*/)[0]; a += c + sep.length; }
+          if (!spans.some(function (s) { return a < s[1] && b > s[0]; })) spans.push([a, b, kind]);
+        }
+      });
+      spans.sort(function (x, y) { return x[0] - y[0]; });
+      out.textContent = ''; var pos = 0;
+      spans.forEach(function (s) {
+        out.appendChild(document.createTextNode(text.slice(pos, s[0])));
+        out.appendChild(h('mark', null, '[masked ' + s[2] + ']')); pos = s[1];
+      });
+      out.appendChild(document.createTextNode(text.slice(pos)));
+      setStatus(st, spans.length + (spans.length === 1 ? ' secret masked.' : ' secrets masked.'));
+    }
+    inp.addEventListener('input', render); render();
+  }
+  initMask();
+})();
+</script>
+</body>
+</html>

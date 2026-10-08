@@ -1,0 +1,323 @@
+<!doctype html>
+<!--
+Kennung:  F12
+Name:     Begleiter
+Zweck:    Ein ziehbarer Blob rastet am nächsten Rand eines Beispielfensters ein und meldet dort Kurznachrichten.
+Herkunft: plasmind Elementeschau 2026-10-03 (Featureseite)
+Bedienung: Blob ziehen und loslassen; Pfeiltasten springen an einen Rand, Enter oder Leertaste zeigt die nächste Meldung.
+Aufbau:   ein Dokument, CSS und JS inline, keine externen Abrufe, keine Abhängigkeit von plasmind.js oder base.css.
+          Dunkel ist Standard, ?theme=light schaltet auf hell.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>F12 Begleiter</title>
+<script>
+(function(){try{if(new URLSearchParams(location.search).get('theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}})();
+</script>
+<style>
+/* Tokens (aus tokens.css) */
+:root{
+  color-scheme: dark;
+  /* Dunkelfeld (Standard). Hue 262, kein reines Schwarz/Weiss. */
+  --bg:          oklch(0.085 0.008 262);
+  --bg-sunk:     oklch(0.052 0.008 262);
+  --surface:     oklch(0.115 0.008 262);
+  --surface-2:   oklch(0.15 0.008 262);
+  --surface-3:   oklch(0.185 0.008 262);
+  --line:        oklch(0.235 0.008 262);
+  --line-strong: oklch(0.37 0.008 262);
+  --fg-mute:     oklch(0.62 0.008 262);
+  --fg-soft:     oklch(0.8 0.004 262);
+  --fg:          oklch(0.975 0.004 262);
+  --cell-fill:   oklch(0.098 0.008 262);
+  --flood:       oklch(0.97 0.004 262);
+  --shadow:      oklch(0.02 0.008 262 / 0.55);
+  --inv-bg: var(--fg);   /* Umkehrfläche: hell auf dunkel */
+  --inv-fg: var(--bg);
+
+  /* Zeichenfarben des Logos (Hex aus dem Logo-Generator w12.py) */
+  --mark-hell:  #F5F7F9;
+  --mark-dunkel:#050608;
+  --splash-grund:#020203;
+
+  /* Textauswahl W2d2 */
+  --sel-bg:   oklch(0.27 0.006 262);
+  --sel-edge: 6px;      /* Kantenbreite */
+  --sel-edge-a: 0.55;   /* Kantendeckkraft */
+
+  /* Cursor / Ladezeichen (Blob-Füllung) */
+  --pm-fill: oklch(0.17 0.006 262);
+  --pm-fill-a: 0.88;
+
+  /* Schrift: Martian Mono für alles, Größenausgleich über x-Höhe (PUNKT-33) */
+  --font: "Martian Mono", ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  --fsa: 0.516;         /* font-size-adjust: x-Höhe von IBM Plex; Martian Mono x-Höhe 0,600 = Faktor 0,86 */
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 140ms;
+  --dur: 220ms;
+  --dur-slow: 420ms;
+  --r-ctl: 4px;
+  --r-tile: 8px;
+}
+:root[data-theme="light"]{
+  color-scheme: light;
+  --bg:          oklch(0.962 0.005 262);
+  --bg-sunk:     oklch(0.985 0.005 262);
+  --surface:     oklch(0.982 0.005 262);
+  --surface-2:   oklch(0.935 0.005 262);
+  --surface-3:   oklch(0.905 0.005 262);
+  --line:        oklch(0.855 0.005 262);
+  --line-strong: oklch(0.72 0.005 262);
+  --fg-mute:     oklch(0.47 0.005 262);
+  --fg-soft:     oklch(0.3 0.006 262);
+  --fg:          oklch(0.12 0.006 262);
+  --cell-fill:   oklch(0.978 0.005 262);
+  --flood:       oklch(0.97 0.006 262);
+  --shadow:      oklch(0.3 0.005 262 / 0.18);
+  --pm-fill: oklch(0.978 0.005 262);
+  --sel-bg:  oklch(0.86 0.006 262);  /* Hellfeld ist in der Marke nicht festgelegt: eigene Annahme */
+}
+::selection{
+  background: var(--sel-bg);
+  color: var(--fg);
+  text-shadow: 0 0 6px oklch(0.975 0.004 262 / 0.9), 0 0 14px oklch(0.975 0.004 262 / 0.5);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--bg);color:var(--fg);font-family:"Martian Mono",ui-monospace,monospace;font-size-adjust:var(--fsa);font-weight:400}
+body{margin:0;background:var(--bg);color:var(--fg);font-size:14px;line-height:1.65;min-height:100vh}
+img,svg,canvas{max-width:100%}
+h1,h2,h3,p,ul,ol,dl,figure{margin:0}
+p{text-wrap:pretty}
+:focus-visible{outline:2px solid var(--fg);outline-offset:3px;border-radius:2px}
+button,input,textarea{font:inherit}
+.stage{max-width:760px;margin:0 auto;padding:24px 16px 40px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:0ms!important}}
+.knopf{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:inherit;font-size:12px;font-weight:500;color:var(--fg);background:transparent;border:1px solid var(--line-strong);border-radius:var(--r-ctl);min-height:36px;padding:0 16px;text-decoration:none;cursor:pointer;transition:background var(--dur-fast),border-color var(--dur-fast),color var(--dur-fast)}
+.knopf:hover{background:var(--surface-2);border-color:var(--fg-mute)}
+.knopf--voll{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.knopf--voll:hover{background:var(--fg-soft);border-color:var(--fg-soft)}
+.knopf[disabled]{opacity:.45;cursor:not-allowed;border-style:dashed}
+.knopf--link{border:0;padding:4px 0;min-height:0;background:none;text-decoration:underline;text-decoration-color:var(--line-strong);text-underline-offset:.3em;font-weight:400;color:var(--fg-mute)}
+.knopf--link:hover{color:var(--fg);background:none}
+.pille{font:inherit;font-size:11px;color:var(--fg-soft);background:transparent;border:1px solid var(--line-strong);border-radius:99px;padding:6px 12px;cursor:pointer;transition:background var(--dur-fast),border-color var(--dur-fast)}
+.pille:hover{background:var(--surface-2);border-color:var(--fg-mute)}
+input[type=text],textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line-strong);border-radius:var(--r-ctl);padding:8px 12px;min-height:38px;width:100%}
+input::placeholder{color:var(--fg-mute)}
+input[type=range]{width:100%;accent-color:var(--fg)}
+.fx-demo{margin:0;border:1px solid var(--line);border-radius:var(--r-tile);background:var(--surface);min-width:0;overflow:clip}
+.fx-bar{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--line);font-size:12px;flex-wrap:wrap}
+.fx-id{font-weight:600;min-width:2.4em;padding:2px 8px;border:1px solid var(--fg);border-radius:var(--r-ctl);line-height:1.4;text-align:center}
+.fx-art{color:var(--fg-soft);flex:1;min-width:10em}
+.fx-body{padding:clamp(16px,3vw,32px);min-width:0}
+.fx-foot{display:flex;gap:16px;align-items:center;justify-content:flex-end;padding:10px 16px;border-top:1px solid var(--line);font-size:11px;color:var(--fg-mute);flex-wrap:wrap}
+.fx-ex{white-space:nowrap}
+.fx-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0}
+.fx-lab{display:block;margin:0 0 8px;font-size:11px;letter-spacing:.06em;color:var(--fg-mute)}
+.fx-input{width:100%;min-height:38px;padding:8px 12px;background:var(--bg);font-size:12px}
+.fx-row .fx-input{flex:1;min-width:12em;width:auto}
+.fx-area{resize:vertical;line-height:1.6}
+.fx-chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0}
+.fx-status{margin:18px 0 0;min-height:1.6em;font-size:12px;line-height:1.6;color:var(--fg-soft)}
+.fx-hint{margin:0 0 20px;font-size:12px;line-height:1.7;color:var(--fg-mute)}
+.fx-state{font-size:12px;color:var(--fg-mute)}
+.fx-badge{display:inline-block;margin:0 0 20px;padding:4px 12px;border:1px dashed var(--line-strong);border-radius:99px;font-size:11px;color:var(--fg-soft)}
+.fx-prog{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:14px}
+.fx-prog i{display:block;height:100%;width:0;background:var(--fg);transform-origin:left}
+.fx-stand{display:inline-block;padding:1px 9px;border:1px solid var(--line-strong);border-radius:99px;font-size:11px;color:var(--fg-soft);line-height:1.6}
+.fx-stand[data-stand="planned"]{border-style:dashed}
+/* F12 */
+.fx-screen{position:relative;height:clamp(240px,40vw,330px);border:1px solid var(--line-strong);border-radius:var(--r-tile);background:var(--bg-sunk);overflow:hidden;touch-action:none}
+.fx-screen-bar{height:22px;border-bottom:1px solid var(--line);display:flex;gap:6px;align-items:center;padding-left:10px}
+.fx-screen-bar i{width:8px;height:8px;border-radius:50%;border:1px solid var(--line-strong)}
+.fx-screen canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.fx-comp{position:absolute;left:0;top:0;width:64px;height:64px;margin:0;padding:0;border:0;background:transparent;cursor:grab;border-radius:50%;touch-action:none;will-change:transform}
+.fx-comp:active{cursor:grabbing}
+.fx-comp svg{width:100%;height:100%;display:block}
+.fx-win{position:absolute;border:1px solid var(--line);border-radius:6px;padding:22px 12px 0;pointer-events:none}
+.fx-win::before{content:"";position:absolute;left:0;right:0;top:0;height:14px;border-bottom:1px solid var(--line)}
+.fx-win i{display:block;height:4px;margin:0 0 9px;background:var(--line);border-radius:2px}
+.fx-win1{left:6%;top:34px;width:44%;height:55%}
+.fx-win2{left:34%;top:78px;width:36%;height:52%;background:var(--bg-sunk)}
+.fx-bubble{position:absolute;margin:0;max-width:15em;padding:8px 12px;border:1px solid var(--line-strong);border-radius:var(--r-tile);background:var(--surface-2);font-size:11px;line-height:1.5;pointer-events:none;opacity:0;transition:opacity var(--dur) var(--ease-out);will-change:transform}
+.fx-bubble.on{opacity:1}
+</style>
+</head>
+<body>
+<main class="stage">
+<figure class="fx-demo" id="F12" data-fx="companion" aria-labelledby="F12-t">
+      <div class="fx-bar"><span class="fx-id">F12</span><span class="fx-art" id="F12-t">Draggable companion</span></div>
+      <div class="fx-body">
+        <p class="fx-hint">Drag the blob, let go and it settles on the nearest edge. Arrow keys move it, Enter lets it sit.</p>
+        <div class="fx-screen" data-comp-screen>
+          <div class="fx-screen-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="fx-win fx-win1" aria-hidden="true"><i></i><i style="width:70%"></i><i style="width:85%"></i><i style="width:40%"></i></div>
+          <div class="fx-win fx-win2" aria-hidden="true"><i style="width:60%"></i><i></i><i style="width:75%"></i></div>
+          <canvas data-comp-canvas aria-hidden="true"></canvas>
+          <button class="fx-comp" type="button" data-comp aria-label="Companion. Drag it, or use the arrow keys."></button>
+          <p class="fx-bubble" data-comp-bubble>Release is waiting for your yes.</p>
+        </div>
+        <p class="fx-status" data-comp-status role="status" aria-live="polite">The companion sits on the right edge.</p>
+      </div>
+      <div class="fx-foot"><span class="fx-ex">example data</span></div>
+    </figure>
+</main>
+<script>
+(function () {
+  'use strict';
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var TAU = Math.PI * 2;
+  var SVGNS = 'http://www.w3.org/2000/svg';
+
+  function $(s, r) { return (r || document).querySelector(s); }
+  function sv(tag, attrs, parent) {
+    var e = document.createElementNS(SVGNS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function loop(fn, el, force) {
+    var run = false, vis = true, raf = 0, last = 0;
+    var io = new IntersectionObserver(function (es) { vis = es[0].isIntersecting; sync(); }, { rootMargin: '80px' });
+    io.observe(el);
+    document.addEventListener('visibilitychange', sync);
+    function tick(ts) { if (!run) return; var dt = ts - last; last = ts; fn(ts, dt); raf = requestAnimationFrame(tick); }
+    function sync() {
+      var want = vis && !document.hidden && (force || !reduced);
+      if (want && !run) { run = true; last = performance.now(); raf = requestAnimationFrame(tick); }
+      else if (!want && run) { run = false; cancelAnimationFrame(raf); }
+    }
+    if (!force && reduced) setTimeout(function () { fn(performance.now(), 0); }, 0);
+    return { stop: function () { run = false; cancelAnimationFrame(raf); io.disconnect(); }, draw: function () { fn(performance.now(), 0); } };
+  }
+  function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function blobD(r, seed, t, amp) {
+    var n = 10, p = [], i;
+    for (i = 0; i < n; i++) {
+      var a = i / n * TAU;
+      var w = 1 + amp * (Math.sin(a * 2 + seed + t * 1.1) * 0.6 + Math.sin(a * 3 - seed * 1.7 + t * 0.8) * 0.4);
+      p.push([Math.cos(a) * r * w, Math.sin(a) * r * w]);
+    }
+    var d = 'M' + p[0][0].toFixed(1) + ' ' + p[0][1].toFixed(1);
+    for (i = 0; i < n; i++) {
+      var p0 = p[(i + n - 1) % n], p1 = p[i], p2 = p[(i + 1) % n], p3 = p[(i + 2) % n];
+      d += 'C' + (p1[0] + (p2[0] - p0[0]) / 6).toFixed(1) + ' ' + (p1[1] + (p2[1] - p0[1]) / 6).toFixed(1) + ' ' +
+        (p2[0] - (p3[0] - p1[0]) / 6).toFixed(1) + ' ' + (p2[1] - (p3[1] - p1[1]) / 6).toFixed(1) + ' ' +
+        p2[0].toFixed(1) + ' ' + p2[1].toFixed(1);
+    }
+    return d + 'Z';
+  }
+  function makeCell(parent, x, y, r, seed, opts) {
+    opts = opts || {};
+    var g = sv('g', { transform: 'translate(' + x + ' ' + y + ')' }, parent);
+    var body = sv('path', { d: blobD(r, seed, 0, 0.05), fill: 'var(--cell-fill)', stroke: 'var(--fg)', 'stroke-width': opts.sw || 2 }, g);
+    var eyeG = sv('g', {}, g), eyes = [];
+    if (opts.eyes !== false) {
+      [-0.2, 0.2].forEach(function (o) {
+        eyes.push(sv('ellipse', { cx: o * r, cy: -0.06 * r, rx: r * 0.075, ry: r * 0.11, fill: 'var(--fg)' }, eyeG));
+      });
+    }
+    return { g: g, body: body, eyes: eyes, r: r, seed: seed, setPos: function (px, py) { g.setAttribute('transform', 'translate(' + px.toFixed(1) + ' ' + py.toFixed(1) + ')'); } };
+  }
+  function eyesState(cell, open) {
+    cell.eyes.forEach(function (e) {
+      var r = cell.r;
+      if (open) { e.setAttribute('ry', r * 0.11); e.setAttribute('rx', r * 0.075); e.setAttribute('opacity', 1); }
+      else { e.setAttribute('ry', r * 0.014); e.setAttribute('rx', r * 0.1); e.setAttribute('opacity', 0.8); }
+    });
+  }
+  function mkCell(host, o) {
+    o = o || {};
+    var svg = host.namespaceURI === SVGNS ? host : sv('svg', {}, host);
+    if (!svg.getAttribute('viewBox')) svg.setAttribute('viewBox', '-64 -64 128 128');
+    svg.style.overflow = 'visible';
+    var R = o.r || 44, seed = o.seed || 3, c = makeCell(svg, 0, 0, R, seed, { sw: 2.5 });
+    var ring = sv('circle', { cx: 0, cy: 0, r: R + 11, fill: 'none', stroke: 'var(--fg-soft)', 'stroke-width': 1.6, transform: 'rotate(-90)' }, svg);
+    var circ = TAU * (R + 11), st = { state: o.state || 'idle', ring: o.ring == null ? null : o.ring, wob: o.wobble == null ? 1 : o.wobble };
+    function draw(t) {
+      c.body.setAttribute('d', blobD(R, seed, t, 0.04 * st.wob));
+      eyesState(c, st.state !== 'sleep' && st.state !== 'stop');
+      if (st.ring != null) { ring.setAttribute('opacity', 1); ring.setAttribute('stroke-dasharray', (circ * clamp(st.ring, 0, 1)) + ' ' + circ); } else ring.setAttribute('opacity', 0);
+    }
+    var lp = loop(function (ts) { draw(ts / 1000); }, svg);
+    draw(0);
+    return { svg: svg, body: c.body, draw: draw, destroy: function () { lp.stop(); },
+      set: function (n) { for (var k in n) { if (k === 'wobble') st.wob = n[k]; else st[k] = n[k]; } if (reduced) draw(0); } };
+  }
+  function setStatus(el, txt) { if (el) el.textContent = txt; }
+
+  function initCompanion() {
+    var root = $('#F12'); if (!root) return;
+    var scr = $('[data-comp-screen]', root), cv = $('[data-comp-canvas]', root), btn = $('[data-comp]', root), bub = $('[data-comp-bubble]', root), st = $('[data-comp-status]', root);
+    var cell = mkCell(btn, { r: 46, seed: 7, state: 'idle', wobble: 1 });
+    var W = 0, H = 0, M = 40, x = 0, y = 0, vx = 0, vy = 0, tx = 0, ty = 0, dragging = false, edge = 'right', sat = false, since = 0, msg = 0, moving = true;
+    var msgs = ['Release is waiting for your yes.', 'Checkout tests: 48 of 48 pass.', 'Mail resident is asleep.', 'Two agents are working.'];
+    function measure() { var r = scr.getBoundingClientRect(); W = r.width; H = r.height; }
+    function home() { measure(); M = 42; x = tx = W - M * 0.6; y = ty = H * 0.55; vx = vy = 0; sat = true; edge = 'right'; }
+    function snap() {
+      var d = { left: x, right: W - x, top: y - 22, bottom: H - y }, best = 'right', bd = 1e9;
+      for (var k in d) if (d[k] < bd) { bd = d[k]; best = k; }
+      goEdge(best);
+    }
+    function goEdge(e) {
+      edge = e;
+      if (e === 'left') tx = M * 0.6; if (e === 'right') tx = W - M * 0.6;
+      if (e === 'top') ty = 22 + M * 0.6; if (e === 'bottom') ty = H - M * 0.6;
+      if (e === 'left' || e === 'right') ty = clamp(y, 22 + M, H - M); else tx = clamp(x, M, W - M);
+      sat = false; moving = true; since = performance.now();
+    }
+    function bubblePos() {
+      var bw = bub.offsetWidth, bh = bub.offsetHeight, bx, by = clamp(y - bh / 2, 28, H - bh - 6);
+      if (edge === 'left' || ((edge === 'top' || edge === 'bottom') && x < W / 2)) bx = x + 38; else bx = x - 38 - bw;
+      if (edge === 'top') by = y + 34; if (edge === 'bottom') by = y - bh - 34;
+      bub.style.transform = 'translate(' + clamp(bx, 6, Math.max(6, W - bw - 6)).toFixed(1) + 'px,' + by.toFixed(1) + 'px)';
+    }
+    function say(i) { bub.textContent = msgs[i % msgs.length]; }
+    function guides() {
+      var g = cv.getContext('2d'), dpr = cv.width / (W || 1);
+      g.clearRect(0, 0, cv.width, cv.height);
+      if (!dragging) return;
+      g.strokeStyle = cssVar('--line-strong'); g.setLineDash([4 * dpr, 4 * dpr]); g.lineWidth = dpr;
+      g.strokeRect(8 * dpr, 30 * dpr, (W - 16) * dpr, (H - 38) * dpr);
+    }
+    function render(ts, dtms) {
+      var dt = clamp((dtms || 16.7) / 1000, 0.001, 0.05);
+      if (!dragging) {
+        var k = 150, c = 15; vx += ((tx - x) * k - vx * c) * dt; vy += ((ty - y) * k - vy * c) * dt; x += vx * dt; y += vy * dt;
+      } else { vx = (tx - x) / dt * 0.3; vy = (ty - y) / dt * 0.3; x += (tx - x) * 0.35; y += (ty - y) * 0.35; }
+      var sp = Math.hypot(vx, vy), stretch = clamp(sp / 1100, 0, 0.3), ang = Math.atan2(vy, vx);
+      var still = !dragging && sp < 5 && Math.hypot(tx - x, ty - y) < 1;
+      if (still && !sat) { sat = true; moving = false; cell.set({ state: 'idle', wobble: 0.6 }); bub.classList.add('on'); say(msg); setStatus(st, 'The companion sits on the ' + edge + ' edge. It says: ' + msgs[msg % msgs.length]); }
+      if (!still && !moving) moving = true;
+      if (!still && (dragging || sp > 40) && bub.classList.contains('on')) { bub.classList.remove('on'); cell.set({ state: 'stop', wobble: 2 }); }
+      btn.style.transform = 'translate3d(' + (x - 32).toFixed(1) + 'px,' + (y - 32).toFixed(1) + 'px,0) rotate(' + ang.toFixed(2) + 'rad) scale(' + (1 + stretch).toFixed(3) + ',' + (1 - stretch * 0.6).toFixed(3) + ') rotate(' + (-ang).toFixed(2) + 'rad)';
+      bubblePos();
+      if (still && ts - since > 4500 && !dragging) { since = ts; msg++; say(msg); }
+      guides();
+    }
+    function resize() { measure(); var d = Math.min(window.devicePixelRatio || 1, 2); cv.width = Math.round(W * d); cv.height = Math.round(H * d); }
+    resize(); home(); cell.set({ state: 'idle' }); say(0); bub.classList.add('on');
+    window.addEventListener('resize', function () { resize(); home(); render(performance.now(), 16); });
+    btn.addEventListener('pointerdown', function (e) {
+      dragging = true; btn.setPointerCapture(e.pointerId); measure(); bub.classList.remove('on'); sat = false;
+      var r = scr.getBoundingClientRect(); tx = clamp(e.clientX - r.left, 24, W - 24); ty = clamp(e.clientY - r.top, 46, H - 24); cell.set({ state: 'stop', wobble: 2 });
+    });
+    btn.addEventListener('pointermove', function (e) { if (!dragging) return; var r = scr.getBoundingClientRect(); tx = clamp(e.clientX - r.left, 24, W - 24); ty = clamp(e.clientY - r.top, 46, H - 24); });
+    function drop() { if (!dragging) return; dragging = false; snap(); }
+    btn.addEventListener('pointerup', drop); btn.addEventListener('pointercancel', drop);
+    btn.addEventListener('keydown', function (e) {
+      var m = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'top', ArrowDown: 'bottom' }[e.key];
+      if (m) { e.preventDefault(); bub.classList.remove('on'); cell.set({ state: 'stop', wobble: 2 }); goEdge(m); }
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); msg++; say(msg); bub.classList.add('on'); setStatus(st, bub.textContent); }
+    });
+    loop(render, scr, true);
+    render(performance.now(), 16);
+  }
+  initCompanion();
+})();
+</script>
+</body>
+</html>

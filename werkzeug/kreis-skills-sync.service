@@ -1,0 +1,7 @@
+[Unit]
+Description=kreis-skills: Skills abgleichen, bereinigen, committen, pushen
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/arbeit/kreis-skills
+ExecStart=%h/arbeit/kreis-skills/werkzeug/abgleich.sh

@@ -1,0 +1,10 @@
+{
+  "name": "web-design-guidelines",
+  "description": "Review UI code against the Web Interface Guidelines (accessibility, UX, best practices). MIT, by Vercel.",
+  "version": "1.0.0",
+  "author": { "name": "Kreis Systems", "url": "https://github.com/Moritz314/kreis-skills" },
+  "homepage": "https://github.com/Moritz314/kreis-skills",
+  "repository": "https://github.com/Moritz314/kreis-skills",
+  "license": "MIT",
+  "keywords": ["design", "frontend", "ui"]
+}

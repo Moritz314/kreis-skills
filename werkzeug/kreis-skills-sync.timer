@@ -1,0 +1,9 @@
+[Unit]
+Description=kreis-skills Abgleich stuendlich
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,10 @@
+{
+  "name": "arsenal",
+  "description": "Technical building blocks for ambitious UI: shaders, 3D, scroll choreography, curated free libraries, ready-made animated components, plus plan/build/critics commands.",
+  "version": "1.0.0",
+  "author": { "name": "Kreis Systems", "url": "https://github.com/Moritz314/kreis-skills" },
+  "homepage": "https://github.com/Moritz314/kreis-skills",
+  "repository": "https://github.com/Moritz314/kreis-skills",
+  "license": "MIT",
+  "keywords": ["design", "frontend", "ui"]
+}

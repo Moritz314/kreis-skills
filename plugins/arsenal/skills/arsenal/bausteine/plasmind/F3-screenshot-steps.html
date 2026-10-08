@@ -1,0 +1,290 @@
+<!doctype html>
+<!--
+Kennung:  F3
+Name:     Schritte auf Bildschirmfotos
+Zweck:    Vier Schritte führen über Bildschirmfotos des App-Fensters, mit Hervorhebung, Zoom und Lupe.
+Herkunft: plasmind Elementeschau 2026-10-03 (Featureseite)
+Bedienung: Schrittliste, Back und Next oder die Pfeiltasten links/rechts im Foto; mit der Maus erscheint eine Lupe.
+Aufbau:   ein Dokument, CSS und JS inline, keine externen Abrufe, keine Abhängigkeit von plasmind.js oder base.css.
+          Dunkel ist Standard, ?theme=light schaltet auf hell.
+          Medien: medien/ansicht-agentenkarte.png, medien/ansicht-agentenzentrale.png, medien/ansicht-projekte.png (zusammen etwa 630 KB).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>F3 Schritte auf Bildschirmfotos</title>
+<script>
+(function(){try{if(new URLSearchParams(location.search).get('theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}})();
+</script>
+<style>
+/* Tokens (aus tokens.css) */
+:root{
+  color-scheme: dark;
+  /* Dunkelfeld (Standard). Hue 262, kein reines Schwarz/Weiss. */
+  --bg:          oklch(0.085 0.008 262);
+  --bg-sunk:     oklch(0.052 0.008 262);
+  --surface:     oklch(0.115 0.008 262);
+  --surface-2:   oklch(0.15 0.008 262);
+  --surface-3:   oklch(0.185 0.008 262);
+  --line:        oklch(0.235 0.008 262);
+  --line-strong: oklch(0.37 0.008 262);
+  --fg-mute:     oklch(0.62 0.008 262);
+  --fg-soft:     oklch(0.8 0.004 262);
+  --fg:          oklch(0.975 0.004 262);
+  --cell-fill:   oklch(0.098 0.008 262);
+  --flood:       oklch(0.97 0.004 262);
+  --shadow:      oklch(0.02 0.008 262 / 0.55);
+  --inv-bg: var(--fg);   /* Umkehrfläche: hell auf dunkel */
+  --inv-fg: var(--bg);
+
+  /* Zeichenfarben des Logos (Hex aus dem Logo-Generator w12.py) */
+  --mark-hell:  #F5F7F9;
+  --mark-dunkel:#050608;
+  --splash-grund:#020203;
+
+  /* Textauswahl W2d2 */
+  --sel-bg:   oklch(0.27 0.006 262);
+  --sel-edge: 6px;      /* Kantenbreite */
+  --sel-edge-a: 0.55;   /* Kantendeckkraft */
+
+  /* Cursor / Ladezeichen (Blob-Füllung) */
+  --pm-fill: oklch(0.17 0.006 262);
+  --pm-fill-a: 0.88;
+
+  /* Schrift: Martian Mono für alles, Größenausgleich über x-Höhe (PUNKT-33) */
+  --font: "Martian Mono", ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  --fsa: 0.516;         /* font-size-adjust: x-Höhe von IBM Plex; Martian Mono x-Höhe 0,600 = Faktor 0,86 */
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 140ms;
+  --dur: 220ms;
+  --dur-slow: 420ms;
+  --r-ctl: 4px;
+  --r-tile: 8px;
+}
+:root[data-theme="light"]{
+  color-scheme: light;
+  --bg:          oklch(0.962 0.005 262);
+  --bg-sunk:     oklch(0.985 0.005 262);
+  --surface:     oklch(0.982 0.005 262);
+  --surface-2:   oklch(0.935 0.005 262);
+  --surface-3:   oklch(0.905 0.005 262);
+  --line:        oklch(0.855 0.005 262);
+  --line-strong: oklch(0.72 0.005 262);
+  --fg-mute:     oklch(0.47 0.005 262);
+  --fg-soft:     oklch(0.3 0.006 262);
+  --fg:          oklch(0.12 0.006 262);
+  --cell-fill:   oklch(0.978 0.005 262);
+  --flood:       oklch(0.97 0.006 262);
+  --shadow:      oklch(0.3 0.005 262 / 0.18);
+  --pm-fill: oklch(0.978 0.005 262);
+  --sel-bg:  oklch(0.86 0.006 262);  /* Hellfeld ist in der Marke nicht festgelegt: eigene Annahme */
+}
+::selection{
+  background: var(--sel-bg);
+  color: var(--fg);
+  text-shadow: 0 0 6px oklch(0.975 0.004 262 / 0.9), 0 0 14px oklch(0.975 0.004 262 / 0.5);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--bg);color:var(--fg);font-family:"Martian Mono",ui-monospace,monospace;font-size-adjust:var(--fsa);font-weight:400}
+body{margin:0;background:var(--bg);color:var(--fg);font-size:14px;line-height:1.65;min-height:100vh}
+img,svg,canvas{max-width:100%}
+h1,h2,h3,p,ul,ol,dl,figure{margin:0}
+p{text-wrap:pretty}
+:focus-visible{outline:2px solid var(--fg);outline-offset:3px;border-radius:2px}
+button,input,textarea{font:inherit}
+.stage{max-width:760px;margin:0 auto;padding:24px 16px 40px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:0ms!important}}
+.knopf{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:inherit;font-size:12px;font-weight:500;color:var(--fg);background:transparent;border:1px solid var(--line-strong);border-radius:var(--r-ctl);min-height:36px;padding:0 16px;text-decoration:none;cursor:pointer;transition:background var(--dur-fast),border-color var(--dur-fast),color var(--dur-fast)}
+.knopf:hover{background:var(--surface-2);border-color:var(--fg-mute)}
+.knopf--voll{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.knopf--voll:hover{background:var(--fg-soft);border-color:var(--fg-soft)}
+.knopf[disabled]{opacity:.45;cursor:not-allowed;border-style:dashed}
+.knopf--link{border:0;padding:4px 0;min-height:0;background:none;text-decoration:underline;text-decoration-color:var(--line-strong);text-underline-offset:.3em;font-weight:400;color:var(--fg-mute)}
+.knopf--link:hover{color:var(--fg);background:none}
+.pille{font:inherit;font-size:11px;color:var(--fg-soft);background:transparent;border:1px solid var(--line-strong);border-radius:99px;padding:6px 12px;cursor:pointer;transition:background var(--dur-fast),border-color var(--dur-fast)}
+.pille:hover{background:var(--surface-2);border-color:var(--fg-mute)}
+input[type=text],textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line-strong);border-radius:var(--r-ctl);padding:8px 12px;min-height:38px;width:100%}
+input::placeholder{color:var(--fg-mute)}
+input[type=range]{width:100%;accent-color:var(--fg)}
+.fx-demo{margin:0;border:1px solid var(--line);border-radius:var(--r-tile);background:var(--surface);min-width:0;overflow:clip}
+.fx-bar{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--line);font-size:12px;flex-wrap:wrap}
+.fx-id{font-weight:600;min-width:2.4em;padding:2px 8px;border:1px solid var(--fg);border-radius:var(--r-ctl);line-height:1.4;text-align:center}
+.fx-art{color:var(--fg-soft);flex:1;min-width:10em}
+.fx-body{padding:clamp(16px,3vw,32px);min-width:0}
+.fx-foot{display:flex;gap:16px;align-items:center;justify-content:flex-end;padding:10px 16px;border-top:1px solid var(--line);font-size:11px;color:var(--fg-mute);flex-wrap:wrap}
+.fx-ex{white-space:nowrap}
+.fx-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0}
+.fx-lab{display:block;margin:0 0 8px;font-size:11px;letter-spacing:.06em;color:var(--fg-mute)}
+.fx-input{width:100%;min-height:38px;padding:8px 12px;background:var(--bg);font-size:12px}
+.fx-row .fx-input{flex:1;min-width:12em;width:auto}
+.fx-area{resize:vertical;line-height:1.6}
+.fx-chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0}
+.fx-status{margin:18px 0 0;min-height:1.6em;font-size:12px;line-height:1.6;color:var(--fg-soft)}
+.fx-hint{margin:0 0 20px;font-size:12px;line-height:1.7;color:var(--fg-mute)}
+.fx-state{font-size:12px;color:var(--fg-mute)}
+.fx-badge{display:inline-block;margin:0 0 20px;padding:4px 12px;border:1px dashed var(--line-strong);border-radius:99px;font-size:11px;color:var(--fg-soft)}
+.fx-prog{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:14px}
+.fx-prog i{display:block;height:100%;width:0;background:var(--fg);transform-origin:left}
+.fx-stand{display:inline-block;padding:1px 9px;border:1px solid var(--line-strong);border-radius:99px;font-size:11px;color:var(--fg-soft);line-height:1.6}
+.fx-stand[data-stand="planned"]{border-style:dashed}
+/* F3 */
+.fx-step-list{list-style:none;margin:0 0 18px;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.fx-step-list button{background:none;border:1px solid var(--line);border-radius:99px;padding:6px 14px;cursor:pointer;font-size:12px;color:var(--fg-mute);display:flex;gap:10px}
+.fx-step-list button b{font-weight:600}
+.fx-step-list button[aria-current="step"]{color:var(--fg);border-color:var(--fg)}
+.fx-shot{position:relative;aspect-ratio:16/10;overflow:hidden;border:1px solid var(--line-strong);border-radius:var(--r-tile);background:var(--bg-sunk);cursor:crosshair;touch-action:pan-y}
+.fx-shot-in{position:absolute;left:0;top:0;width:100%;height:100%;transform-origin:0 0;transition:transform .7s var(--ease-out);will-change:transform}
+.fx-shot-in img{position:absolute;inset:0;width:100%;height:100%;display:block;transition:opacity .35s var(--ease-out)}
+.fx-shot-in svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.fx-mk{fill:none;stroke:var(--flood);stroke-width:1.5;vector-effect:non-scaling-stroke;stroke-dasharray:6 4}
+.fx-mk-bg{fill:none;stroke:var(--bg);stroke-width:4;vector-effect:non-scaling-stroke;opacity:.7}
+.fx-lens{position:absolute;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;border:1px solid var(--fg);box-shadow:0 6px 24px var(--shadow);background-repeat:no-repeat;pointer-events:none;opacity:0;transition:opacity var(--dur-fast)}
+.fx-lens.on{opacity:1}
+.fx-shot-wrap .fx-row{margin-top:16px}
+
+/* Geplant, Dock */
+.fx-plist{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.fx-plist li{display:grid;grid-template-columns:minmax(0,12em) 1fr;gap:20px;padding:16px 0;border-bottom:1px solid var(--line);font-size:12px;line-height:1.7}
+.fx-plist b{font-weight:500}
+.fx-plist span{color:var(--fg-soft)}
+.fx-inv{margin:28px 0 0;font-size:12px;color:var(--fg-soft)}
+.fx-inv a{color:var(--fg);text-underline-offset:3px}
+.fx-dock-n{white-space:nowrap}
+.fx-dock{position:sticky;bottom:0;z-index:20;display:flex;gap:18px;align-items:center;justify-content:space-between;padding:12px var(--gutter);margin:0 calc(-1*var(--gutter));border-top:1px solid var(--line-strong);background:var(--bg);font-size:12px}
+
+/* Richtungswerte (Rest steckt in base.css) */
+[data-richtung="r1"] .fx-hero-art{display:none}
+[data-richtung="r2"] .fx-hero-art{width:min(26%,260px)}
+[data-richtung="r3"] .fx-hero-art{width:min(30%,320px);background:var(--inv-bg);border-radius:var(--r-tile)}
+[data-richtung="r3"] .fx-claim{font-size:clamp(15px,1.6vw,19px);color:var(--fg)}
+[data-richtung="r3"] .fx-id{background:var(--inv-bg);color:var(--inv-fg);border-color:var(--inv-bg)}
+[data-richtung="r1"] .fx-demo{background:var(--surface)}
+
+/* Handy */
+@media (max-width:860px){
+  .fx-sec{grid-template-columns:minmax(0,1fr);gap:28px}
+  .fx-text{position:static}
+  .fx-hero-art{display:none}
+}
+@media (max-width:600px){
+  .fx-index ol{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fx-budget,.fx-res{grid-template-columns:minmax(0,1fr)}
+  .fx-budget-cell,.fx-res-btn{width:min(60%,200px);margin:0 auto}
+  .fx-board{grid-template-columns:minmax(0,1fr)}
+  .fx-track{grid-template-columns:minmax(0,1fr)}
+  .fx-plist li{grid-template-columns:minmax(0,1fr);gap:4px}
+  .fx-brief>div{grid-template-columns:7em 1fr}
+  .fx-bar{gap:10px}
+  .fx-art{flex-basis:100%;order:3}
+  .fx-pick{margin-left:auto}
+  .fx-foot{flex-direction:column;align-items:stretch;gap:8px}
+  .fx-scrub{height:150vh}
+}
+@media (pointer:coarse){.fx-lens{display:none}.fx-shot{cursor:default}}
+@media (prefers-reduced-motion:reduce){
+  .fx-shot-in{transition:none}.fx-ask{animation:none}.fx-file.is-refused{animation:none}
+  .fx-log span{transition:none}
+}
+.fx-steps{display:block}
+@media (pointer:coarse){.fx-lens{display:none}.fx-shot{cursor:default}}
+@media (prefers-reduced-motion:reduce){.fx-shot-in{transition:none}}
+</style>
+</head>
+<body>
+<main class="stage">
+<figure class="fx-demo" id="F3" data-fx="steps" aria-labelledby="F3-t">
+      <div class="fx-bar"><span class="fx-id">F3</span><span class="fx-art" id="F3-t">Step by step, on screenshots of the window</span></div>
+      <div class="fx-body">
+        <div class="fx-steps">
+          <ol class="fx-step-list" data-steps-list></ol>
+          <div class="fx-shot-wrap">
+            <div class="fx-shot" data-shot tabindex="0" aria-label="Screenshot of the app window. Move the pointer for a magnifier.">
+              <div class="fx-shot-in" data-shot-in></div>
+              <div class="fx-lens" data-lens aria-hidden="true"></div>
+            </div>
+            <p class="fx-status" data-steps-status role="status" aria-live="polite"></p>
+            <p class="fx-row"><button class="knopf" type="button" data-step-prev>Back</button><button class="knopf knopf--voll" type="button" data-step-next>Next</button></p>
+          </div>
+        </div>
+      </div>
+      <div class="fx-foot"><span class="fx-ex">screenshots of the app window, example data</span></div>
+    </figure>
+</main>
+<script>
+(function () {
+  'use strict';
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  var MEDIA = 'medien/';
+
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function sv(tag, attrs, parent) {
+    var e = document.createElementNS(SVGNS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function h(tag, attrs, text) {
+    var e = document.createElement(tag);
+    if (attrs) for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function setStatus(el, txt) { if (el) el.textContent = txt; }
+
+  function initSteps() {
+    var root = $('#F3'); if (!root) return;
+    var list = $('[data-steps-list]', root), shot = $('[data-shot]', root), inn = $('[data-shot-in]', root), lens = $('[data-lens]', root), st = $('[data-steps-status]', root), prev = $('[data-step-prev]', root), next = $('[data-step-next]', root);
+    var steps = [
+      { img: 'ansicht-agentenkarte.png', box: [842, 458, 136, 136], c: [909, 525], w: 640, t: 'The overseer', x: 'The blob in the middle is the overseer. Its label names the role and the layer. Everything else hangs off it.' },
+      { img: 'ansicht-agentenkarte.png', box: [240, 912, 420, 34], c: [500, 800], w: 760, t: 'The legend', x: 'The legend under the view names each form: overseer, leader, expert, resident, worker. The form tells you the role.' },
+      { img: 'ansicht-projekte.png', box: [962, 212, 328, 276], c: [1125, 350], w: 640, t: 'The ring', x: 'On the project page every agent has a ring. It fills as the agent spends its budget. The state word stands at the right.' },
+      { img: 'ansicht-agentenzentrale.png', box: [1285, 95, 300, 235], c: [1400, 260], w: 520, t: 'The card', x: 'Open an agent in the control center. Its card lists role, state, runtime and tokens.' }
+    ];
+    var imgs = {}, cur = 0, geo = { s: 1, tx: 0, ty: 0, W: 0, H: 0 }, ov = sv('svg', { viewBox: '0 0 1600 1000', preserveAspectRatio: 'none', 'aria-hidden': 'true' }, inn), mk1 = sv('rect', { class: 'fx-mk-bg' }, ov), mk2 = sv('rect', { class: 'fx-mk' }, ov);
+    steps.forEach(function (s) {
+      if (!imgs[s.img]) { var im = h('img', { src: MEDIA + s.img, alt: '', width: 1600, height: 1000, loading: 'lazy', decoding: 'async' }); im.style.opacity = 0; inn.insertBefore(im, ov); imgs[s.img] = im; }
+    });
+    steps.forEach(function (s, i) {
+      var li = h('li'), b = h('button', { type: 'button' }); b.appendChild(h('b', null, String(i + 1))); b.appendChild(h('span', null, s.t));
+      b.addEventListener('click', function () { go(i); }); li.appendChild(b); list.appendChild(li);
+    });
+    function go(i) {
+      cur = clamp(i, 0, steps.length - 1); var s = steps[cur];
+      $$('button', list).forEach(function (b, k) { if (k === cur) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
+      Object.keys(imgs).forEach(function (k) { imgs[k].style.opacity = k === s.img ? 1 : 0; });
+      [mk1, mk2].forEach(function (m) { m.setAttribute('x', s.box[0]); m.setAttribute('y', s.box[1]); m.setAttribute('width', s.box[2]); m.setAttribute('height', s.box[3]); m.setAttribute('rx', 8); });
+      geo.W = shot.clientWidth; geo.H = shot.clientHeight;
+      var w = s.w, hh = w / 1.6, cx = clamp(s.c[0], w / 2, 1600 - w / 2), cy = clamp(s.c[1], hh / 2, 1000 - hh / 2);
+      geo.s = 1600 / w; geo.tx = -(cx - w / 2) / 1600 * geo.W * geo.s; geo.ty = -(cy - hh / 2) / 1000 * geo.H * geo.s;
+      inn.style.transform = 'translate(' + geo.tx.toFixed(1) + 'px,' + geo.ty.toFixed(1) + 'px) scale(' + geo.s.toFixed(3) + ')';
+      setStatus(st, 'Step ' + (cur + 1) + ' of ' + steps.length + '. ' + s.x);
+      prev.disabled = cur === 0; next.disabled = cur === steps.length - 1;
+    }
+    prev.addEventListener('click', function () { go(cur - 1); }); next.addEventListener('click', function () { go(cur + 1); });
+    shot.addEventListener('keydown', function (e) { if (e.key === 'ArrowRight') go(cur + 1); if (e.key === 'ArrowLeft') go(cur - 1); });
+    window.addEventListener('resize', function () { inn.style.transition = 'none'; go(cur); requestAnimationFrame(function () { inn.style.transition = ''; }); });
+    /* Lupe: nur mit Maus */
+    shot.addEventListener('pointermove', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      var r = shot.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top, s = steps[cur];
+      var mag = clamp(2400 / (geo.W * geo.s), 1.3, 2.6), bw = geo.W * geo.s * mag, bh = geo.H * geo.s * mag;
+      var fx = (px - geo.tx) / (geo.W * geo.s), fy = (py - geo.ty) / (geo.H * geo.s);
+      lens.style.left = px + 'px'; lens.style.top = py + 'px';
+      lens.style.backgroundImage = 'url(' + MEDIA + s.img + ')';
+      lens.style.backgroundSize = bw + 'px ' + bh + 'px';
+      lens.style.backgroundPosition = (75 - fx * bw) + 'px ' + (75 - fy * bh) + 'px';
+      lens.classList.add('on');
+    });
+    shot.addEventListener('pointerleave', function () { lens.classList.remove('on'); });
+    go(0);
+  }
+  initSteps();
+})();
+</script>
+</body>
+</html>

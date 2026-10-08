@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>E15 Cursor CU1</title>
+<!--
+Baustein E15: Cursor CU1
+Zweck: The calm, tight blob cursor as an option: it follows, squashes on click and fuses with cells.
+Herkunft: plasmind Elementeschau 2026-10-03 (<studio>, eigenes Werk).
+In sich geschlossen: CSS und JS inline, keine externen Abrufe. Farben ueber die CSS-Variablen im Tokenblock
+(dunkel, hell ueber [data-theme=light]); die Schrift faellt auf ui-monospace zurueck.
+API: PMEL.E15.init(el,{theme:'dark'|'light'}) liefert ein Handle mit setTheme(t) und destroy()
+(set(name,wert) fuer Optionen, falls vorhanden). el braucht position:relative und eine Hoehe.
+Pausiert ausserhalb des Bildschirms und im verdeckten Tab, Standbild bei prefers-reduced-motion.
+URL-Parameter: ?theme=light
+-->
+<style>
+/* Tokenblock */
+:root{
+  color-scheme: dark;
+  
+  --bg:          oklch(0.085 0.008 262);
+  --bg-sunk:     oklch(0.052 0.008 262);
+  --surface:     oklch(0.115 0.008 262);
+  --surface-2:   oklch(0.15 0.008 262);
+  --surface-3:   oklch(0.185 0.008 262);
+  --line:        oklch(0.235 0.008 262);
+  --line-strong: oklch(0.37 0.008 262);
+  --fg-mute:     oklch(0.62 0.008 262);
+  --fg-soft:     oklch(0.8 0.004 262);
+  --fg:          oklch(0.975 0.004 262);
+  --cell-fill:   oklch(0.098 0.008 262);
+  --flood:       oklch(0.97 0.004 262);
+  --shadow:      oklch(0.02 0.008 262 / 0.55);
+  --inv-bg: var(--fg);   
+  --inv-fg: var(--bg);
+
+  
+  --mark-hell:  #F5F7F9;
+  --mark-dunkel:#050608;
+  --splash-grund:#020203;
+
+  
+  --sel-bg:   oklch(0.27 0.006 262);
+  --sel-edge: 6px;      
+  --sel-edge-a: 0.55;   
+
+  
+  --pm-fill: oklch(0.17 0.006 262);
+  --pm-fill-a: 0.88;
+
+  
+  --font: "Martian Mono", ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  --fsa: 0.516;         
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 140ms;
+  --dur: 220ms;
+  --dur-slow: 420ms;
+  --r-ctl: 4px;
+  --r-tile: 8px;
+}
+:root[data-theme="light"]{
+  color-scheme: light;
+  --bg:          oklch(0.962 0.005 262);
+  --bg-sunk:     oklch(0.985 0.005 262);
+  --surface:     oklch(0.982 0.005 262);
+  --surface-2:   oklch(0.935 0.005 262);
+  --surface-3:   oklch(0.905 0.005 262);
+  --line:        oklch(0.855 0.005 262);
+  --line-strong: oklch(0.72 0.005 262);
+  --fg-mute:     oklch(0.47 0.005 262);
+  --fg-soft:     oklch(0.3 0.006 262);
+  --fg:          oklch(0.12 0.006 262);
+  --cell-fill:   oklch(0.978 0.005 262);
+  --flood:       oklch(0.97 0.006 262);
+  --shadow:      oklch(0.3 0.005 262 / 0.18);
+  --pm-fill: oklch(0.978 0.005 262);
+  --sel-bg:  oklch(0.86 0.006 262);  
+}
+
+html{
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font);
+  font-size-adjust: var(--fsa);
+  font-weight: 400;
+}
+body{ margin:0; background:var(--bg); color:var(--fg); }
+
+
+::selection{
+  background: var(--sel-bg);
+  color: var(--fg);
+  text-shadow: 0 0 6px oklch(0.975 0.004 262 / 0.9), 0 0 14px oklch(0.975 0.004 262 / 0.5);
+}
+:root[data-theme="light"] ::selection{ text-shadow:none; }
+.pm-sel-aktiv ::selection, .pm-sel-aktiv::selection{ background: transparent; } 
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:0.001ms !important; transition-duration:0ms !important; }
+}
+/* Seitengeruest der Demo */
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;font-size:13px;line-height:1.6}
+.bar{display:flex;gap:10px 16px;align-items:center;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line)}
+.bar b{font-weight:600}.bar span{color:var(--fg-mute);font-size:12px}.sp{flex:1}
+.seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:var(--r-ctl);overflow:hidden}
+.seg button{font:500 12px/1 var(--font);padding:7px 11px;border:0;background:transparent;color:var(--fg-soft);cursor:pointer}
+.seg button+button{border-left:1px solid var(--line-strong)}
+.seg button[aria-pressed=true]{background:var(--fg);color:var(--bg)}
+.opt{display:inline-flex;gap:7px;align-items:center;font-size:12px;color:var(--fg-soft);cursor:pointer}
+.opt input{accent-color:var(--fg)}
+button:focus-visible,input:focus-visible{outline:1px solid var(--fg);outline-offset:2px}
+#stage{position:relative;overflow:hidden;flex:1;min-height:280px;background:var(--bg-sunk)}
+</style>
+</head>
+<body>
+<div class="bar"><b>E15</b><b>Cursor CU1</b><span class="sp"></span><div class="seg" role="group" aria-label="Theme"><button type="button" aria-pressed="true" data-th="dark">dark</button><button type="button" aria-pressed="false" data-th="light">light</button></div></div>
+<div id="stage"></div>
+<script>
+/* plasmind element E15: Cursor CU1.
+   Standalone: only needs gemeinsam/tokens.css for the font (optional). No other dependency.
+   Use: <div id=stage style="position:relative;height:280px"></div>, PMEL.E15.init(stage,{theme:'dark'|'light'}) returns a handle with setTheme(t) and destroy().
+   PMEL.E15.destroy() removes every instance. Pauses when off screen and in a hidden tab, still frame under prefers-reduced-motion. */
+(function(g){
+var TAU=Math.PI*2,PI=Math.PI,abs=Math.abs,sin=Math.sin,cos=Math.cos,min=Math.min,max=Math.max,sqrt=Math.sqrt,hypot=Math.hypot,atan2=Math.atan2,exp=Math.exp,pow=Math.pow;
+var PAL={"dark":{"bg":"#010203","bgs":"#000001","sf":"#040507","sf2":"#090b0f","sf3":"#111316","ln":"#1c1e22","ls":"#3d4044","mute":"#83868b","soft":"#bcbec0","fg":"#f5f7f9","fill":"#020305","sel":"#252629","pf":"#0e0f12"},"light":{"bg":"#f1f2f6","bgs":"#f8fafe","sf":"#f7f9fd","sf2":"#e8e9ed","sf3":"#dee0e3","ln":"#cdcfd3","ls":"#a3a5a8","mute":"#595b5e","soft":"#2c2e31","fg":"#050608","fill":"#f6f8fb","sel":"#cfd1d5","pf":"#f6f8fb"}};
+var VARS={bg:'--bg',bgs:'--bg-sunk',sf:'--surface',sf2:'--surface-2',sf3:'--surface-3',ln:'--line',ls:'--line-strong',mute:'--fg-mute',soft:'--fg-soft',fg:'--fg',fill:'--cell-fill',sel:'--sel-bg',pf:'--pm-fill'};
+var mqR=matchMedia('(prefers-reduced-motion: reduce)'),mqC=matchMedia('(pointer: coarse)');
+function clamp(v,a,b){return v<a?a:v>b?b:v}
+function lerp(a,b,t){return a+(b-a)*t}
+function sstep(a,b,x){x=clamp((x-a)/(b-a),0,1);return x*x*(3-2*x)}
+function ease(t){t=clamp(t,0,1);return t<.5?4*t*t*t:1-pow(-2*t+2,3)/2}
+function rgba(h,a){var n=parseInt(h.slice(1),16);return 'rgba('+(n>>16)+','+(n>>8&255)+','+(n&255)+','+a+')'}
+function rgb3(h){var n=parseInt(h.slice(1),16);return [n>>16,n>>8&255,n&255]}
+function mixc(a,b,t){var x=rgb3(a),y=rgb3(b);return [x[0]+(y[0]-x[0])*t,x[1]+(y[1]-x[1])*t,x[2]+(y[2]-x[2])*t]}
+function rng(s){s=s>>>0;return function(){s+=0x6D2B79F5;var t=s;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+function hash(x,y,z){var h=Math.imul(x|0,374761393)+Math.imul(y|0,668265263)+Math.imul(z|0,2147483647);h=Math.imul(h^h>>>13,1274126177);return((h^h>>>16)>>>0)/4294967296}
+function vnoise(x,y,z){var xi=Math.floor(x),yi=Math.floor(y),zi=Math.floor(z),xf=x-xi,yf=y-yi,zf=z-zi,u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf),w=zf*zf*(3-2*zf);
+ function L(a,b,t){return a+(b-a)*t}
+ return L(L(L(hash(xi,yi,zi),hash(xi+1,yi,zi),u),L(hash(xi,yi+1,zi),hash(xi+1,yi+1,zi),u),v),L(L(hash(xi,yi,zi+1),hash(xi+1,yi,zi+1),u),L(hash(xi,yi+1,zi+1),hash(xi+1,yi+1,zi+1),u),v),w)}
+/* geschlossene organische Kurve: Punkte, glatt (Catmull-Rom als Bezier) */
+function blobPts(cx,cy,r,t,sd,amp,N){var p=[],i,a,k;N=N||10;for(i=0;i<N;i++){a=i/N*TAU;k=1+amp*(.5*sin(2*a+sd+t*.9)+.3*sin(3*a+sd*1.7-t*1.1)+.2*sin(5*a+sd*2.3+t*.7));p.push(cx+cos(a)*r*k,cy+sin(a)*r*k)}return p}
+function cpath(c,p){var n=p.length/2,i,a,b,d,e;c.moveTo(p[0],p[1]);for(i=0;i<n;i++){a=(i-1+n)%n;b=i;d=(i+1)%n;e=(i+2)%n;c.bezierCurveTo(p[2*b]+(p[2*d]-p[2*a])/6,p[2*b+1]+(p[2*d+1]-p[2*a+1])/6,p[2*d]-(p[2*e]-p[2*b])/6,p[2*d+1]-(p[2*e+1]-p[2*b+1])/6,p[2*d],p[2*d+1])}c.closePath()}
+function dpath(p){var n=p.length/2,i,a,b,d,e,s='M'+r1(p[0])+' '+r1(p[1]);function r1(v){return Math.round(v*10)/10}
+ for(i=0;i<n;i++){a=(i-1+n)%n;b=i;d=(i+1)%n;e=(i+2)%n;s+='C'+r1(p[2*b]+(p[2*d]-p[2*a])/6)+' '+r1(p[2*b+1]+(p[2*d+1]-p[2*a+1])/6)+' '+r1(p[2*d]-(p[2*e]-p[2*b])/6)+' '+r1(p[2*d+1]-(p[2*e+1]-p[2*b+1])/6)+' '+r1(p[2*d])+' '+r1(p[2*d+1])}return s+'Z'}
+function blobTo(c,x,y,r,t,sd,amp,N){cpath(c,blobPts(x,y,r,t,sd,amp,N))}
+/* Vereinigung mehrerer Teilformen mit einer gemeinsamen Kontur: erst dicke Linie, dann Fuellung */
+function union(c,prims,fs,ss,lw){var i;c.lineJoin='round';c.strokeStyle=ss;c.lineWidth=lw*2;for(i=0;i<prims.length;i++){c.beginPath();prims[i](c);c.stroke()}c.fillStyle=fs;for(i=0;i<prims.length;i++){c.beginPath();prims[i](c);c.fill()}}
+function css(id,txt){if(document.getElementById('pmc-'+id))return;var s=document.createElement('style');s.id='pmc-'+id;s.textContent=txt;document.head.appendChild(s)}
+function mount(el,o,id){
+ var S={el:el,id:id,o:o||{},th:'dark',w:0,h:0,dpr:1,mx:0,my:0,nx:.5,ny:.5,px:0,py:0,inside:false,down:false,vis:false,tab:!document.hidden,raf:0,rq:0,fn:null,last:0,dead:false,t:0,reduced:mqR.matches,coarse:mqC.matches,undo:[],gp:false},cs=getComputedStyle(el),tm=0;
+ if(cs.position==='static')el.style.position='relative';
+ el.classList.add('pmx');el.style.touchAction='pan-y';
+ function on(t,ev,f,op){t.addEventListener(ev,f,op);S.undo.push(function(){t.removeEventListener(ev,f,op)})}
+ S.on=on;
+ S.setTheme=function(t){S.th=t==='light'?'light':'dark';S.P=PAL[S.th];for(var k in VARS)el.style.setProperty(VARS[k],S.P[k]);el.style.colorScheme=S.th;el.style.color=S.P.fg;el.setAttribute('data-pm-theme',S.th);if(S.onTheme)S.onTheme();S.kick()};
+ function pos(e){var r=el.getBoundingClientRect();S.mx=e.clientX-r.left;S.my=e.clientY-r.top;S.nx=S.mx/(r.width||1);S.ny=S.my/(r.height||1);S.inside=true;S.gp=false;clearTimeout(tm)}
+ on(el,'pointermove',pos);
+ on(el,'pointerdown',function(e){pos(e);S.down=true;if(S.onDown)S.onDown(e)});
+ function up(e){S.down=false;if(S.onUp)S.onUp(e);if(e.pointerType!=='mouse'){tm=setTimeout(function(){S.inside=false},1400)}}
+ on(el,'pointerup',up);on(el,'pointercancel',up);
+ on(el,'pointerleave',function(e){if(e.pointerType==='mouse'){S.inside=false;S.down=false}});
+ /* wirksamer Zeiger: echter, sonst ein Geisterzeiger auf Lissajous-Bahn */
+ S.pt=function(){if(S.inside){S.px=S.mx;S.py=S.my}else{var t=S.reduced?2:S.t;S.px=S.w*(.5+.32*sin(t*.55));S.py=S.h*(.5+.26*sin(t*.41+1.2))}return S};
+ function tick(ts){S.raf=0;if(S.dead||!S.fn||!S.vis||!S.tab){S.last=0;return}
+  var dt=S.last?min((ts-S.last)/1000,.05):1/60;S.last=ts;S.t+=dt;S.fn(dt,true);S.raf=requestAnimationFrame(tick)}
+ S.kick=function(){if(S.dead||!S.fn)return;
+  if(S.reduced){if(!S.rq&&S.vis&&S.w){S.rq=requestAnimationFrame(function(){S.rq=0;if(S.dead)return;for(var i=0;i<40;i++)S.fn(1/30,i===39)})}return}
+  if(!S.raf&&S.vis&&S.tab){S.last=0;S.raf=requestAnimationFrame(tick)}};
+ S.run=function(fn){S.fn=fn;S.kick()};
+ S.canvas=function(){var c=document.createElement('canvas');c.style.cssText='position:absolute;left:0;top:0;width:100%;height:100%;display:block';c.setAttribute('aria-hidden','true');el.insertBefore(c,el.firstChild);S.cv=c;S.cx=c.getContext('2d');return S.cx};
+ S.hint=function(a,b){var d=document.createElement('div');d.textContent=S.coarse?(b||a):a;d.style.cssText='position:absolute;left:10px;bottom:8px;font:400 11px/1.2 var(--font,ui-monospace,monospace);color:var(--fg-mute);pointer-events:none;z-index:3;background:var(--bg);padding:2px 6px;border-radius:3px';el.appendChild(d);return d};
+ function size(){var r=el.getBoundingClientRect();S.w=r.width;S.h=r.height;S.dpr=min(window.devicePixelRatio||1,1.5);
+  if(S.cv&&S.cx){S.cv.width=Math.round(S.w*S.dpr);S.cv.height=Math.round(S.h*S.dpr);S.cx.setTransform(S.dpr,0,0,S.dpr,0,0)}
+  if(S.onResize)S.onResize();S.kick()}
+ var ro=new ResizeObserver(size);ro.observe(el);
+ var io=new IntersectionObserver(function(es){S.vis=es[es.length-1].isIntersecting;S.kick()},{rootMargin:'40px'});io.observe(el);
+ on(document,'visibilitychange',function(){S.tab=!document.hidden;S.kick()});
+ function mr(){S.reduced=mqR.matches;S.coarse=mqC.matches;S.kick()}
+ if(mqR.addEventListener)mqR.addEventListener('change',mr);
+ S.destroy=function(){if(S.dead)return;S.dead=true;cancelAnimationFrame(S.raf);cancelAnimationFrame(S.rq);ro.disconnect();io.disconnect();clearTimeout(tm);S.undo.forEach(function(f){f()});if(S.onDestroy)S.onDestroy();if(mqR.removeEventListener)mqR.removeEventListener('change',mr);el.textContent='';el.classList.remove('pmx')};
+ S.setTheme(S.o.theme);
+ S.sizeNow=size;
+ return S}
+function piece(id,name,make){var list=[];return{id:id,name:name,init:function(el,o){var S=mount(el,o,id);list.push(S);make(S,S.o);S.sizeNow();return S},destroy:function(s){(s?[s]:list.slice()).forEach(function(x){x.destroy();var i=list.indexOf(x);if(i>=0)list.splice(i,1)})}}}
+
+g.PMEL=g.PMEL||{};
+var X=piece("E15","Cursor CU1",function(S,o){
+/* plasmind Cursor CU1 "ruhig und straff" als eigenständiges Modul, ohne Abhängigkeiten.
+   Quelle: marke/blob-auswahl-3.html, Zeilen ca. 320-588 (Skript im Abschnitt B Cursor), Konfiguration CFG[0]
+   (Flag fu:1 = verschmolzen in der Zelle + gewölbter Hals). Entscheidungen: C1 (22:02), CU1 + zwei Anpassungen (23:09),
+   Korrektur bei hohem Tempo (23:40, siehe Abschnitt "Eigene Ergänzung").
+
+   API:  Plasmind.cursor.init({cells: selector | Element | NodeList | Array, hover?, line?, radius?, hideCursor?, zIndex?})
+         -> { destroy(), refresh(), active }   (active=false: Touch/pointer:coarse/prefers-reduced-motion -> Modul tut nichts)
+   Zellen: HTML-Elemente oder <svg>-Wurzeln mit einer Kontur (path/ellipse/circle/polygon/rect). Die Kontur wird abgetastet;
+   das Modul setzt für die Verformung style.transform auf der Zelle. Die Zelle sollte undurchsichtig gefüllt sein
+   (Füllung = var(--pm-fill)), weil der Hals ohne Naht mit ihr verschmilzt. */
+(function (root) {
+  "use strict";
+  var Pm = root.Plasmind = root.Plasmind || {};
+  var NS = "http://www.w3.org/2000/svg";
+  var uid = 0;
+
+  // Konfiguration CFG[0] aus der Quelle (fu:1 fest)
+  var CFG = { k: 300, c: 30, maxS: .28, wob: .15, sq: .22, dk: 1.8, ds: .12, pull: 10, adh: 14, thr: 40, neck: 8, kick: 110 };
+  var BN = 10, bM = [.97, .88, 1.08, .94, 1.06, .87, 1.03, .92, 1.09, .91], bJ = [.05, -.1, .08, -.04, .1, -.07, .03, .09, -.06, .04];
+  var NB = 24; // Stützstellen des Zellprofils
+  var FAST = 1600; // px/s: darüber kein Verschmelzen (eigene Ergänzung)
+
+  function r1(v) { return Math.round(v * 10) / 10; }
+  function smooth(p) {
+    var n = p.length, d = "M" + r1(p[0][0]) + " " + r1(p[0][1]);
+    for (var i = 0; i < n; i++) {
+      var p0 = p[(i - 1 + n) % n], p1 = p[i], p2 = p[(i + 1) % n], p3 = p[(i + 2) % n];
+      d += "C" + r1(p1[0] + (p2[0] - p0[0]) / 6) + " " + r1(p1[1] + (p2[1] - p0[1]) / 6) + " " + r1(p2[0] - (p3[0] - p1[0]) / 6) + " " + r1(p2[1] - (p3[1] - p1[1]) / 6) + " " + r1(p2[0]) + " " + r1(p2[1]);
+    }
+    return d + "Z";
+  }
+  function el(n, a, par) { var e = document.createElementNS(NS, n); for (var k in a) e.setAttribute(k, a[k]); if (par) par.appendChild(e); return e; }
+  function use(id, par) { var u = document.createElementNS(NS, "use"); u.setAttribute("href", "#" + id); if (par) par.appendChild(u); return u; }
+  function resolve(c) {
+    if (!c) return [];
+    if (typeof c === "string") return [].slice.call(document.querySelectorAll(c));
+    if (c.nodeType === 1) return [c];
+    return [].slice.call(c).filter(function (x) { return x && x.nodeType === 1; });
+  }
+  function mq(q) { try { return window.matchMedia(q); } catch (_) { return { matches: false }; } }
+
+  function init(opts) {
+    opts = opts || {};
+    var api = { active: false, destroy: destroy, refresh: refresh };
+    var RB = opts.radius || 14, LINE = opts.line == null ? 3 : opts.line;
+    var HOVER = opts.hover || 'a[href],button,[role="button"],input,select,textarea,summary,label,[data-pm-hover]';
+    var cfg = CFG, rb = RB, sc = 1;
+    var id = "pmcu" + (++uid);
+    var svg, defs, mG, lF, lL, blobPath, dotG, dot, maskEl, maskRect, styleEl, cells = [];
+    var W = innerWidth, H = innerHeight;
+    var P = { x: 0, y: 0, in: false }, B = { x: 0, y: 0 }, V = { x: 0, y: 0 };
+    var q = 0, vq = 0, ds = 0, vds = 0, gr = 1, vgr = 0, held = false, hoverBtn = false;
+    var bAng = [], dr = [], vdr = [];
+    for (var i = 0; i < BN; i++) { bAng.push(2 * Math.PI * i / BN + bJ[i]); dr.push(0); vdr.push(0); }
+    var inCell = false, phi = 0, Sx = 1;
+    var raf = 0, last = 0, built = false, spd = 0, lastT = 0, lastPx = 0, lastPy = 0, scrollQ = 0;
+    var mqRed = mq("(prefers-reduced-motion: reduce)"), mqCoarse = mq("(pointer: coarse)");
+
+    function off() { return mqRed.matches || mqCoarse.matches || document.documentElement.classList.contains("reduziert"); }
+
+    /* ---------- Aufbau ---------- */
+    function build() {
+      if (built) return; built = true;
+      styleEl = document.createElement("style");
+      styleEl.textContent = "html.pm-cursor-an,html.pm-cursor-an *{cursor:none !important}";
+      document.head.appendChild(styleEl);
+      svg = el("svg", { "class": "pm-cursor", "aria-hidden": "true", width: W, height: H, viewBox: "0 0 " + W + " " + H });
+      svg.style.cssText = "position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:" + (opts.zIndex || 2147483000) + ";overflow:visible";
+      defs = el("defs", {}, svg);
+      maskEl = el("mask", { id: id + "m", maskUnits: "userSpaceOnUse", x: 0, y: 0, width: W, height: H }, defs);
+      maskRect = el("rect", { x: 0, y: 0, width: W, height: H, fill: "#fff" }, maskEl);
+      mG = el("g", { fill: "#000", stroke: "none" }, maskEl);
+      blobPath = el("path", { id: id + "b", d: "" }, defs);
+      lF = el("g", { style: "fill:var(--pm-fill,oklch(0.17 0.006 262));opacity:var(--pm-fill-a,.88)" }, svg);
+      lL = el("g", { fill: "none", style: "stroke:var(--fg,oklch(0.975 0.004 262))", "stroke-width": LINE * 2, "stroke-linejoin": "round", mask: "url(#" + id + "m)" }, svg);
+      dotG = el("g", { style: "opacity:0" }, svg);
+      dot = el("circle", { r: 2.6, cx: -20, cy: -20, style: "fill:var(--fg,oklch(0.975 0.004 262))" }, dotG);
+      collect();
+      use(id + "b", mG); use(id + "b", lF); use(id + "b", lL);
+      document.body.appendChild(svg);
+    }
+    function collect() {
+      cells.forEach(function (c) { c.el.style.transform = c.prevT || ""; });
+      cells = resolve(opts.cells).map(function (e) {
+        var c = { el: e, prevT: e.style.transform, ox: 0, oy: 0, vx: 0, vy: 0, sp: 0, vsp: 0, ang: 0, bridged: false, torn: false, inside: false, stub: 0, prox: 1e9, g: 0, d: 0, ux: 1, uy: 0, s: 0, bu: 0, rad: [], geo: null, key: "" };
+        c.sil = el("path", { id: id + "c" + cells.length, d: "" }, defs);
+        c.br = el("path", { id: id + "r" + cells.length, d: "" }, defs);
+        c.silUse = use(c.sil.id, mG);
+        use(c.br.id, mG); use(c.br.id, lF); use(c.br.id, lL);
+        e.style.willChange = "transform";
+        return c;
+      });
+      // Reihenfolge: Hälse vor dem Cursor-Blob zeichnen
+      [mG, lF, lL].forEach(function (par) { var u = par.querySelector('use[href="#' + id + 'b"]'); if (u) par.appendChild(u); });
+      measureAll();
+    }
+
+    /* ---------- Zellprofil (Strahlen gegen die abgetastete Kontur) ---------- */
+    var GEO = "path,ellipse,circle,polygon,rect";
+    function measure(c) {
+      var e = c.el, prev = e.style.transform;
+      e.style.transform = "none";
+      var rc = e.getBoundingClientRect(), src = e.matches(GEO) ? e : e.querySelector(GEO), poly = [], n, k;
+      if (src && src.getTotalLength && src.getScreenCTM) {
+        try {
+          var m = src.getScreenCTM(), L = src.getTotalLength(); n = 72;
+          for (k = 0; k < n; k++) { var p = src.getPointAtLength(L * k / n); poly.push([m.a * p.x + m.c * p.y + m.e, m.b * p.x + m.d * p.y + m.f]); }
+        } catch (_) { poly = []; }
+      }
+      if (poly.length < 8) {
+        n = 48; for (k = 0; k < n; k++) { var a = 2 * Math.PI * k / n; poly.push([rc.left + rc.width / 2 + Math.cos(a) * rc.width / 2, rc.top + rc.height / 2 + Math.sin(a) * rc.height / 2]); }
+      }
+      var x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+      poly.forEach(function (p) { x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); y0 = Math.min(y0, p[1]); y1 = Math.max(y1, p[1]); });
+      c.cx = (x0 + x1) / 2; c.cy = (y0 + y1) / 2; c.r = (x1 - x0 + y1 - y0) / 4;
+      var rad = [], mean = 0;
+      for (k = 0; k < NB; k++) {
+        var ang = 2 * Math.PI * k / NB, dx = Math.cos(ang), dy = Math.sin(ang), best = 0;
+        for (var j = 0; j < poly.length; j++) {
+          var A = poly[j], Bp = poly[(j + 1) % poly.length], ex = Bp[0] - A[0], ey = Bp[1] - A[1], rx = A[0] - c.cx, ry = A[1] - c.cy;
+          var den = dx * ey - dy * ex; if (Math.abs(den) < 1e-9) continue;
+          var t = (rx * ey - ry * ex) / den, u = (rx * dy - ry * dx) / den;
+          if (t > 0 && u >= 0 && u <= 1 && t > best) best = t;
+        }
+        rad.push(best || c.r); mean += rad[k];
+      }
+      c.rad = rad;
+      c.sil.setAttribute("d", smooth(rad.map(function (r, k2) { var a2 = 2 * Math.PI * k2 / NB; return [Math.cos(a2) * r, Math.sin(a2) * r]; })));
+      e.style.transformOrigin = (c.cx - rc.left) + "px " + (c.cy - rc.top) + "px";
+      e.style.transform = prev;
+      c.key = "";
+    }
+    function measureAll() { cells.forEach(measure); cells.forEach(placeCell); }
+    function radAt(c, ang) {
+      var a = ang % (2 * Math.PI); if (a < 0) a += 2 * Math.PI;
+      var f = a / (2 * Math.PI) * NB, i0 = Math.floor(f) % NB, t = f - Math.floor(f);
+      return (c.rad[i0] * (1 - t) + c.rad[(i0 + 1) % NB] * t) * 1.02;
+    }
+    function placeCell(c) {
+      var t = "rotate(" + r1(c.ang) + ") scale(" + (1 + c.sp * .11).toFixed(3) + " " + (1 - c.sp * .05).toFixed(3) + ") rotate(" + r1(-c.ang) + ")";
+      var key = r1(c.ox) + "|" + r1(c.oy) + "|" + t;
+      if (key === c.key) return; c.key = key;
+      var still = Math.abs(c.ox) < .05 && Math.abs(c.oy) < .05 && Math.abs(c.sp) < .002;
+      c.el.style.transform = still ? "" : "translate(" + r1(c.ox) + "px," + r1(c.oy) + "px) " + t;
+      c.silUse.setAttribute("transform", "translate(" + r1(c.cx + c.ox) + " " + r1(c.cy + c.oy) + ") " + t);
+    }
+
+    /* ---------- Physik (aus der Quelle) ---------- */
+    function setP(x, y, hov) {
+      var now = performance.now(), dtp = (now - lastT) / 1000;
+      if (lastT && dtp > 0) { spd = spd * .6 + .4 * Math.hypot(x - P.x, y - P.y) / Math.max(dtp, .004); }
+      lastT = now;
+      P.x = x; P.y = y; dot.setAttribute("cx", r1(x)); dot.setAttribute("cy", r1(y));
+      hoverBtn = !!hov; wakeUp();
+    }
+    function enter(x, y, hov) {
+      P.in = true; B.x = x; B.y = y; V.x = V.y = 0; spd = 0; lastT = 0;
+      dotG.style.opacity = "1"; document.documentElement.classList.toggle("pm-cursor-an", opts.hideCursor !== false);
+      setP(x, y, hov); B.x = x; B.y = y;
+    }
+    function leave() {
+      P.in = false; dotG.style.opacity = "0"; held = false; document.documentElement.classList.remove("pm-cursor-an");
+      cells.forEach(function (c) { c.bridged = false; c.inside = false; c.stub = 0; }); wakeUp();
+    }
+    function shape() {
+      var wx = P.x - B.x + V.x * .05, wy = P.y - B.y + V.y * .05, wl = Math.sqrt(wx * wx + wy * wy);
+      if (wl > .4) phi = Math.atan2(wy, wx); var mx = cfg.maxS * (inCell ? .3 : 1); Sx = 1 + Math.min(mx, wl * mx / 40);
+    }
+    function rbEff(ux, uy) {
+      var d = Math.atan2(uy, ux) - phi, co = Math.cos(d), si = Math.sin(d), a = Sx, b = 1 / Math.sqrt(Sx);
+      return rb * (1 - ds) * gr * 1 / Math.sqrt(co * co / (a * a) + si * si / (b * b));
+    }
+    function step(dt) {
+      shape(); spd *= Math.exp(-5 * dt);
+      var fast = spd > FAST;
+      var kk = cfg.k * (held ? cfg.dk : 1), cc = cfg.c * Math.sqrt(held ? cfg.dk : 1);
+      var Tx = P.x, Ty = P.y, ax = 0, ay = 0, thr = cfg.thr * sc, capR = thr * .6; inCell = false;
+      for (var i = 0; i < cells.length; i++) {
+        var c = cells[i], Cx = c.cx + c.ox, Cy = c.cy + c.oy;
+        var dpx = Cx - P.x, dpy = Cy - P.y, dp = Math.sqrt(dpx * dpx + dpy * dpy) || 1, prox = dp - radAt(c, Math.atan2(-dpy, -dpx));
+        if (c.torn && prox > capR) c.torn = false;
+        c.prox = prox;
+        // Zustände: frei -> verschmolzen (inside) -> Hals (bridged) -> gerissen (torn); Eintritt mit Hysterese und Tempo-Schwelle
+        if (prox < -2 && !fast && P.in) { if (!c.inside) c.vsp += .4; c.inside = true; c.bridged = false; c.torn = false; }
+        else if (c.inside && prox >= 0) {
+          c.inside = false;
+          if (P.in) { var ux0 = B.x - Cx, uy0 = B.y - Cy, d0 = Math.hypot(ux0, uy0) || 1, g0 = d0 - radAt(c, Math.atan2(uy0, ux0)) - rbEff(ux0 / d0, uy0 / d0); if (g0 < thr * .92) c.bridged = true; else c.torn = true; }
+        }
+        if (c.inside) inCell = true;
+        if (P.in && !c.torn && prox < capR && prox >= 0 && !fast) { var w = 1 - prox / capR, rimR = radAt(c, Math.atan2(-dpy, -dpx)); Tx += (Cx + (-dpx / dp) * rimR - P.x) * w; Ty += (Cy + (-dpy / dp) * rimR - P.y) * w; }
+        var ux = B.x - Cx, uy = B.y - Cy, d = Math.sqrt(ux * ux + uy * uy) || 1; ux /= d; uy /= d;
+        var g = d - radAt(c, Math.atan2(uy, ux)) - rbEff(ux, uy); c.g = g; c.ux = ux; c.uy = uy; c.d = d;
+        if (!P.in) { c.bridged = false; }
+        else if (!c.bridged && !c.torn && !c.inside && g < thr * .35 && prox >= 0 && !fast) { c.bridged = true; c.vsp += .8; }
+        if (c.bridged) {
+          var gg = d - radAt(c, Math.atan2(uy, ux)), s = Math.max(0, Math.min(1, gg / (rb * .6))) * Math.max(0, Math.min(1, 1 - g / thr)); c.s = s; c.bu = Math.max(0, Math.min(1, 1 - Math.max(g, 0) / thr));
+          ax += -ux * kk * cfg.adh * sc * s; ay += -uy * kk * cfg.adh * sc * s;
+          if (g > thr * .92) {
+            c.bridged = false; c.torn = true; var pd = Math.max(1, Math.hypot(P.x - B.x, P.y - B.y));
+            V.x += (P.x - B.x) / pd * cfg.kick; V.y += (P.y - B.y) / pd * cfg.kick;
+            c.stub = g < thr * 1.4 ? 1 : 0; // zu weit/zu schnell gerissen: Stumpf sofort weg, nie ein loses Stück
+            c.vsp += 2.2; c.vx += ux * -60; c.vy += uy * -60; c.ang = Math.atan2(uy, ux) * 57.3;
+            for (var j = 0; j < BN; j++) vdr[j] += (Math.random() - .5) * cfg.wob * 260;
+          }
+        } else { c.s = 0; c.bu = 0; }
+        var bm = Math.min(12, thr * .22), tx = c.bridged ? ux * bm * c.bu : 0, ty = c.bridged ? uy * bm * c.bu : 0;
+        if (c.bridged) c.ang = Math.atan2(uy, ux) * 57.3;
+        if (c.inside) { var bdx = P.x - c.cx, bdy = P.y - c.cy, bdl = Math.hypot(bdx, bdy), bsc = Math.min(.1, 6 * sc / Math.max(bdl, 1e-6)); tx = bdx * bsc; ty = bdy * bsc; }
+        c.stub = (c.stub || 0) * Math.exp(-9 * dt); if (c.stub < .02) c.stub = 0;
+        c.vx += (90 * (tx - c.ox) - 7 * c.vx) * dt; c.vy += (90 * (ty - c.oy) - 7 * c.vy) * dt; c.ox += c.vx * dt; c.oy += c.vy * dt;
+        var spT = c.bridged ? .5 * c.bu : 0; if (c.inside) spT = 0; c.vsp += (150 * (spT - c.sp) - 8 * c.vsp) * dt; c.sp += c.vsp * dt;
+      }
+      ax += kk * (Tx - B.x) - cc * V.x; ay += kk * (Ty - B.y) - cc * V.y;
+      V.x += ax * dt; V.y += ay * dt; var sp = Math.hypot(V.x, V.y); if (sp > 3500) { V.x *= 3500 / sp; V.y *= 3500 / sp; }
+      B.x += V.x * dt; B.y += V.y * dt;
+      var lag = Math.hypot(P.x - B.x, P.y - B.y), maxLag = thr * 2.5; // Auslenkung begrenzen (eigene Ergänzung)
+      if (lag > maxLag) { B.x = P.x + (B.x - P.x) * maxLag / lag; B.y = P.y + (B.y - P.y) * maxLag / lag; }
+      vq += (-220 * q - 12 * vq) * dt; q += vq * dt;
+      var dsT = held ? cfg.ds : 0; vds += (300 * (dsT - ds) - 26 * vds) * dt; ds += vds * dt;
+      var grT = (hoverBtn && P.in) ? 1.28 : 1; vgr += (200 * (grT - gr) - 20 * vgr) * dt; gr += vgr * dt;
+      var lim = rb * .5, gain = .18 * cfg.wob;
+      for (var n = 0; n < BN; n++) { var nx = Math.cos(bAng[n]), ny = Math.sin(bAng[n]); vdr[n] += (-220 * dr[n] - 7 * vdr[n] + gain * (-(ax * nx + ay * ny))) * dt; dr[n] += vdr[n] * dt; if (dr[n] > lim) dr[n] = lim; if (dr[n] < -lim) dr[n] = -lim; }
+    }
+    function rest() {
+      if (Math.hypot(P.x - B.x, P.y - B.y) > .08 || Math.hypot(V.x, V.y) > .5) return false;
+      if (Math.abs(q) > .002 || Math.abs(vq) > .03 || Math.abs(ds - (held ? cfg.ds : 0)) > .002 || Math.abs(vds) > .03 || Math.abs(gr - ((hoverBtn && P.in) ? 1.28 : 1)) > .002 || Math.abs(vgr) > .03) return false;
+      for (var n = 0; n < BN; n++) if (Math.abs(dr[n]) > .05 || Math.abs(vdr[n]) > .5) return false;
+      for (var i = 0; i < cells.length; i++) { var c = cells[i]; if (Math.abs(c.vx) + Math.abs(c.vy) > .3 || Math.abs(c.sp) > .003 && !c.bridged || Math.abs(c.vsp) > .05 || c.stub > 0 || Math.hypot(c.ox, c.oy) > .1 && !c.bridged && !c.inside) return false; }
+      return true;
+    }
+
+    /* ---------- Hals (gewölbt, bridgeFu der Quelle) ---------- */
+    function bridge(c) {
+      var G = c.geo, d = "";
+      function pt(x, w) { return r1(G.Ox + G.ux * x + G.nx * w) + " " + r1(G.Oy + G.uy * x + G.ny * w); }
+      if (c.bridged && P.in && c.g > -rb * 1.3) {
+        var ux = c.ux, uy = c.uy, nx = -uy, ny = ux, Cx = c.cx + c.ox, Cy = c.cy + c.oy;
+        var rc = radAt(c, Math.atan2(uy, ux)), rbv = rbEff(ux, uy), g = c.g, thr = cfg.thr * sc, f = Math.max(0, Math.min(1, 1 - Math.max(g, 0) / thr));
+        var insA = Math.min(rc * .45, 30), bperp = rb * (1 - ds) * gr * .8 / Math.sqrt(Sx);
+        var chA = Math.sqrt(Math.max(0, rc * rc - (rc - insA) * (rc - insA))) * .8;
+        var wA = Math.min(chA, .7 * rb), wB = Math.min(.8 * bperp, rb), wn0 = Math.min(wA, wB) * .8, wn = wn0 * Math.pow(f, 1.3); if (g < 0) wn = wn0;
+        wn = Math.max(.9, wn);
+        var Ox = Cx + ux * (rc - insA), Oy = Cy + uy * (rc - insA), x0 = insA - 6, x1 = Math.max(insA + g + rbv * .5, x0 + 16), xn = x0 + .65 * (x1 - x0);
+        G = { Ox: Ox, Oy: Oy, ux: ux, uy: uy, nx: nx, ny: ny, insA: insA, g: g, wA: wA, wn: wn, rb: rbv }; c.geo = G;
+        var qc = function (a0, w0, ac, wc, a2, w2) { return "C" + pt(a0 + 2 / 3 * (ac - a0), w0 + 2 / 3 * (wc - w0)) + " " + pt(a2 + 2 / 3 * (ac - a2), w2 + 2 / 3 * (wc - w2)) + " " + pt(a2, w2); };
+        var xm1 = (x0 + xn) / 2, xm2 = (xn + x1) / 2;
+        d = "M" + pt(x0, wA) + qc(x0, wA, xm1, wn, xn, wn) + qc(xn, wn, xm2, wn, x1, wB) + "L" + pt(x1, -wB) + qc(x1, -wB, xm2, -wn, xn, -wn) + qc(xn, -wn, xm1, -wn, x0, -wA) + "Z";
+      } else if (c.stub > 0 && G && P.in) {
+        // Stumpf: bleibt an Zelle und Blob verankert (Ansatz wird mit der Zelle nachgeführt), zieht sich zurück, kein freies Stück
+        var rc2 = radAt(c, Math.atan2(G.uy, G.ux));
+        G.Ox = c.cx + c.ox + G.ux * (rc2 - G.insA); G.Oy = c.cy + c.oy + G.uy * (rc2 - G.insA);
+        var st = c.stub, lc = Math.min(G.g * .5 + 8, rb * 2) * st, wb = Math.min(G.wA, rb * .9) * st, xs = G.insA;
+        d += "M" + pt(xs - 6, wb) + "C" + pt(xs + lc * .3, wb * .35) + " " + pt(xs + lc * .7, wb * .08) + " " + pt(xs + lc, 0) + "C" + pt(xs + lc * .7, -wb * .08) + " " + pt(xs + lc * .3, -wb * .35) + " " + pt(xs - 6, -wb) + "Z";
+        var xB = (B.x - G.Ox) * G.ux + (B.y - G.Oy) * G.uy, rv = rbEff(G.ux, G.uy), xd = xB - rv, ld = Math.min(G.g * .5 + 8, rb * 2) * st, wd = Math.min(G.wn + rb * .5, rv * .8) * st;
+        d += "M" + pt(xd + 6, wd) + "C" + pt(xd - ld * .3, wd * .35) + " " + pt(xd - ld * .7, wd * .08) + " " + pt(xd - ld, 0) + "C" + pt(xd - ld * .7, -wd * .08) + " " + pt(xd - ld * .3, -wd * .35) + " " + pt(xd + 6, -wd) + "Z";
+      }
+      c.br.setAttribute("d", d);
+    }
+    function draw() {
+      var pts = [];
+      if (!P.in) { blobPath.setAttribute("d", ""); cells.forEach(function (c) { placeCell(c); c.br.setAttribute("d", ""); }); return; }
+      shape(); var co = Math.cos(phi), si = Math.sin(phi), S = Sx, iS = 1 / Math.sqrt(S), f = (1 - ds) * gr;
+      for (var j = 0; j < BN; j++) {
+        var r = (rb * (1 + (bM[j] - 1) * .4) + dr[j]), lx = Math.cos(bAng[j]) * r * (1 + q) * f, ly = Math.sin(bAng[j]) * r * (1 - .8 * q) * f;
+        var rx = lx * co + ly * si, ry = -lx * si + ly * co; rx *= S; ry *= iS; pts.push([B.x + rx * co - ry * si, B.y + rx * si + ry * co]);
+      }
+      var anyIn = cells.some(function (c) { return c.inside; });
+      blobPath.setAttribute("d", anyIn ? "" : smooth(pts));
+      cells.forEach(function (c) { placeCell(c); bridge(c); });
+    }
+    function frame(t) {
+      raf = 0;
+      var dt = Math.min(1 / 30, Math.max(.001, (t - last) / 1000)); last = t;
+      var n = Math.max(1, Math.ceil(dt / (1 / 120))); for (var i = 0; i < n; i++) step(dt / n);
+      draw();
+      if (!rest()) raf = requestAnimationFrame(frame);
+    }
+    function wakeUp() { if (!built || !raf && false) return; if (!raf) { if (!P.in || true) { last = performance.now(); raf = requestAnimationFrame(frame); } } }
+
+    /* ---------- Ereignisse ---------- */
+    function hov(e) { return !!(e.target && e.target.closest && e.target.closest(HOVER)); }
+    function onMove(e) { if (e.pointerType === "touch") return; if (!P.in) { if (!raf) cells.forEach(function (c) { if (!c.bridged && !c.inside) measure(c); }); enter(e.clientX, e.clientY, hov(e)); } else setP(e.clientX, e.clientY, hov(e)); }
+    function onDown(e) { if (e.pointerType === "touch") return; if (!P.in) enter(e.clientX, e.clientY, hov(e)); held = true; q = cfg.sq; vq = 0; wakeUp(); }
+    function onUp() { if (!held) return; held = false; vq += -cfg.sq * 14; wakeUp(); }
+    function onOut(e) { if (!e.relatedTarget) leave(); }
+    function onResize() { W = innerWidth; H = innerHeight; if (!svg) return; svg.setAttribute("viewBox", "0 0 " + W + " " + H); svg.setAttribute("width", W); svg.setAttribute("height", H); [maskEl, maskRect].forEach(function (m) { m.setAttribute("width", W); m.setAttribute("height", H); }); measureAll(); }
+    function onScroll() { if (scrollQ) return; scrollQ = requestAnimationFrame(function () { scrollQ = 0; cells.forEach(function (c) { measure(c); }); }); }
+    function onPref() { if (off()) teardown(); else if (!built) setup(); api.active = built; }
+
+    var listening = false;
+    function setup() {
+      if (off()) return; build();
+      if (!listening) {
+        listening = true;
+        document.addEventListener("pointermove", onMove, { passive: true });
+        document.addEventListener("pointerdown", onDown, { passive: true });
+        document.addEventListener("pointerup", onUp, { passive: true });
+        document.addEventListener("pointercancel", onUp, { passive: true });
+        document.addEventListener("pointerout", onOut, { passive: true });
+        window.addEventListener("blur", leave);
+        window.addEventListener("resize", onResize);
+        window.addEventListener("scroll", onScroll, { passive: true, capture: true });
+      }
+      api.active = true;
+    }
+    function teardown() {
+      if (raf) { cancelAnimationFrame(raf); raf = 0; }
+      if (listening) {
+        listening = false;
+        document.removeEventListener("pointermove", onMove); document.removeEventListener("pointerdown", onDown);
+        document.removeEventListener("pointerup", onUp); document.removeEventListener("pointercancel", onUp); document.removeEventListener("pointerout", onOut);
+        window.removeEventListener("blur", leave); window.removeEventListener("resize", onResize); window.removeEventListener("scroll", onScroll, true);
+      }
+      document.documentElement.classList.remove("pm-cursor-an");
+      cells.forEach(function (c) { c.el.style.transform = c.prevT || ""; c.el.style.willChange = ""; });
+      if (svg && svg.parentNode) svg.parentNode.removeChild(svg);
+      if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
+      cells = []; built = false; P.in = false; api.active = false;
+    }
+    function refresh() { if (built) { collect(); } }
+    function destroy() {
+      teardown();
+      [mqRed, mqCoarse].forEach(function (m) { if (m.removeEventListener) m.removeEventListener("change", onPref); });
+    }
+    [mqRed, mqCoarse].forEach(function (m) { if (m.addEventListener) m.addEventListener("change", onPref); });
+    new MutationObserver(onPref).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    if (document.body) setup(); else document.addEventListener("DOMContentLoaded", setup);
+    return api;
+  }
+  Pm.cursor = { init: init, version: "CU1-2026-10-02-r3" };
+})(window);
+
+css('E15','.e15{position:absolute;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;gap:34px;padding:20px;flex-wrap:wrap}.e15 svg.c{width:84px;height:84px;overflow:visible}.e15 button.b{font:500 12px var(--font,monospace);padding:10px 16px;border:1px solid var(--fg-soft);background:transparent;color:var(--fg);border-radius:4px;cursor:pointer}.e15 .sw{position:absolute;left:12px;bottom:10px;display:flex;gap:10px;align-items:center;font:400 11px var(--font,monospace);color:var(--fg-mute)}.e15 [role=switch]{width:34px;height:18px;border-radius:9px;border:1px solid var(--fg-soft);background:var(--surface-3);position:relative;cursor:pointer;padding:0}.e15 [role=switch]:after{content:"";position:absolute;left:2px;top:2px;width:12px;height:12px;border-radius:50%;background:var(--fg-soft);transition:transform 140ms}.e15 [aria-checked=true]:after{transform:translateX(16px);background:var(--fg)}.e15 [role=switch]:focus-visible{outline:1px solid var(--fg);outline-offset:2px}');
+S.el.innerHTML='<div class="e15"><svg class="c" viewBox="-4 -4 108 108" aria-hidden="true"><path class="cell" fill="var(--pm-fill)" stroke="var(--fg)" stroke-width="2" d="M55 4C76 2 98 18 96 40C95 53 82 56 84 68C86 83 71 98 52 96C39 95 35 86 23 86C8 84 0 68 6 53C10 41 22 39 20 26C19 13 38 6 55 4Z"/></svg><button class="b" type="button">A button</button><div class="sw"><button type="button" role="switch" aria-checked="false" aria-label="Blob cursor"></button><span>Blob cursor off</span></div></div>';
+var sw=S.el.querySelector('[role=switch]'),lab=S.el.querySelector('.sw span'),cu=null;
+function off(){if(cu){cu.destroy();cu=null}}
+sw.addEventListener('click',function(){var on=sw.getAttribute('aria-checked')!=='true';
+ if(on){cu=Plasmind.cursor.init({cells:S.el.querySelectorAll('svg.c'),zIndex:50});if(!cu.active){cu=null;lab.textContent='Not available on touch or with reduced motion';return}document.documentElement.classList.add('pm-cursor-an');sw.setAttribute('aria-checked','true');lab.textContent='Blob cursor on (whole page)'}
+ else{off();document.documentElement.classList.remove('pm-cursor-an');sw.setAttribute('aria-checked','false');lab.textContent='Blob cursor off'}});
+S.onDestroy=function(){off();document.documentElement.classList.remove('pm-cursor-an')};
+
+});
+X.purpose="The calm, tight blob cursor as an option: it follows, squashes on click and fuses with cells.";
+g.PMEL["E15"]=X;
+if(typeof module!=='undefined')module.exports=X;
+})(typeof window!=='undefined'?window:this);
+
+</script>
+<script>
+(function(){
+var q=new URLSearchParams(location.search),th=q.get('theme')==='light'?'light':'dark',st=document.getElementById('stage'),hd;
+function apply(t){th=t;document.documentElement.setAttribute('data-theme',t);document.querySelectorAll('[data-th]').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.th===t)});if(hd&&hd.setTheme)hd.setTheme(t)}
+document.documentElement.setAttribute('data-theme',th);
+hd=window.PMEL.E15.init(st,{theme:th});
+apply(th);
+document.querySelectorAll('[data-th]').forEach(function(b){b.addEventListener('click',function(){apply(b.dataset.th)})});
+document.querySelectorAll('[data-opt]').forEach(function(x){x.addEventListener('change',function(){if(hd&&hd.set)hd.set(x.dataset.opt,x.checked)})});
+})();
+</script>
+</body>
+</html>

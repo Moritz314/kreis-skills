@@ -1,0 +1,243 @@
+<!doctype html>
+<!--
+Kennung:  F4
+Name:     Vorher/nachher
+Zweck:    Ein Regler blendet zwischen einem unvollständigen Briefing (Start gesperrt) und einem vollständigen (Start frei) über.
+Herkunft: plasmind Elementeschau 2026-10-03 (Featureseite)
+Bedienung: Regler ziehen oder Pfeiltasten verwenden; fährt beim Sichtbarwerden einmal von selbst.
+Aufbau:   ein Dokument, CSS und JS inline, keine externen Abrufe, keine Abhängigkeit von plasmind.js oder base.css.
+          Dunkel ist Standard, ?theme=light schaltet auf hell.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>F4 Vorher/nachher</title>
+<script>
+(function(){try{if(new URLSearchParams(location.search).get('theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}})();
+</script>
+<style>
+/* Tokens (aus tokens.css) */
+:root{
+  color-scheme: dark;
+  /* Dunkelfeld (Standard). Hue 262, kein reines Schwarz/Weiss. */
+  --bg:          oklch(0.085 0.008 262);
+  --bg-sunk:     oklch(0.052 0.008 262);
+  --surface:     oklch(0.115 0.008 262);
+  --surface-2:   oklch(0.15 0.008 262);
+  --surface-3:   oklch(0.185 0.008 262);
+  --line:        oklch(0.235 0.008 262);
+  --line-strong: oklch(0.37 0.008 262);
+  --fg-mute:     oklch(0.62 0.008 262);
+  --fg-soft:     oklch(0.8 0.004 262);
+  --fg:          oklch(0.975 0.004 262);
+  --cell-fill:   oklch(0.098 0.008 262);
+  --flood:       oklch(0.97 0.004 262);
+  --shadow:      oklch(0.02 0.008 262 / 0.55);
+  --inv-bg: var(--fg);   /* Umkehrfläche: hell auf dunkel */
+  --inv-fg: var(--bg);
+
+  /* Zeichenfarben des Logos (Hex aus dem Logo-Generator w12.py) */
+  --mark-hell:  #F5F7F9;
+  --mark-dunkel:#050608;
+  --splash-grund:#020203;
+
+  /* Textauswahl W2d2 */
+  --sel-bg:   oklch(0.27 0.006 262);
+  --sel-edge: 6px;      /* Kantenbreite */
+  --sel-edge-a: 0.55;   /* Kantendeckkraft */
+
+  /* Cursor / Ladezeichen (Blob-Füllung) */
+  --pm-fill: oklch(0.17 0.006 262);
+  --pm-fill-a: 0.88;
+
+  /* Schrift: Martian Mono für alles, Größenausgleich über x-Höhe (PUNKT-33) */
+  --font: "Martian Mono", ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  --fsa: 0.516;         /* font-size-adjust: x-Höhe von IBM Plex; Martian Mono x-Höhe 0,600 = Faktor 0,86 */
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 140ms;
+  --dur: 220ms;
+  --dur-slow: 420ms;
+  --r-ctl: 4px;
+  --r-tile: 8px;
+}
+:root[data-theme="light"]{
+  color-scheme: light;
+  --bg:          oklch(0.962 0.005 262);
+  --bg-sunk:     oklch(0.985 0.005 262);
+  --surface:     oklch(0.982 0.005 262);
+  --surface-2:   oklch(0.935 0.005 262);
+  --surface-3:   oklch(0.905 0.005 262);
+  --line:        oklch(0.855 0.005 262);
+  --line-strong: oklch(0.72 0.005 262);
+  --fg-mute:     oklch(0.47 0.005 262);
+  --fg-soft:     oklch(0.3 0.006 262);
+  --fg:          oklch(0.12 0.006 262);
+  --cell-fill:   oklch(0.978 0.005 262);
+  --flood:       oklch(0.97 0.006 262);
+  --shadow:      oklch(0.3 0.005 262 / 0.18);
+  --pm-fill: oklch(0.978 0.005 262);
+  --sel-bg:  oklch(0.86 0.006 262);  /* Hellfeld ist in der Marke nicht festgelegt: eigene Annahme */
+}
+::selection{
+  background: var(--sel-bg);
+  color: var(--fg);
+  text-shadow: 0 0 6px oklch(0.975 0.004 262 / 0.9), 0 0 14px oklch(0.975 0.004 262 / 0.5);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--bg);color:var(--fg);font-family:"Martian Mono",ui-monospace,monospace;font-size-adjust:var(--fsa);font-weight:400}
+body{margin:0;background:var(--bg);color:var(--fg);font-size:14px;line-height:1.65;min-height:100vh}
+img,svg,canvas{max-width:100%}
+h1,h2,h3,p,ul,ol,dl,figure{margin:0}
+p{text-wrap:pretty}
+:focus-visible{outline:2px solid var(--fg);outline-offset:3px;border-radius:2px}
+button,input,textarea{font:inherit}
+.stage{max-width:760px;margin:0 auto;padding:24px 16px 40px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:0ms!important}}
+.knopf{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:inherit;font-size:12px;font-weight:500;color:var(--fg);background:transparent;border:1px solid var(--line-strong);border-radius:var(--r-ctl);min-height:36px;padding:0 16px;text-decoration:none;cursor:pointer;transition:background var(--dur-fast),border-color var(--dur-fast),color var(--dur-fast)}
+.knopf:hover{background:var(--surface-2);border-color:var(--fg-mute)}
+.knopf--voll{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.knopf--voll:hover{background:var(--fg-soft);border-color:var(--fg-soft)}
+.knopf[disabled]{opacity:.45;cursor:not-allowed;border-style:dashed}
+.knopf--link{border:0;padding:4px 0;min-height:0;background:none;text-decoration:underline;text-decoration-color:var(--line-strong);text-underline-offset:.3em;font-weight:400;color:var(--fg-mute)}
+.knopf--link:hover{color:var(--fg);background:none}
+.pille{font:inherit;font-size:11px;color:var(--fg-soft);background:transparent;border:1px solid var(--line-strong);border-radius:99px;padding:6px 12px;cursor:pointer;transition:background var(--dur-fast),border-color var(--dur-fast)}
+.pille:hover{background:var(--surface-2);border-color:var(--fg-mute)}
+input[type=text],textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line-strong);border-radius:var(--r-ctl);padding:8px 12px;min-height:38px;width:100%}
+input::placeholder{color:var(--fg-mute)}
+input[type=range]{width:100%;accent-color:var(--fg)}
+.fx-demo{margin:0;border:1px solid var(--line);border-radius:var(--r-tile);background:var(--surface);min-width:0;overflow:clip}
+.fx-bar{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--line);font-size:12px;flex-wrap:wrap}
+.fx-id{font-weight:600;min-width:2.4em;padding:2px 8px;border:1px solid var(--fg);border-radius:var(--r-ctl);line-height:1.4;text-align:center}
+.fx-art{color:var(--fg-soft);flex:1;min-width:10em}
+.fx-body{padding:clamp(16px,3vw,32px);min-width:0}
+.fx-foot{display:flex;gap:16px;align-items:center;justify-content:flex-end;padding:10px 16px;border-top:1px solid var(--line);font-size:11px;color:var(--fg-mute);flex-wrap:wrap}
+.fx-ex{white-space:nowrap}
+.fx-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0}
+.fx-lab{display:block;margin:0 0 8px;font-size:11px;letter-spacing:.06em;color:var(--fg-mute)}
+.fx-input{width:100%;min-height:38px;padding:8px 12px;background:var(--bg);font-size:12px}
+.fx-row .fx-input{flex:1;min-width:12em;width:auto}
+.fx-area{resize:vertical;line-height:1.6}
+.fx-chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0}
+.fx-status{margin:18px 0 0;min-height:1.6em;font-size:12px;line-height:1.6;color:var(--fg-soft)}
+.fx-hint{margin:0 0 20px;font-size:12px;line-height:1.7;color:var(--fg-mute)}
+.fx-state{font-size:12px;color:var(--fg-mute)}
+.fx-badge{display:inline-block;margin:0 0 20px;padding:4px 12px;border:1px dashed var(--line-strong);border-radius:99px;font-size:11px;color:var(--fg-soft)}
+.fx-prog{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:14px}
+.fx-prog i{display:block;height:100%;width:0;background:var(--fg);transform-origin:left}
+.fx-stand{display:inline-block;padding:1px 9px;border:1px solid var(--line-strong);border-radius:99px;font-size:11px;color:var(--fg-soft);line-height:1.6}
+.fx-stand[data-stand="planned"]{border-style:dashed}
+/* F4 */
+.fx-cmp{position:relative;border:1px solid var(--line);border-radius:var(--r-tile);overflow:hidden;background:var(--bg);touch-action:pan-y;--cut:50%}
+.fx-cmp-pane{padding:clamp(14px,3vw,26px);background:var(--bg)}
+.fx-cmp-b{position:absolute;inset:0;clip-path:inset(0 0 0 var(--cut));background:var(--surface-2)}
+.fx-cmp-tag{margin:0 0 16px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--fg-soft)}
+.fx-brief{margin:0;display:grid;gap:0}
+.fx-brief>div{display:grid;grid-template-columns:8.5em 1fr;gap:12px;padding:5px 0;align-items:center;font-size:12px}
+.fx-brief dt{color:var(--fg-mute)}
+.fx-brief dd{margin:0;border:1px solid var(--line);border-radius:var(--r-ctl);padding:7px 10px;min-height:2.4em}
+.fx-brief .is-missing dd{border:1px dashed var(--fg)}
+.fx-cmp-b .is-changed dd{text-align:right;border-color:var(--fg)}
+.fx-cmp-b .fx-cmp-tag{text-align:right}
+.fx-cmp-tag{max-width:46%}
+.fx-cmp-b .fx-cmp-tag{margin-left:auto}
+.fx-cmp-act,.fx-cmp-act span{max-width:none}
+.fx-cmp-act span{max-width:44%}
+.fx-cmp-act{margin:18px 0 0;display:flex;flex-direction:column;gap:10px;align-items:flex-start;font-size:11px;color:var(--fg-soft)}
+.fx-cmp-b .fx-cmp-act{align-items:flex-end;text-align:right}
+.fx-cmp-handle{position:absolute;top:0;bottom:0;left:var(--cut);width:0;pointer-events:none}
+.fx-cmp-handle::before{content:"";position:absolute;top:0;bottom:0;left:-.5px;width:1px;background:var(--fg)}
+.fx-cmp-handle span{position:absolute;top:50%;left:0;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:1px solid var(--fg);background:var(--bg);display:grid;place-content:center}
+.fx-cmp-handle span::before{content:"<>";font-size:11px;letter-spacing:-1px}
+.fx-cmp-range{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:ew-resize}
+.fx-cmp:focus-within .fx-cmp-handle span{outline:2px solid var(--fg);outline-offset:3px}
+@media (max-width:600px){.fx-brief>div{grid-template-columns:7em 1fr}}
+</style>
+</head>
+<body>
+<main class="stage">
+<figure class="fx-demo" id="F4" data-fx="compare" aria-labelledby="F4-t">
+      <div class="fx-bar"><span class="fx-id">F4</span><span class="fx-art" id="F4-t">Before and after, with a slider</span></div>
+      <div class="fx-body">
+        <div class="fx-cmp" data-cmp>
+          <div class="fx-cmp-pane fx-cmp-a" aria-hidden="false">
+            <p class="fx-cmp-tag">Incomplete: start locked</p>
+            <dl class="fx-brief">
+              <div><dt>Goal</dt><dd>Update the price table</dd></div>
+              <div><dt>Rules</dt><dd>Keep the layout</dd></div>
+              <div class="is-missing"><dt>Limits</dt><dd>missing</dd></div>
+              <div><dt>Sources</dt><dd>tariffs.csv</dd></div>
+              <div><dt>Return format</dt><dd>Changed file</dd></div>
+              <div><dt>Model</dt><dd>Mid tier</dd></div>
+              <div><dt>Test</dt><dd>Totals match</dd></div>
+              <div><dt>Budget</dt><dd>5 EUR</dd></div>
+            </dl>
+            <p class="fx-cmp-act"><button class="knopf" type="button" disabled tabindex="-1">Start</button><span>Blocked: the field Limits is empty.</span></p>
+          </div>
+          <div class="fx-cmp-pane fx-cmp-b" data-cmp-top>
+            <p class="fx-cmp-tag">Complete: starts</p>
+            <dl class="fx-brief">
+              <div><dt>Goal</dt><dd>Update the price table</dd></div>
+              <div><dt>Rules</dt><dd>Keep the layout</dd></div>
+              <div class="is-changed"><dt>Limits</dt><dd>tariffs.json</dd></div>
+              <div><dt>Sources</dt><dd>tariffs.csv</dd></div>
+              <div><dt>Return format</dt><dd>Changed file</dd></div>
+              <div><dt>Model</dt><dd>Mid tier</dd></div>
+              <div><dt>Test</dt><dd>Totals match</dd></div>
+              <div><dt>Budget</dt><dd>5 EUR</dd></div>
+            </dl>
+            <p class="fx-cmp-act"><button class="knopf knopf--voll" type="button" tabindex="-1">Start</button><span>All eight fields are filled. The brief can start.</span></p>
+          </div>
+          <div class="fx-cmp-handle" data-cmp-handle aria-hidden="true"><span></span></div>
+          <input class="fx-cmp-range" type="range" min="0" max="100" value="50" step="1" aria-label="Compare: incomplete brief on the left, complete brief on the right" data-cmp-range>
+        </div>
+        <p class="fx-status" data-cmp-status role="status" aria-live="polite">Showing both. Drag the slider or use the arrow keys.</p>
+      </div>
+      <div class="fx-foot"><span class="fx-ex">example data</span></div>
+    </figure>
+</main>
+<script>
+(function () {
+  'use strict';
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function $(s, r) { return (r || document).querySelector(s); }
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function tween(ms, fn, done) {
+    if (reduced || ms <= 0) { fn(1); if (done) done(); return; }
+    var t0 = performance.now();
+    (function f(ts) {
+      var k = clamp((ts - t0) / ms, 0, 1);
+      fn(1 - Math.pow(1 - k, 3));
+      if (k < 1) requestAnimationFrame(f); else if (done) done();
+    })(t0);
+  }
+  function once(el, fn, margin) {
+    var io = new IntersectionObserver(function (es) {
+      if (es[0].isIntersecting) { io.disconnect(); fn(); }
+    }, { rootMargin: margin || '0px' });
+    io.observe(el);
+  }
+  function setStatus(el, txt) { if (el) el.textContent = txt; }
+
+  function initCompare() {
+    var root = $('#F4'); if (!root) return;
+    var box = $('[data-cmp]', root), range = $('[data-cmp-range]', root), st = $('[data-cmp-status]', root);
+    function upd() {
+      var v = +range.value; box.style.setProperty('--cut', v + '%');
+      range.setAttribute('aria-valuetext', v < 8 ? 'Complete brief: starts' : v > 92 ? 'Incomplete brief: start locked' : 'Both, ' + v + ' percent');
+      setStatus(st, v < 8 ? 'Complete: all eight fields filled, the brief starts.' : v > 92 ? 'Incomplete: the field Limits is empty, so Start stays locked.' : 'Showing both. Left: incomplete, start locked. Right: complete, starts.');
+    }
+    range.addEventListener('input', upd); upd();
+    /* kleine Einladung: Regler fährt einmal von selbst */
+    if (!reduced) once(box, function () {
+      var from = 50;
+      tween(1400, function (k) { range.value = from + Math.sin(k * Math.PI * 2) * 22; box.style.setProperty('--cut', range.value + '%'); }, upd);
+    });
+  }
+  initCompare();
+})();
+</script>
+</body>
+</html>

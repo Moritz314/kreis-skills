@@ -1,0 +1,208 @@
+<!doctype html>
+<!--
+Kennung:  F6
+Name:     Freigabe-Probe
+Zweck:    Eine Probe zeigt, dass ein Agent vor jedem Senden neu um ein einmaliges Ja bittet, das nach Gebrauch verbraucht ist.
+Herkunft: plasmind Elementeschau 2026-10-03 (Featureseite)
+Bedienung: Send drücken, mit Yes oder Not now antworten, erneut Send drücken; Start over setzt zurück. Es wird nichts versendet.
+Aufbau:   ein Dokument, CSS und JS inline, keine externen Abrufe, keine Abhängigkeit von plasmind.js oder base.css.
+          Dunkel ist Standard, ?theme=light schaltet auf hell.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>F6 Freigabe-Probe</title>
+<script>
+(function(){try{if(new URLSearchParams(location.search).get('theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}})();
+</script>
+<style>
+/* Tokens (aus tokens.css) */
+:root{
+  color-scheme: dark;
+  /* Dunkelfeld (Standard). Hue 262, kein reines Schwarz/Weiss. */
+  --bg:          oklch(0.085 0.008 262);
+  --bg-sunk:     oklch(0.052 0.008 262);
+  --surface:     oklch(0.115 0.008 262);
+  --surface-2:   oklch(0.15 0.008 262);
+  --surface-3:   oklch(0.185 0.008 262);
+  --line:        oklch(0.235 0.008 262);
+  --line-strong: oklch(0.37 0.008 262);
+  --fg-mute:     oklch(0.62 0.008 262);
+  --fg-soft:     oklch(0.8 0.004 262);
+  --fg:          oklch(0.975 0.004 262);
+  --cell-fill:   oklch(0.098 0.008 262);
+  --flood:       oklch(0.97 0.004 262);
+  --shadow:      oklch(0.02 0.008 262 / 0.55);
+  --inv-bg: var(--fg);   /* Umkehrfläche: hell auf dunkel */
+  --inv-fg: var(--bg);
+
+  /* Zeichenfarben des Logos (Hex aus dem Logo-Generator w12.py) */
+  --mark-hell:  #F5F7F9;
+  --mark-dunkel:#050608;
+  --splash-grund:#020203;
+
+  /* Textauswahl W2d2 */
+  --sel-bg:   oklch(0.27 0.006 262);
+  --sel-edge: 6px;      /* Kantenbreite */
+  --sel-edge-a: 0.55;   /* Kantendeckkraft */
+
+  /* Cursor / Ladezeichen (Blob-Füllung) */
+  --pm-fill: oklch(0.17 0.006 262);
+  --pm-fill-a: 0.88;
+
+  /* Schrift: Martian Mono für alles, Größenausgleich über x-Höhe (PUNKT-33) */
+  --font: "Martian Mono", ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  --fsa: 0.516;         /* font-size-adjust: x-Höhe von IBM Plex; Martian Mono x-Höhe 0,600 = Faktor 0,86 */
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 140ms;
+  --dur: 220ms;
+  --dur-slow: 420ms;
+  --r-ctl: 4px;
+  --r-tile: 8px;
+}
+:root[data-theme="light"]{
+  color-scheme: light;
+  --bg:          oklch(0.962 0.005 262);
+  --bg-sunk:     oklch(0.985 0.005 262);
+  --surface:     oklch(0.982 0.005 262);
+  --surface-2:   oklch(0.935 0.005 262);
+  --surface-3:   oklch(0.905 0.005 262);
+  --line:        oklch(0.855 0.005 262);
+  --line-strong: oklch(0.72 0.005 262);
+  --fg-mute:     oklch(0.47 0.005 262);
+  --fg-soft:     oklch(0.3 0.006 262);
+  --fg:          oklch(0.12 0.006 262);
+  --cell-fill:   oklch(0.978 0.005 262);
+  --flood:       oklch(0.97 0.006 262);
+  --shadow:      oklch(0.3 0.005 262 / 0.18);
+  --pm-fill: oklch(0.978 0.005 262);
+  --sel-bg:  oklch(0.86 0.006 262);  /* Hellfeld ist in der Marke nicht festgelegt: eigene Annahme */
+}
+::selection{
+  background: var(--sel-bg);
+  color: var(--fg);
+  text-shadow: 0 0 6px oklch(0.975 0.004 262 / 0.9), 0 0 14px oklch(0.975 0.004 262 / 0.5);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--bg);color:var(--fg);font-family:"Martian Mono",ui-monospace,monospace;font-size-adjust:var(--fsa);font-weight:400}
+body{margin:0;background:var(--bg);color:var(--fg);font-size:14px;line-height:1.65;min-height:100vh}
+img,svg,canvas{max-width:100%}
+h1,h2,h3,p,ul,ol,dl,figure{margin:0}
+p{text-wrap:pretty}
+:focus-visible{outline:2px solid var(--fg);outline-offset:3px;border-radius:2px}
+button,input,textarea{font:inherit}
+.stage{max-width:760px;margin:0 auto;padding:24px 16px 40px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:0ms!important}}
+.knopf{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:inherit;font-size:12px;font-weight:500;color:var(--fg);background:transparent;border:1px solid var(--line-strong);border-radius:var(--r-ctl);min-height:36px;padding:0 16px;text-decoration:none;cursor:pointer;transition:background var(--dur-fast),border-color var(--dur-fast),color var(--dur-fast)}
+.knopf:hover{background:var(--surface-2);border-color:var(--fg-mute)}
+.knopf--voll{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.knopf--voll:hover{background:var(--fg-soft);border-color:var(--fg-soft)}
+.knopf[disabled]{opacity:.45;cursor:not-allowed;border-style:dashed}
+.knopf--link{border:0;padding:4px 0;min-height:0;background:none;text-decoration:underline;text-decoration-color:var(--line-strong);text-underline-offset:.3em;font-weight:400;color:var(--fg-mute)}
+.knopf--link:hover{color:var(--fg);background:none}
+.pille{font:inherit;font-size:11px;color:var(--fg-soft);background:transparent;border:1px solid var(--line-strong);border-radius:99px;padding:6px 12px;cursor:pointer;transition:background var(--dur-fast),border-color var(--dur-fast)}
+.pille:hover{background:var(--surface-2);border-color:var(--fg-mute)}
+input[type=text],textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line-strong);border-radius:var(--r-ctl);padding:8px 12px;min-height:38px;width:100%}
+input::placeholder{color:var(--fg-mute)}
+input[type=range]{width:100%;accent-color:var(--fg)}
+.fx-demo{margin:0;border:1px solid var(--line);border-radius:var(--r-tile);background:var(--surface);min-width:0;overflow:clip}
+.fx-bar{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--line);font-size:12px;flex-wrap:wrap}
+.fx-id{font-weight:600;min-width:2.4em;padding:2px 8px;border:1px solid var(--fg);border-radius:var(--r-ctl);line-height:1.4;text-align:center}
+.fx-art{color:var(--fg-soft);flex:1;min-width:10em}
+.fx-body{padding:clamp(16px,3vw,32px);min-width:0}
+.fx-foot{display:flex;gap:16px;align-items:center;justify-content:flex-end;padding:10px 16px;border-top:1px solid var(--line);font-size:11px;color:var(--fg-mute);flex-wrap:wrap}
+.fx-ex{white-space:nowrap}
+.fx-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0}
+.fx-lab{display:block;margin:0 0 8px;font-size:11px;letter-spacing:.06em;color:var(--fg-mute)}
+.fx-input{width:100%;min-height:38px;padding:8px 12px;background:var(--bg);font-size:12px}
+.fx-row .fx-input{flex:1;min-width:12em;width:auto}
+.fx-area{resize:vertical;line-height:1.6}
+.fx-chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0}
+.fx-status{margin:18px 0 0;min-height:1.6em;font-size:12px;line-height:1.6;color:var(--fg-soft)}
+.fx-hint{margin:0 0 20px;font-size:12px;line-height:1.7;color:var(--fg-mute)}
+.fx-state{font-size:12px;color:var(--fg-mute)}
+.fx-badge{display:inline-block;margin:0 0 20px;padding:4px 12px;border:1px dashed var(--line-strong);border-radius:99px;font-size:11px;color:var(--fg-soft)}
+.fx-prog{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:14px}
+.fx-prog i{display:block;height:100%;width:0;background:var(--fg);transform-origin:left}
+.fx-stand{display:inline-block;padding:1px 9px;border:1px solid var(--line-strong);border-radius:99px;font-size:11px;color:var(--fg-soft);line-height:1.6}
+.fx-stand[data-stand="planned"]{border-style:dashed}
+/* F6 */
+.fx-draft{padding:18px 20px;border:1px solid var(--line);border-radius:var(--r-tile);background:var(--bg)}
+.fx-draft-head{margin:0 0 10px;font-size:12px}
+.fx-draft-head span{color:var(--fg-mute);margin-right:8px}
+.fx-draft-text{margin:0 0 16px;font-size:12px;line-height:1.7;color:var(--fg-soft)}
+.fx-ask{margin-top:14px;padding:18px 20px;border:1px solid var(--fg);border-radius:var(--r-tile);animation:fx-in var(--dur) var(--ease-out)}
+.fx-ask[hidden]{display:none}
+.fx-ask-q{margin:0 0 14px;font-size:12px;line-height:1.7}
+.fx-ledger{list-style:none;margin:20px 0 0;padding:0;font-size:12px}
+.fx-ledger li{padding:7px 0;border-top:1px solid var(--line);display:flex;gap:12px;color:var(--fg-soft)}
+.fx-ledger li b{font-weight:500;color:var(--fg-mute);min-width:3.6em}
+@keyframes fx-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<main class="stage">
+<figure class="fx-demo" id="F6" data-fx="approval" aria-labelledby="F6-t">
+      <div class="fx-bar"><span class="fx-id">F6</span><span class="fx-art" id="F6-t">Rehearsal: try to send, twice</span></div>
+      <div class="fx-body">
+        <div class="fx-draft">
+          <p class="fx-draft-head"><span>Draft</span> Reply to the supplier</p>
+          <p class="fx-draft-text">Thanks for the offer. We accept the second option and need the delivery by the end of the month.</p>
+          <div class="fx-row"><button class="knopf knopf--voll" type="button" data-appr-send>Send</button><span class="fx-state" data-appr-state>ready</span></div>
+        </div>
+        <div class="fx-ask" data-appr-ask hidden>
+          <p class="fx-ask-q"><b>Send this mail to 1 recipient?</b> It cannot be taken back.</p>
+          <div class="fx-row"><button class="knopf knopf--voll" type="button" data-appr-yes>Yes, send this once</button><button class="knopf" type="button" data-appr-no>Not now</button></div>
+        </div>
+        <ul class="fx-ledger" data-appr-log aria-label="What happened"></ul>
+        <p class="fx-status" data-appr-status role="status" aria-live="polite">Press Send. The agent will ask first.</p>
+        <p><button class="knopf knopf--link" type="button" data-appr-reset>Start over</button></p>
+      </div>
+      <div class="fx-foot"><span class="fx-ex">example data, nothing is sent</span></div>
+    </figure>
+</main>
+<script>
+(function () {
+  'use strict';
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function h(tag, attrs, text) {
+    var e = document.createElement(tag);
+    if (attrs) for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function setStatus(el, txt) { if (el) el.textContent = txt; }
+
+  function initApproval() {
+    var root = $('#F6'); if (!root) return;
+    var send = $('[data-appr-send]', root), ask = $('[data-appr-ask]', root), yes = $('[data-appr-yes]', root), no = $('[data-appr-no]', root),
+      state = $('[data-appr-state]', root), log = $('[data-appr-log]', root), st = $('[data-appr-status]', root), reset = $('[data-appr-reset]', root);
+    var asked = 0, given = 0, step = 0;
+    function entry(t) { step++; var li = h('li'); li.appendChild(h('b', null, '#' + step)); li.appendChild(h('span', null, t)); log.appendChild(li); }
+    function summary() { return 'Asked ' + asked + (asked === 1 ? ' time' : ' times') + ', yes given ' + given + (given === 1 ? ' time.' : ' times.'); }
+    send.addEventListener('click', function () {
+      asked++; ask.hidden = false; send.disabled = true; state.textContent = 'waiting for your yes';
+      entry(asked === 1 ? 'Send pressed. The agent asks first.' : 'Send pressed again. The earlier yes is used up, so it asks again.');
+      setStatus(st, 'Question open. ' + summary()); yes.focus();
+    });
+    yes.addEventListener('click', function () {
+      given++; ask.hidden = true; send.disabled = false; state.textContent = 'sent once, this yes is used up';
+      entry('Yes given. One mail sent (example, nothing leaves this page).'); setStatus(st, 'Sent. ' + summary() + ' Press Send again to see it ask again.'); send.focus();
+    });
+    no.addEventListener('click', function () {
+      ask.hidden = true; send.disabled = false; state.textContent = 'not sent'; entry('Not now. Nothing was sent.'); setStatus(st, 'Nothing sent. ' + summary()); send.focus();
+    });
+    reset.addEventListener('click', function () {
+      asked = given = step = 0; log.innerHTML = ''; ask.hidden = true; send.disabled = false; state.textContent = 'ready'; setStatus(st, 'Press Send. The agent will ask first.'); send.focus();
+    });
+  }
+  initApproval();
+})();
+</script>
+</body>
+</html>

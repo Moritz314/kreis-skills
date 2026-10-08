@@ -1,0 +1,250 @@
+<!doctype html>
+<!--
+Kennung:  F9
+Name:     Dateiraster
+Zweck:    Pakete werden Dateien zugewiesen; jede Datei gehört genau einem Paket, eine belegte Datei weist ab.
+Herkunft: plasmind Elementeschau 2026-10-03 (Featureseite)
+Bedienung: Paket wählen, dann Datei antippen, oder ein Paket per Ziehen auf eine Datei legen; Add package fügt bis zu fünf Pakete hinzu, Reset setzt zurück.
+Aufbau:   ein Dokument, CSS und JS inline, keine externen Abrufe, keine Abhängigkeit von plasmind.js oder base.css.
+          Dunkel ist Standard, ?theme=light schaltet auf hell.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>F9 Dateiraster</title>
+<script>
+(function(){try{if(new URLSearchParams(location.search).get('theme')==='light')document.documentElement.setAttribute('data-theme','light');}catch(e){}})();
+</script>
+<style>
+/* Tokens (aus tokens.css) */
+:root{
+  color-scheme: dark;
+  /* Dunkelfeld (Standard). Hue 262, kein reines Schwarz/Weiss. */
+  --bg:          oklch(0.085 0.008 262);
+  --bg-sunk:     oklch(0.052 0.008 262);
+  --surface:     oklch(0.115 0.008 262);
+  --surface-2:   oklch(0.15 0.008 262);
+  --surface-3:   oklch(0.185 0.008 262);
+  --line:        oklch(0.235 0.008 262);
+  --line-strong: oklch(0.37 0.008 262);
+  --fg-mute:     oklch(0.62 0.008 262);
+  --fg-soft:     oklch(0.8 0.004 262);
+  --fg:          oklch(0.975 0.004 262);
+  --cell-fill:   oklch(0.098 0.008 262);
+  --flood:       oklch(0.97 0.004 262);
+  --shadow:      oklch(0.02 0.008 262 / 0.55);
+  --inv-bg: var(--fg);   /* Umkehrfläche: hell auf dunkel */
+  --inv-fg: var(--bg);
+
+  /* Zeichenfarben des Logos (Hex aus dem Logo-Generator w12.py) */
+  --mark-hell:  #F5F7F9;
+  --mark-dunkel:#050608;
+  --splash-grund:#020203;
+
+  /* Textauswahl W2d2 */
+  --sel-bg:   oklch(0.27 0.006 262);
+  --sel-edge: 6px;      /* Kantenbreite */
+  --sel-edge-a: 0.55;   /* Kantendeckkraft */
+
+  /* Cursor / Ladezeichen (Blob-Füllung) */
+  --pm-fill: oklch(0.17 0.006 262);
+  --pm-fill-a: 0.88;
+
+  /* Schrift: Martian Mono für alles, Größenausgleich über x-Höhe (PUNKT-33) */
+  --font: "Martian Mono", ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  --fsa: 0.516;         /* font-size-adjust: x-Höhe von IBM Plex; Martian Mono x-Höhe 0,600 = Faktor 0,86 */
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 140ms;
+  --dur: 220ms;
+  --dur-slow: 420ms;
+  --r-ctl: 4px;
+  --r-tile: 8px;
+}
+:root[data-theme="light"]{
+  color-scheme: light;
+  --bg:          oklch(0.962 0.005 262);
+  --bg-sunk:     oklch(0.985 0.005 262);
+  --surface:     oklch(0.982 0.005 262);
+  --surface-2:   oklch(0.935 0.005 262);
+  --surface-3:   oklch(0.905 0.005 262);
+  --line:        oklch(0.855 0.005 262);
+  --line-strong: oklch(0.72 0.005 262);
+  --fg-mute:     oklch(0.47 0.005 262);
+  --fg-soft:     oklch(0.3 0.006 262);
+  --fg:          oklch(0.12 0.006 262);
+  --cell-fill:   oklch(0.978 0.005 262);
+  --flood:       oklch(0.97 0.006 262);
+  --shadow:      oklch(0.3 0.005 262 / 0.18);
+  --pm-fill: oklch(0.978 0.005 262);
+  --sel-bg:  oklch(0.86 0.006 262);  /* Hellfeld ist in der Marke nicht festgelegt: eigene Annahme */
+}
+::selection{
+  background: var(--sel-bg);
+  color: var(--fg);
+  text-shadow: 0 0 6px oklch(0.975 0.004 262 / 0.9), 0 0 14px oklch(0.975 0.004 262 / 0.5);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--bg);color:var(--fg);font-family:"Martian Mono",ui-monospace,monospace;font-size-adjust:var(--fsa);font-weight:400}
+body{margin:0;background:var(--bg);color:var(--fg);font-size:14px;line-height:1.65;min-height:100vh}
+img,svg,canvas{max-width:100%}
+h1,h2,h3,p,ul,ol,dl,figure{margin:0}
+p{text-wrap:pretty}
+:focus-visible{outline:2px solid var(--fg);outline-offset:3px;border-radius:2px}
+button,input,textarea{font:inherit}
+.stage{max-width:760px;margin:0 auto;padding:24px 16px 40px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:0ms!important}}
+.knopf{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:inherit;font-size:12px;font-weight:500;color:var(--fg);background:transparent;border:1px solid var(--line-strong);border-radius:var(--r-ctl);min-height:36px;padding:0 16px;text-decoration:none;cursor:pointer;transition:background var(--dur-fast),border-color var(--dur-fast),color var(--dur-fast)}
+.knopf:hover{background:var(--surface-2);border-color:var(--fg-mute)}
+.knopf--voll{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.knopf--voll:hover{background:var(--fg-soft);border-color:var(--fg-soft)}
+.knopf[disabled]{opacity:.45;cursor:not-allowed;border-style:dashed}
+.knopf--link{border:0;padding:4px 0;min-height:0;background:none;text-decoration:underline;text-decoration-color:var(--line-strong);text-underline-offset:.3em;font-weight:400;color:var(--fg-mute)}
+.knopf--link:hover{color:var(--fg);background:none}
+.pille{font:inherit;font-size:11px;color:var(--fg-soft);background:transparent;border:1px solid var(--line-strong);border-radius:99px;padding:6px 12px;cursor:pointer;transition:background var(--dur-fast),border-color var(--dur-fast)}
+.pille:hover{background:var(--surface-2);border-color:var(--fg-mute)}
+input[type=text],textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line-strong);border-radius:var(--r-ctl);padding:8px 12px;min-height:38px;width:100%}
+input::placeholder{color:var(--fg-mute)}
+input[type=range]{width:100%;accent-color:var(--fg)}
+.fx-demo{margin:0;border:1px solid var(--line);border-radius:var(--r-tile);background:var(--surface);min-width:0;overflow:clip}
+.fx-bar{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--line);font-size:12px;flex-wrap:wrap}
+.fx-id{font-weight:600;min-width:2.4em;padding:2px 8px;border:1px solid var(--fg);border-radius:var(--r-ctl);line-height:1.4;text-align:center}
+.fx-art{color:var(--fg-soft);flex:1;min-width:10em}
+.fx-body{padding:clamp(16px,3vw,32px);min-width:0}
+.fx-foot{display:flex;gap:16px;align-items:center;justify-content:flex-end;padding:10px 16px;border-top:1px solid var(--line);font-size:11px;color:var(--fg-mute);flex-wrap:wrap}
+.fx-ex{white-space:nowrap}
+.fx-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0}
+.fx-lab{display:block;margin:0 0 8px;font-size:11px;letter-spacing:.06em;color:var(--fg-mute)}
+.fx-input{width:100%;min-height:38px;padding:8px 12px;background:var(--bg);font-size:12px}
+.fx-row .fx-input{flex:1;min-width:12em;width:auto}
+.fx-area{resize:vertical;line-height:1.6}
+.fx-chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0}
+.fx-status{margin:18px 0 0;min-height:1.6em;font-size:12px;line-height:1.6;color:var(--fg-soft)}
+.fx-hint{margin:0 0 20px;font-size:12px;line-height:1.7;color:var(--fg-mute)}
+.fx-state{font-size:12px;color:var(--fg-mute)}
+.fx-badge{display:inline-block;margin:0 0 20px;padding:4px 12px;border:1px dashed var(--line-strong);border-radius:99px;font-size:11px;color:var(--fg-soft)}
+.fx-prog{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:14px}
+.fx-prog i{display:block;height:100%;width:0;background:var(--fg);transform-origin:left}
+.fx-stand{display:inline-block;padding:1px 9px;border:1px solid var(--line-strong);border-radius:99px;font-size:11px;color:var(--fg-soft);line-height:1.6}
+.fx-stand[data-stand="planned"]{border-style:dashed}
+/* F9 */
+.fx-pkgs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.fx-pkg{display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:0 14px;border:1px solid var(--line-strong);border-radius:99px;background:var(--bg);cursor:grab;font-size:12px;touch-action:none;user-select:none}
+.fx-pkg[aria-checked="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.fx-pkg i{width:9px;height:9px;border-radius:50%;border:1px solid currentColor}
+.fx-status+.fx-row,.fx-files+.fx-status{margin-top:18px}
+.fx-files{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:8px}
+.fx-file{position:relative;min-height:56px;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r-ctl);background:var(--bg);font-size:10.5px;text-align:left;cursor:pointer;display:flex;flex-direction:column;justify-content:flex-start;gap:8px;overflow-wrap:break-word}
+.fx-file em{font-style:normal;color:var(--fg-mute);font-size:10px;line-height:18px}
+.fx-file[data-owner=""]{border-style:dashed}
+.fx-file:not([data-owner=""])::after{content:attr(data-owner);position:absolute;top:7px;right:7px;width:18px;height:18px;border:1px solid var(--fg);border-radius:50%;display:grid;place-content:center;font-size:10px;line-height:1}
+.fx-file.is-refused{animation:fx-shake .42s;border-color:var(--fg);border-style:dashed}
+.fx-file.is-new{border-color:var(--fg);box-shadow:0 0 0 2px var(--fg) inset}
+.fx-file.is-over{border-color:var(--fg)}
+@keyframes fx-shake{0%,100%{transform:none}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+.fx-ghost{position:fixed;z-index:50;pointer-events:none;padding:8px 14px;border:1px solid var(--fg);border-radius:99px;background:var(--bg);font-size:12px}
+@media (prefers-reduced-motion:reduce){.fx-file.is-refused{animation:none}}
+</style>
+</head>
+<body>
+<main class="stage">
+<figure class="fx-demo" id="F9" data-fx="grid" aria-labelledby="F9-t">
+      <div class="fx-bar"><span class="fx-id">F9</span><span class="fx-art" id="F9-t">File grid with package assignment</span></div>
+      <div class="fx-body">
+        <p class="fx-hint">Choose a package, then a file. Or drag a package onto a file. A taken file turns it away.</p>
+        <div class="fx-pkgs" role="radiogroup" aria-label="Packages" data-grid-pkgs></div>
+        <div class="fx-files" data-grid-files></div>
+        <p class="fx-status" data-grid-status role="status" aria-live="polite">No package chosen.</p>
+        <p class="fx-row"><button class="knopf" type="button" data-grid-add>Add package</button><span class="fx-state" data-grid-count>5 of 5 packages</span><button class="knopf knopf--link" type="button" data-grid-reset>Reset</button></p>
+      </div>
+      <div class="fx-foot"><span class="fx-ex">example data</span></div>
+    </figure>
+</main>
+<script>
+(function () {
+  'use strict';
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function h(tag, attrs, text) {
+    var e = document.createElement(tag);
+    if (attrs) for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function setStatus(el, txt) { if (el) el.textContent = txt; }
+
+  function initGrid() {
+    var root = $('#F9'); if (!root) return;
+    var pkgBox = $('[data-grid-pkgs]', root), fileBox = $('[data-grid-files]', root), st = $('[data-grid-status]', root), add = $('[data-grid-add]', root), cnt = $('[data-grid-count]', root), reset = $('[data-grid-reset]', root);
+    var files = ['api/routes.ts', 'api/auth.ts', 'billing/tariff.ts', 'billing/tariff.test.ts', 'ui/header.tsx', 'ui/footer.tsx', 'ui/cart.tsx', 'db/schema.sql', 'db/migrate.ts', 'docs/readme.md', 'docs/api.md', 'cfg/app.json', 'cfg/env.example', 'lib/format.ts', 'lib/money.ts', 'lib/dates.ts', 'test/e2e.ts', 'test/fixtures.json', 'ops/deploy.yml', 'ops/cron.yml'];
+    var start = { 0: 'A', 1: 'A', 2: 'B', 3: 'B', 4: 'C', 6: 'C', 7: 'A', 8: 'B', 13: 'C', 14: 'B', 16: 'A', 18: 'C' };
+    var letters = 'ABCDE', npk = 3, owner = [], sel = '', btns = [];
+    function reinit() { owner = files.map(function (_, i) { return start[i] || ''; }); npk = 3; sel = ''; renderPk(); renderFiles(); setStatus(st, 'No package chosen.'); }
+    function renderPk() {
+      pkgBox.innerHTML = '';
+      for (var i = 0; i < npk; i++) (function (L) {
+        var b = h('button', { type: 'button', role: 'radio', 'aria-checked': sel === L ? 'true' : 'false', class: 'fx-pkg', 'data-pkg': L });
+        b.appendChild(h('i')); b.appendChild(document.createTextNode('Package ' + L));
+        b.addEventListener('click', function () { if (b._dragged) { b._dragged = false; return; } sel = L; renderPk(); setStatus(st, 'Package ' + L + ' chosen. Now choose a file.'); var p = $('[data-pkg="' + L + '"]', pkgBox); if (p) p.focus(); });
+        drag(b, L); pkgBox.appendChild(b);
+      })(letters[i]);
+      add.disabled = npk >= 5; cnt.textContent = npk + ' of 5 packages' + (npk >= 5 ? ', the limit' : '');
+    }
+    function renderFiles() {
+      fileBox.innerHTML = ''; btns = [];
+      files.forEach(function (f, i) {
+        var b = h('button', { type: 'button', class: 'fx-file', 'data-owner': owner[i], 'data-i': i });
+        b.appendChild(h('em', null, owner[i] ? 'package ' + owner[i] : 'free')); b.appendChild(h('span', null, f.replace(/\//g, '/\u200b')));
+        b.setAttribute('aria-label', f + ', ' + (owner[i] ? 'package ' + owner[i] : 'free'));
+        b.addEventListener('click', function () { claim(sel, i); });
+        fileBox.appendChild(b); btns.push(b);
+      });
+    }
+    function paint(i, cls) { renderFiles(); btns[i].classList.add(cls); setTimeout(function () { if (btns[i]) btns[i].classList.remove(cls); }, 900); }
+    function claim(L, i) {
+      if (!L) { setStatus(st, 'Choose a package first.'); return; }
+      if (owner[i] === L) { setStatus(st, files[i] + ' is already in package ' + L + '.'); return; }
+      if (!owner[i]) { owner[i] = L; paint(i, 'is-new'); setStatus(st, files[i] + ' joined package ' + L + '. Each file has exactly one package.'); return; }
+      var o = owner[i];
+      btns[i].classList.add('is-refused');
+      setStatus(st, files[i] + ' belongs to package ' + o + '. Package ' + L + ' is turned away and looks for a free file.');
+      setTimeout(function () {
+        var best = -1, bd = 99;
+        owner.forEach(function (x, k) { if (!x && Math.abs(k - i) < bd) { bd = Math.abs(k - i); best = k; } });
+        if (best < 0) { renderFiles(); setStatus(st, 'No free file is left. Package ' + L + ' waits.'); return; }
+        owner[best] = L; paint(best, 'is-new');
+        setStatus(st, files[i] + ' belongs to package ' + o + '. Package ' + L + ' took the free file ' + files[best] + ' instead.');
+      }, reduced ? 0 : 650);
+    }
+    function drag(b, L) {
+      b.addEventListener('pointerdown', function (e) {
+        if (e.pointerType === 'touch' && false) return;
+        var sx = e.clientX, sy = e.clientY, ghost = null, over = null, id = e.pointerId;
+        function mv(ev) {
+          if (!ghost && Math.hypot(ev.clientX - sx, ev.clientY - sy) > 8) { ghost = h('div', { class: 'fx-ghost' }, 'Package ' + L); document.body.appendChild(ghost); b._dragged = true; sel = L; }
+          if (ghost) {
+            ghost.style.left = ev.clientX + 8 + 'px'; ghost.style.top = ev.clientY + 8 + 'px';
+            var t = document.elementFromPoint(ev.clientX, ev.clientY), f = t && t.closest && t.closest('.fx-file');
+            if (over && over !== f) over.classList.remove('is-over');
+            over = f; if (f) f.classList.add('is-over');
+          }
+        }
+        function up(ev) {
+          window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up);
+          if (ghost) { ghost.remove(); var t = document.elementFromPoint(ev.clientX, ev.clientY), f = t && t.closest && t.closest('.fx-file'); if (over) over.classList.remove('is-over'); renderPk(); if (f && ev.type === 'pointerup') claim(L, +f.getAttribute('data-i')); setTimeout(function () { b._dragged = false; }, 0); }
+        }
+        window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
+      });
+    }
+    add.addEventListener('click', function () { if (npk < 5) { npk++; renderPk(); setStatus(st, 'Package ' + letters[npk - 1] + ' added.' + (npk >= 5 ? ' Five is the most a plan allows.' : '')); } });
+    reset.addEventListener('click', reinit);
+    reinit();
+  }
+  initGrid();
+})();
+</script>
+</body>
+</html>
