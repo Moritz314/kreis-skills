@@ -65,3 +65,10 @@ Vom Reel-Wissensagenten (Punkt 68) eingeordnete Design-Erkenntnisse. Je Abschnit
 - Skill /hairline-create: Claude Code, Cursor oder Codex zeichnen neue Figuren aus einem Satz im selben Stil.
 - Paket: npm @lucasmarkes/hairline (Name laut Bild, lesbar nur teilweise; vor Nutzung pruefen); Link und Skill nur per Kommentar-DM, daher selbst suchen.
 - Quelle: Instagram-Reel speedy_devv, https://www.instagram.com/reel/DeIQfJsz2vc
+
+### Vier schnelle Layout-Korrekturen
+- Ungeordnet: Raster verwenden, um Elemente auszurichten und zu strukturieren.
+- Farben harmonieren nicht: auf eine Farbe als Hauptfarbe fokussieren.
+- Layout klemmt: Elementen mehr Raum zum Atmen (Weißraum) geben.
+- Fokus fehlt: einen klaren Fokuspunkt bewusst setzen.
+- Quelle: Instagram-Reel von Daryl Kastenholz, https://www.instagram.com/reel/DePTR2jtWDh/
