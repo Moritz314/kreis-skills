@@ -89,3 +89,10 @@ Vom Reel-Wissensagenten (Punkt 68) eingeordnete Design-Erkenntnisse. Je Abschnit
 - Filter: Beschleunigen die Suche laut Reel, bei unter 25 Produkten aber eher überflüssig.
 - Warenkorb: Zusatzangebote (z. B. Rückgabeschutz) nicht automatisch über den Haupt-Button hinzufügen; Opt-out-Button klar gestalten und deutlich erkennbar machen (Dark-Pattern- und Rechtsrisiko).
 - Quelle: Instagram-Reel von Blaze Smith, https://www.instagram.com/reel/DeMVrhGPF0G/
+
+### Framing bei Personenaufnahmen (Video/Foto)
+- Augen oberhalb der Bildmitte platzieren, nicht exakt zentriert.
+- Kopfraum reduzieren; die Person nicht im Bild "verkleinern".
+- Kamera näher an die Person: Distanz mindert Autorität.
+- Framing schafft Hierarchie (Blick zuerst aufs Wichtige) und entfernt Ablenkungen; es wirkt psychologisch, nicht nur ästhetisch.
+- Quelle: Instagram-Reel von Ahren Steis, https://www.instagram.com/reel/DdyuZ89t6-h/
