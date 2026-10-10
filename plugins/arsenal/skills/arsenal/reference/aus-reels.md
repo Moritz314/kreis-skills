@@ -80,3 +80,12 @@ Vom Reel-Wissensagenten (Punkt 68) eingeordnete Design-Erkenntnisse. Je Abschnit
 - Rahmen: Hero-Headline am Anfang, am Ende erneut aufgegriffen; schlichter Link-Footer.
 - Hinweis: Bibliothek/Technik im Reel nicht genannt (Workflow nur gegen Kommentar "HOW").
 - Quelle: https://www.instagram.com/reel/DeQ5h06RyNA/ (Jerry Rogers)
+
+### Shop-UX: Grid, Filter, Warenkorb-Overlay (Beispiel Khy)
+- Raster: 12-Spalten-Grid plus Schreibmaschinen-/Monospace-Schrift wirkt redaktionell und geordnet.
+- Ladezeit: Logo-Animationen von rund 6 Sekunden vermeiden; sie kosten Aufmerksamkeit.
+- Shop-Grid: Bei kleinen Drop-Katalogen auf Abwechslung achten, sonst wirkt alles gleich.
+- Produktbilder: Fotos am Model statt nur Freisteller (Behauptung im Reel: 20–30 % mehr Umsatz, unbelegt).
+- Filter: Beschleunigen die Suche laut Reel, bei unter 25 Produkten aber eher überflüssig.
+- Warenkorb: Zusatzangebote (z. B. Rückgabeschutz) nicht automatisch über den Haupt-Button hinzufügen; Opt-out-Button klar gestalten und deutlich erkennbar machen (Dark-Pattern- und Rechtsrisiko).
+- Quelle: Instagram-Reel von Blaze Smith, https://www.instagram.com/reel/DeMVrhGPF0G/
