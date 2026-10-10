@@ -72,3 +72,11 @@ Vom Reel-Wissensagenten (Punkt 68) eingeordnete Design-Erkenntnisse. Je Abschnit
 - Layout klemmt: Elementen mehr Raum zum Atmen (Weißraum) geben.
 - Fokus fehlt: einen klaren Fokuspunkt bewusst setzen.
 - Quelle: Instagram-Reel von Daryl Kastenholz, https://www.instagram.com/reel/DePTR2jtWDh/
+
+### Scrollgesteuerte Storytelling-Landingpage (Referenz "Corn. Revolutionized.")
+- Aufbau: Folge von Vollbild-Szenen, je eine große, kurze Headline; Scroll treibt Übergänge (Partikel, 3D, Parallax).
+- Motivwechsel pro Inhaltsstation: DNA-Helix, Sternbild-Netz, Pflanztopf mit Wurzeln, Feld, Parzellenraster, Einzelkorn.
+- Farbe: dunkles Grün als Grundton, warme Akzente (Orange/Gelb) für Highlights und Schlussszene.
+- Rahmen: Hero-Headline am Anfang, am Ende erneut aufgegriffen; schlichter Link-Footer.
+- Hinweis: Bibliothek/Technik im Reel nicht genannt (Workflow nur gegen Kommentar "HOW").
+- Quelle: https://www.instagram.com/reel/DeQ5h06RyNA/ (Jerry Rogers)
