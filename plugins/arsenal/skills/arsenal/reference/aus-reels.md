@@ -96,3 +96,16 @@ Vom Reel-Wissensagenten (Punkt 68) eingeordnete Design-Erkenntnisse. Je Abschnit
 - Kamera näher an die Person: Distanz mindert Autorität.
 - Framing schafft Hierarchie (Blick zuerst aufs Wichtige) und entfernt Ablenkungen; es wirkt psychologisch, nicht nur ästhetisch.
 - Quelle: Instagram-Reel von Ahren Steis, https://www.instagram.com/reel/DdyuZ89t6-h/
+
+### Nischen-Bibliotheken für UI-Effekte (OriginKit, Particles.casberry)
+- **originkit.dev**: Komponenten und über 100 Mikrointeraktionen, Buttons auf Tailwind und ShadCN/UI (z. B. Wasser-Button, Ripple-Hintergrund). Nutzen: fertige Interaktionsbausteine für React/Tailwind-Projekte.
+- **particles.casberry.in**: interaktive Partikelhintergründe, Node-Webs und Canvas-Effekte für Landingpage-Sektionen. Laut Sprecher 60 FPS ohne Lag; Performance vor Einsatz selbst prüfen.
+- Hinweis: Reel ist als Werbung (#ad) für manus.im gekennzeichnet; die Aussagen zu den Bibliotheken sind unabhängig nicht überprüft. Lizenz vor Einsatz klären.
+- Quelle: Instagram-Reel Db4xrgaxvjU (Dane | UX / UI Professional), https://www.instagram.com/reel/Db4xrgaxvjU/
+
+### Admin-Dashboard-Look (V7-Demo)
+- Kartenraster mit Kennzahlen, Liniendiagramm und Aktivitätsliste als Grundaufbau.
+- Dunkle Glas-Optik auf Hintergrundbild, orange Akzentkarten; zusätzlich helle blaue Variante mit Seitenleiste.
+- Animation: Framer Motion für Mikro-Interaktionen (React + CSS).
+- Hinweis: Quellcode nur per Kommentar-Köder erhältlich, kein Link im Reel.
+- Quelle: Instagram-Reel Dd31mzgzt0p (Arastoo), https://www.instagram.com/reel/Dd31mzgzt0p/
