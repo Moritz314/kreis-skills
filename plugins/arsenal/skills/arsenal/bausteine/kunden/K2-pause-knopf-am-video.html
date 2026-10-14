@@ -120,7 +120,7 @@ body { margin: 0; background: var(--b-grund); color: var(--b-text);
 .sk-teil > p { color: var(--b-leise); margin: 0 0 20px; max-width: 62ch; }
 .buehne { background: var(--b-flaeche); border: 1px solid var(--b-linie); border-radius: var(--b-radius-flaeche);
   padding: clamp(24px, 4vw, 48px); }
-.zustaende { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px 16px; }
+.zustaende { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 16px; }
 .zustand { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
 .zustand > span:not(.knopf) { font-size: 16px; color: var(--b-leise); }
 .masse { width: 100%; border-collapse: collapse; font-size: 16px; }
@@ -129,13 +129,10 @@ body { margin: 0; background: var(--b-grund); color: var(--b-text);
 .masse td:last-child { color: var(--b-leise); white-space: nowrap; }
 .sk-fuss { margin-top: 72px; padding-top: 24px; padding-bottom: 40px; border-top: 1px solid var(--b-linie); color: var(--b-leise); font-size: 16px; }
 @media (max-width: 600px) {
-  .zustaende { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .zustaende { grid-template-columns: minmax(0, 1fr); }
   .masse th, .masse td { display: block; padding: 0 0 4px; border-top: 0; }
   .masse th { padding-top: 12px; border-top: 1px solid var(--b-linie); }
   .masse td:last-child { white-space: normal; padding-bottom: 12px; }
-}
-@media (max-width: 420px) {
-  .zustaende { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* Knoepfe: eine Gestalt fuer alle vier Bausteine */
@@ -184,7 +181,7 @@ body { margin: 0; background: var(--b-grund); color: var(--b-text);
 .film-steuerung button, .film-steuerung button * { white-space: nowrap; }
 .film-steuerung button { flex: 0 0 auto; }
 .film-steuerung button:focus-visible, .film-steuerung .vk.ist-fokus { outline: 2px solid var(--b-fokus); outline-offset: 3px; box-shadow: 0 0 0 3px var(--b-flaeche); }
-.zustaende { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+@media (max-width: 359px) { .film-steuerung button { padding: 0 14px 0 10px; } }
 .zustaende .vk { white-space: nowrap; }
 @media (max-width: 600px) {
   .film-steuerung { left: 12px; bottom: 12px; }

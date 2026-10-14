@@ -134,8 +134,8 @@ body { margin: 0; background: var(--b-grund); color: var(--b-text);
 .abschnitte { display: grid; gap: 24px; }
 .buehne > :last-child { margin-bottom: 0; }
 .hinweis-breit > p { margin: 0; }
-.hinweis-breit { display: grid; grid-template-columns: minmax(0, 1fr) 390px; gap: 48px; align-items: start; }
-.telefon { width: 390px; border: 1px solid var(--b-linie); border-radius: var(--b-radius-flaeche); overflow: hidden; background: var(--b-grund); }
+.hinweis-breit { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 48px; align-items: start; }
+.telefon { width: 400px; border: 1px solid var(--b-linie); border-radius: var(--b-radius-flaeche); overflow: hidden; background: var(--b-grund); }
 .telefon-inhalt { height: 300px; padding: 24px 16px; display: grid; align-content: start; gap: 12px; }
 .telefon-zeile { height: 14px; border-radius: var(--b-radius-flaeche); background: var(--b-linie); }
 .telefon-zeile.kurz { width: 62%; }
@@ -179,9 +179,9 @@ body { margin: 0; background: var(--b-grund); color: var(--b-text);
 <p class="sk-lead">Unter 768 px Breite steht am unteren Rand eine Leiste mit genau zwei gleich breiten Knöpfen in einer Zeile: Anrufen als Nebenknopf links, die Hauptaktion in Signalfarbe rechts im Daumenbereich. Breiter erscheint sie nicht; dort stehen die Knöpfe im Kopf und in der ersten Ansicht.</p>
 
 <section class="sk-teil nur-breit" aria-labelledby="vs">
-  <h2 id="vs">So sieht die Leiste bei 390 px aus</h2>
+  <h2 id="vs">So sieht die Leiste ab 400 px aus</h2>
   <div class="hinweis-breit">
-    <p>Ziehen Sie das Fenster schmaler als 768 px, dann steht die echte Leiste unten. Die Vorschau rechts zeigt sie im Maßstab 1:1 auf 390 px Breite.</p>
+    <p>Ziehen Sie das Fenster schmaler als 768 px, dann steht die echte Leiste unten. Die Vorschau rechts zeigt sie im Maßstab 1:1 auf 400 px Breite; schmaler steht beim Anrufen nur der Hörer.</p>
     <div class="telefon" aria-hidden="true">
       <div class="telefon-inhalt"><div class="telefon-zeile"></div><div class="telefon-zeile"></div><div class="telefon-zeile kurz"></div></div>
       <div class="leiste-vorschau">
