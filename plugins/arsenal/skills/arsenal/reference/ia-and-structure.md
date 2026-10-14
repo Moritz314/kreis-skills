@@ -76,11 +76,6 @@ command palette or search-first pattern is the safer default, that audience
 already expects it from other product tools it uses daily (this is Jakob's
 law acting on the structural choice itself, not only on individual widgets).
 
-**Above the H1, website path** *[award 2026, proposal]*. Plan a short category line above the
-H1 and let the H1 say who the site is for; the page title names the category
-and, for a local business, the place. Ask in planning: what is the category
-line, who is the H1 for? Kreis Systems sites: R02.
-
 ## 2. The proven laws, applied correctly
 
 Three lines each: what it says, what it does not say, what follows for
@@ -200,12 +195,6 @@ repeating it and adds only what the research surfaced beyond it.
   2018). This ties directly to the Doherty threshold in section 2: the first
   roughly 400 ms need visible acknowledgment regardless of which of these
   three tiers the total wait falls into.
-- **Homepage of a local business** *[award 2026, proposal]*: order the sections by what sells,
-  not by the agency sequence. The primary button follows every proof, case
-  cards open with the result, an FAQ or the process in steps removes the
-  doubt before the first call. Film and attitude before the action is the
-  agency pattern and does not carry for lay customers (award 2026, help
-  sections far more frequent on the lower ranks).
 
 ## 5. Progressive disclosure and data density
 
@@ -252,11 +241,6 @@ without violating usability specifically by leaning on Shneiderman's
 overview-zoom-filter-details structure: the dense first screen is the
 overview, not the whole depth, drill-down carries the detail rather than
 cramming it into the first view.
-
-**Section length, practice value** *[award 2026, proposal]*. One section carries at most about
-300 words; FAQ and testimonial sections are exempt. Calibrated on the 2026
-award winners (10 of 14 within it, the longer ones were FAQ and
-testimonials). No METHODE rule carries this value, so it lives here.
 
 ## 6. The checklist
 

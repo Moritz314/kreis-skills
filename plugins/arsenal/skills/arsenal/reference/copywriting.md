@@ -64,10 +64,6 @@ copy in the target tone when exact final text isn't ready yet, and treat
   "docs" partly read as doctors), while "professional look", the customer's
   own phrase from reviews, tested clearly. Pull vocabulary from support
   tickets, reviews, and interviews, not from the internal deck.
-- *[award 2026, proposal]* Choose the proof while writing the brief, not at layout time: a
-  number with its customer, result or timeframe, or an independent rating
-  with a link to its source. A superlative needs its source in the same
-  section, otherwise it goes. Kreis Systems sites: R03, R21.
 
 ## Labels that say what happens
 
@@ -82,10 +78,6 @@ copy in the target tone when exact final text isn't ready yet, and treat
   ("Syncing 12 files…", "3 changes saved") rather than a generic spinner
   with no label, visible system status is a core usability heuristic, not
   decoration.
-- *[award 2026, proposal]* The primary action keeps one label in every place it appears, and
-  the first button gets a microcopy line underneath that names the hurdle
-  (how long, what it costs, what the visitor has to do). Length limit and
-  placement: R16 on Kreis Systems sites.
 
 ## Error messages
 

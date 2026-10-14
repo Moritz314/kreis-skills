@@ -99,12 +99,6 @@ Material 3 and Carbon do the opposite by default: fixed cubic bezier curves with
 
 **A reduced state that is not a broken state.** MDN's own reference example for `prefers-reduced-motion: reduce` replaces a scaling transform animation ("pulse") with a pure opacity animation ("dissolve"): the implied rule is to replace large transform, translation or scale motion with a fade, not to strip it to nothing. No checked official source (MDN, W3C) supports a blanket "set every animation property to none" rule, and it is risky in practice: it can make state changes invisible that carried no vestibular risk in the first place (a plain fade-in on load, say). The defensible rule is narrower: remove or reduce to opacity for large positional change, parallax, zoom and autoplay motion; keep state change, focus and error feedback visible, just without the spatial shift.
 
-**The query must take effect, not just exist** *[award 2026, proposal]*. In the 2026 award
-analysis most homepages had `prefers-reduced-motion` in their CSS, but only a
-few showed a measurable effect; background videos kept running almost
-everywhere. Check with a second run under `reducedMotion: reduce`: videos
-stand, animations almost all gone. Limits: R23 on Kreis Systems sites.
-
 ## 6. The checklist
 
 **Failure modes the sections above already rule out**, worth naming because they recur:

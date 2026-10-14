@@ -186,14 +186,6 @@ and `ring` default width dropped from 3px to 1px (old width is `ring-3`).
 Minimum browsers: Safari 16.4+, Chrome 111+, Firefox 128+; an older-browser
 requirement means Tailwind 3.4 instead.
 
-*[award 2026, proposal]* **Two widths as tokens.** Define exactly two width tokens, a content
-width for grid and images and a reading width for body text (in `ch`), and
-use no third large `max-width`. Kreis Systems sites: R39.
-
-```css
-@theme { --width-content: /* project value */; --width-read: /* in ch */; }
-```
-
 ## 5. Foreign components
 
 **shadcn/ui** has an official Astro guide (checked directly 2026-09-08),

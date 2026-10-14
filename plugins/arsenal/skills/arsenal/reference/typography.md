@@ -50,11 +50,6 @@ Never pair two typefaces from the same genre at similar weight, e.g. two
 different grotesks as headline and body, the difference reads as a mistake
 rather than a choice.
 
-*[award 2026, proposal]* Count families by their visible share of characters in the computed
-style, not by `@font-face` rules: a page can load a dozen files and show
-three families, or load two and show one. Mobile body size and the H1 as the
-largest line of the first screen: R06 and R02 on Kreis Systems sites.
-
 ## Type scale
 
 Pick a ratio and stick to it rather than eyeballing sizes per component. A
@@ -71,11 +66,6 @@ instead of arbitrary.
 - Don't skip scale levels arbitrarily inside one page, if H2 is 1.5rem and H3
   is 1.4rem, the hierarchy barely registers, use the ratio consistently or
   collapse levels you don't need.
-- *[award 2026, proposal]* Measure the scale at H1, H2 and body only, not at every size on the
-  page. Practice value for Kreis Systems sites: factor 1.5 per step. The
-  2026 award winners ran 1.09 to 1.31 at the median, so recalibrate the
-  value on our own demos before treating it as a hard limit. No METHODE rule
-  carries this value, so it lives here.
 
 ## Letter spacing (tracking)
 
@@ -114,10 +104,6 @@ or viewport.
 - Preload the primary body/heading font file (`<link rel="preload" as="font"
   type="font/woff2" crossorigin>`) so it doesn't wait behind other render-
   blocking requests, but don't preload every weight, that defeats the point.
-- *[award 2026, proposal]* Load budget on Kreis Systems sites (R38): WOFF2 only, few files,
-  `font-display: swap` or `optional`, `preload` for the main face, no icon
-  font (marks as SVG). Count network requests of type font for the check,
-  not `@font-face` rules; file count and size limits stand in R38.
 
 ## Free sources with license
 

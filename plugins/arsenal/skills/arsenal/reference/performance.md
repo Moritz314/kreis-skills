@@ -46,12 +46,6 @@ Applies to every technique in [shaders.md](shaders.md), [3d.md](3d.md), [motion.
 
 4. **Contrast and focus survive the effect.** A shader background or particle field must never drop text contrast below WCAG AA (4.5:1 body text) at any point in its animation cycle: check the darkest/brightest frame, not just the average. Interactive elements layered over 3D/shader content still need a visible focus ring; `outline: none` without a replacement is not acceptable because the background looks cool.
 
-**Video, on top of the four** *[award 2026, proposal]*. Every `video` carries `poster`, `width`
-and `height`; below the first screen `preload="none"`, otherwise `metadata`;
-`autoplay` only muted and with a visible pause button; under reduced motion
-the poster stands still. Size budget for all videos of a page: R36 on Kreis
-Systems sites.
-
 ## Quick budget table
 
 | Technique | First-paint cost | Ongoing cost | Typical fallback |
@@ -62,10 +56,6 @@ Systems sites.
 | Three.js / R3F scene | Asset + scene graph load | High, scales with poly count and lights | Poster-frame image; mount only in viewport |
 | GSAP ScrollTrigger sequences | Low | Low (transform/opacity only) | Instant end-state on reduced-motion |
 | Particle systems (canvas2d or WebGL) | Low to medium | Scales with particle count | Cap count on mobile, disable below breakpoint |
-
-**LCP element** *[award 2026, proposal]*. On Kreis Systems sites the LCP element is the H1 or an
-image within the R32 budget, never a video, and every image carries `width`
-and `height`. The fastest 2026 winner had a text H1 as LCP element.
 
 ## Sanity check before calling it done
 
@@ -105,4 +95,3 @@ A `scroll` or `resize` listener that reads or writes a layout property (see the 
 - **Keyboard.** Anything that reveals content on `:hover` also reveals it on `:focus-within` or `:focus`, verified with the mouse disconnected, `Tab` only.
 - **Touch.** Anything gated behind `:hover` has a tap or focus equivalent, see [product-motion.md](product-motion.md) section 2 for the pattern, verified under `(hover: none)` and `(pointer: coarse)` emulation, not assumed from desktop testing.
 - **Contrast under motion.** The darkest and brightest frame of any color, opacity or shader animation still clears 4.5:1 for body text, checked per [design-foundations.md](design-foundations.md) section 3, not only the resting frame.
-- **Skeleton** *[award 2026, proposal]*. Exactly one `main`, exactly one `h1`, a skip link as the first focus target, `lang` set, zoom not locked. Check with axe-core in full (WCAG A and AA plus `region` and `landmark-*`); the Lighthouse accessibility score alone misses missing landmarks. Kreis Systems sites: R27.

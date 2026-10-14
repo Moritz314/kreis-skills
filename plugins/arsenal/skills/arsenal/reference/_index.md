@@ -1,6 +1,6 @@
 # Reference index
 
-Open only what it points at. Kept by lernen and whoever adds or renames a file.
+Open only the files this points at. Maintained by lernen (appends a row on new rules) and whoever adds or renames a file.
 
 | slug | file | tags | one sentence | source | date | status |
 |---|---|---|---|---|---|---|
@@ -23,6 +23,6 @@ Open only what it points at. Kept by lernen and whoever adds or renames a file.
 | stack | stack.md | astro | Stack setup | docs | 2026-09-09 | verified |
 | typography | typography.md | fonts | Pairing | research | 2026-09-09 | verified |
 | website | website.md | marketing | Website rules | curated | 2026-09-09 | verified |
-| aus-reels | aus-reels.md | design | Reel findings | reels | 2026-10-08 | unverified |
+| aus-reels | aus-reels.md | design | Erkenntnisse aus Reels (Reel-Wissensagent) | reels | 2026-10-08 | unverified |
 
-Bausteine: bausteine/_index.md
+Fertige Bausteine: bausteine/_index.md

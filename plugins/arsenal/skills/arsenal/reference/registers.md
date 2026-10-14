@@ -81,9 +81,6 @@ What the page is allowed to ship. Governed by [stack.md](stack.md) and
 | `inseln` | Islands for the parts that need them | `client:visible` by default, `client:load` only when the element is above the fold and interactive |
 | `webgl` | The above plus shader and 3D layers | Islands only, never on the critical path, always with a static fallback |
 
-*[award 2026, proposal]* Video is part of the technical budget: no video unless ARMOURY.md names
-its purpose under `technik`. Kreis Systems sites: R36 (with R08).
-
 ### 5. `tonfall` (voice)
 
 How the copy speaks. Governed by [copywriting.md](copywriting.md).
@@ -136,7 +133,6 @@ rather than resolving it on its own.
 | `bewegung: 3` with `dichte: verdichtet` | A surface operated daily is made worse by motion competing with the data |
 | `technik: webgl` with a stated low-power or mobile-first audience | The budget in performance.md cannot be met, the fallback becomes the real design |
 | `auftreten: werkstatt` with `tonfall: selbstbewusst` | Not forbidden, but it is the exact combination that reads as a trade business wearing borrowed clothes. Requires an explicit decision and a reason recorded in ARMOURY.md |
-| *[award 2026, proposal]* Loud scene look (subculture boldness: high contrast, distortion, short scene texts) for a broad local business | It carries only with a small, clearly defined audience; for a broad local clientele the 2026 award analysis has no evidence. `plan` asks before building it |
 
 ## Calibration examples
 
