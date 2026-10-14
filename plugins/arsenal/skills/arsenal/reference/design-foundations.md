@@ -71,6 +71,8 @@ What's added here:
     Never the straight or English-slanted form.
   - En dash (glyph: –) for parenthetical asides, ranges, and what German
     calls the Gedankenstrich. Plain hyphen (-) only inside compound words.
+    On Kreis Systems sites METHODE.md governs: client copy carries no
+    Gedankenstrich at all (R21); this note applies everywhere else.
   - A narrow non-breaking space before abbreviations ("z. B.") and between
     a number and its unit ("12 kg"), and no space around the hyphen in a
     compound (Divis).
