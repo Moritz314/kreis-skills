@@ -181,6 +181,11 @@ body { margin: 0; background: var(--b-grund); color: var(--b-text);
   border: 1px solid var(--b-linie); background: var(--b-flaeche); }
 .still img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .zustaende .vk { pointer-events: none; }
+.film-steuerung button, .film-steuerung button * { white-space: nowrap; }
+.film-steuerung button { flex: 0 0 auto; }
+.film-steuerung button:focus-visible, .film-steuerung .vk.ist-fokus { outline: 2px solid var(--b-fokus); outline-offset: 3px; box-shadow: 0 0 0 3px var(--b-flaeche); }
+.zustaende { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.zustaende .vk { white-space: nowrap; }
 @media (max-width: 600px) {
   .film-steuerung { left: 12px; bottom: 12px; }
 }

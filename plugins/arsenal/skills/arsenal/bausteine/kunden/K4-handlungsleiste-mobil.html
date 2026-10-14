@@ -11,7 +11,7 @@ Herkunft: angeregt durch BOLD, Platz 14, German Web Award 2026 (BAUPLAN G11); ei
 In sich geschlossen: CSS und JS inline, keine externen Abrufe, Schrift nur Systemschrift. Farben ueber die Tokens oben im style-Block
 (dunkel Standard, hell ueber [data-theme=light], ohne gesetztes Thema nach prefers-color-scheme). In einer Website folgt der Baustein
 dem Thema der Seite. Die Werte der Tokens sind neutral; der Bau einer Website setzt sie aus MASK.md der Variante.
-API: aside.leiste am Ende von body mit zwei Knoepfen; das kleine Skript blendet die Leiste aus, solange ein Eingabefeld den Fokus hat. Ueber 767 px ist sie nicht sichtbar, unter 400 px Fensterhoehe auch nicht.
+API: aside.leiste am Ende von body mit zwei Knoepfen; das kleine Skript blendet die Leiste nur aus, solange ein Eingabefeld den Fokus hat und die Bildschirmtastatur offen ist (visualViewport unter 75 % der Fensterhoehe); sonst bleibt sie per Tab erreichbar. Ueber 767 px ist sie nicht sichtbar, unter 400 px Fensterhoehe auch nicht.
 Verhalten bei prefers-reduced-motion: Die Leiste bewegt sich nie; bei reduzierter Bewegung entfaellt nur der Versatz beim Druecken.
 URL-Parameter: ?theme=light oder ?theme=dark (nur Demo).
 Demo-Inhalt: Betrieb, Nummer 089 9999 8123, Zeiten und Texte sind erfunden und glaubhaft gewaehlt (R37), kein echter Kunde.
@@ -27,8 +27,11 @@ b.addEventListener('click',function(){d.setAttribute('data-theme',d.getAttribute
 
   document.addEventListener('DOMContentLoaded',function(){var l=document.querySelector('.leiste');if(!l)return;
     var f='input,textarea,select';
-    document.addEventListener('focusin',function(e){if(e.target.matches(f))l.classList.add('ist-weg');});
-    document.addEventListener('focusout',function(e){if(e.target.matches(f))l.classList.remove('ist-weg');});});
+    var tastatur=function(){var v=window.visualViewport;return !!v&&v.height<window.innerHeight*0.75;};
+    var pruefen=function(){var a=document.activeElement;l.classList.toggle('ist-weg',!!a&&a.matches(f)&&tastatur());};
+    document.addEventListener('focusin',pruefen);
+    document.addEventListener('focusout',function(){l.classList.remove('ist-weg');});
+    if(window.visualViewport)window.visualViewport.addEventListener('resize',pruefen);});
 })();
 </script>
 <style>
@@ -119,7 +122,7 @@ body { margin: 0; background: var(--b-grund); color: var(--b-text);
 /* Baustein G11 */
 
 .leiste { display: none; }
-.leiste .knopf { width: 100%; padding: 0 16px; }
+.leiste .knopf { width: 100%; padding: 0 12px; font-size: 16px; }
 .leiste.ist-weg { display: none !important; }
 .muster-kopf { font-size: clamp(30px, 4vw, 48px); line-height: 1.1; letter-spacing: -0.02em; font-weight: 700; margin: 0 0 12px; }
 .muster-text { margin: 0 0 20px; color: var(--b-leise); max-width: 52ch; }
@@ -129,14 +132,16 @@ body { margin: 0; background: var(--b-grund); color: var(--b-text);
 .feld input { min-height: 48px; padding: 0 14px; font: 400 17px/1 var(--b-schrift); color: var(--b-text);
   background: var(--b-grund); border: 1.5px solid var(--b-rand); border-radius: var(--b-radius-flaeche); }
 .abschnitte { display: grid; gap: 24px; }
-.hinweis-breit { display: grid; grid-template-columns: minmax(0, 1fr) 390px; gap: 48px; align-items: center; }
+.buehne > :last-child { margin-bottom: 0; }
+.hinweis-breit > p { margin: 0; }
+.hinweis-breit { display: grid; grid-template-columns: minmax(0, 1fr) 390px; gap: 48px; align-items: start; }
 .telefon { width: 390px; border: 1px solid var(--b-linie); border-radius: var(--b-radius-flaeche); overflow: hidden; background: var(--b-grund); }
 .telefon-inhalt { height: 300px; padding: 24px 16px; display: grid; align-content: start; gap: 12px; }
 .telefon-zeile { height: 14px; border-radius: var(--b-radius-flaeche); background: var(--b-linie); }
 .telefon-zeile.kurz { width: 62%; }
 .leiste-vorschau { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 8px 16px;
   border-top: 1px solid var(--b-linie); background: var(--b-grund); }
-.leiste-vorschau .knopf { width: 100%; padding: 0 16px; }
+.leiste-vorschau .knopf { width: 100%; padding: 0 12px; font-size: 16px; }
 @media (max-width: 767px) {
   .leiste { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
@@ -147,8 +152,11 @@ body { margin: 0; background: var(--b-grund); color: var(--b-text);
   .nur-breit { display: none; }
   .knopfreihe .knopf { width: 100%; }
 }
-@media (max-width: 359px) {
-  .leiste { grid-template-columns: auto minmax(0, 1fr); }
+@media (max-width: 399px) {
+  .leiste, .leiste-vorschau { grid-template-columns: 48px minmax(0, 1fr); }
+  .leiste .knopf--neben, .leiste-vorschau .knopf--neben { padding: 0; }
+  .leiste .anruf-text, .leiste-vorschau .anruf-text { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+    overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
 }
 @media (max-width: 767px) and (max-height: 399px) {
   .leiste { display: none; }
@@ -177,7 +185,7 @@ body { margin: 0; background: var(--b-grund); color: var(--b-text);
     <div class="telefon" aria-hidden="true">
       <div class="telefon-inhalt"><div class="telefon-zeile"></div><div class="telefon-zeile"></div><div class="telefon-zeile kurz"></div></div>
       <div class="leiste-vorschau">
-        <span class="knopf knopf--neben"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg>Anrufen</span>
+        <span class="knopf knopf--neben"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg><span class="anruf-text">Anrufen</span></span>
         <span class="knopf knopf--haupt">Termin anfragen</span>
       </div>
     </div>
@@ -221,12 +229,12 @@ body { margin: 0; background: var(--b-grund); color: var(--b-text);
   </div>
 </section>
 
-<aside class="leiste" aria-label="Schnellkontakt">
-  <a class="knopf knopf--neben" href="tel:+498999998123" aria-label="Anrufen: 089 9999 8123"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg>Anrufen</a>
-  <a class="knopf knopf--haupt" href="#termin">Termin anfragen</a>
-</aside>
 
 </main>
 <footer class="sk sk-fuss">K4 Feste Handlungsleiste unten mobil. Kunden-Baustein des Arsenals; alle Angaben in der Demo sind erfunden.</footer>
+<aside class="leiste" aria-label="Schnellkontakt">
+  <a class="knopf knopf--neben" href="tel:+498999998123" aria-label="Anrufen: 089 9999 8123"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg><span class="anruf-text">Anrufen</span></a>
+  <a class="knopf knopf--haupt" href="#termin">Termin anfragen</a>
+</aside>
 </body>
 </html>
