@@ -17,7 +17,9 @@ sourcing mechanics in `assets.md`, don't duplicate those here either.
 
 Kreis-Systems-Seiten: Regeln R01 bis R39 in METHODE.md (`/srv/syncthing/stamm/Files/Arbeit/Projekte/Aktiv/plasmind/pieces/webdesign/METHODE.md`).
 
-Every threshold for these sites stands only there. Arsenal files name the
+Every rule threshold for these sites stands only there. Practice values that
+carry no R rule stand in the one Arsenal file that checks them, each marked as
+practice value. Arsenal files name the
 planning question, the build step or the check and point to the rule number
 (R01 to R39). R35 to R39 and the sharpened wording of existing rules are
 proposals until the overseer decides; until then they are in the draft
