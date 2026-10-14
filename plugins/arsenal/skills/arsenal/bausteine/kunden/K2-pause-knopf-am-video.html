@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K2 Pause-Knopf mit Dauer am Video</title>
+<!--
+Baustein K2: Pause-Knopf mit Dauer am Video
+Zweck: Ein stummer Film laeuft als Schleife, links unten im Bild stehen Pause und Ganzer Film mit seiner Dauer.
+Herkunft: angeregt durch Tricks, Platz 6, German Web Award 2026 (BAUPLAN G8); eigene Gestalt, kein Material der Agentur. Film und Standbild sind selbst erzeugt (Fliesenraster, 12 Sekunden, ohne Ton), Ablage medien/k2-film.webm und medien/k2-poster.webp.
+In sich geschlossen: CSS und JS inline, keine externen Abrufe, Schrift nur Systemschrift. Farben ueber die Tokens oben im style-Block
+(dunkel Standard, hell ueber [data-theme=light], ohne gesetztes Thema nach prefers-color-scheme). In einer Website folgt der Baustein
+dem Thema der Seite. Die Werte der Tokens sind neutral; der Bau einer Website setzt sie aus MASK.md der Variante.
+API: Markup figure[data-g8] mit video, button[data-g8-pause] und button[data-g8-ganz]; das Skript startet den Film (kein autoplay-Attribut), haelt ihn ausserhalb des Bildes (unter 25 %) und im verdeckten Tab an und liest die Dauer aus der Datei. Ohne Skript startet nichts, das poster steht.
+Verhalten bei prefers-reduced-motion: Kein Start, das poster steht, der Knopf heisst Abspielen; erst ein Klick startet den Film.
+URL-Parameter: ?theme=light oder ?theme=dark (nur Demo).
+Demo-Inhalt: Betrieb, Nummer 089 9999 8123, Zeiten und Texte sind erfunden und glaubhaft gewaehlt (R37), kein echter Kunde.
+Gestalt und Masse: Vorgaben von Web Gestaltung (ap3-bausteine/VORGABEN.md, Abschnitt zu G8).
+-->
+<script>
+(function(){var d=document.documentElement;var q=new URLSearchParams(location.search).get('theme');
+var t=(q==='light'||q==='dark')?q:(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');d.setAttribute('data-theme',t);
+document.addEventListener('DOMContentLoaded',function(){var b=document.querySelector('.sk-thema');if(!b)return;
+var s=function(){b.textContent=d.getAttribute('data-theme')==='light'?'Dunkel zeigen':'Hell zeigen';};s();
+b.addEventListener('click',function(){d.setAttribute('data-theme',d.getAttribute('data-theme')==='light'?'dark':'light');s();});});})();
+(function(){
+  document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('[data-g8]').forEach(function(f){dauer(f);g8(f);});});
+  /* G8: Schleife stumm, Pause-Knopf, ganzer Film mit Dauer. Unter reduzierter Bewegung startet nichts. */
+  function g8(fig) {
+    var v = fig.querySelector('video');
+    var bP = fig.querySelector('[data-g8-pause]');
+    var bF = fig.querySelector('[data-g8-ganz]');
+    var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var nutzerPause = still;
+    var sichtbar = true;
+    function zeige() {
+      var laeuft = !v.paused && !v.ended;
+      bP.querySelector('.vk-text').textContent = laeuft ? 'Pause' : 'Abspielen';
+      bP.classList.toggle('ist-pausiert', !laeuft);
+    }
+    function versuche() { if (!nutzerPause && sichtbar && !document.hidden) { var p = v.play(); if (p) p.catch(function () {}); } }
+    v.addEventListener('play', zeige);
+    v.addEventListener('pause', zeige);
+    bP.addEventListener('click', function () {
+      if (v.paused) { nutzerPause = false; sichtbar = true; versuche(); } else { nutzerPause = true; v.pause(); }
+    });
+    if (bF) bF.addEventListener('click', function () {
+      fig.classList.add('ist-ganz');
+      v.loop = false; v.controls = true; v.currentTime = 0;
+      var p = v.play(); if (p) p.catch(function () {});
+      v.focus();
+    });
+    v.addEventListener('ended', function () {
+      if (!fig.classList.contains('ist-ganz')) return;
+      fig.classList.remove('ist-ganz');
+      v.controls = false; v.loop = true; v.currentTime = 0;
+      versuche(); zeige(); bF.focus();
+    });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) {
+        sichtbar = es[0].isIntersecting;
+        if (!sichtbar && !fig.classList.contains('ist-ganz')) v.pause(); else versuche();
+      }, { threshold: 0.25 }).observe(fig);
+    }
+    document.addEventListener('visibilitychange', function () { if (document.hidden) v.pause(); else versuche(); });
+    zeige(); versuche();
+  }
+
+  /* Dauer aus der Datei, nicht geschaetzt */
+  function dauerText(s){s=Math.round(s);return s>99?Math.floor(s/60)+' Min. '+(s%60)+' Sek.':s+' Sek.';}
+  function dauer(fig){var v=fig.querySelector('video'),n=fig.querySelector('[data-g8-ganz] .nr');
+    var f=function(){if(n&&isFinite(v.duration)&&v.duration>0)n.textContent=dauerText(v.duration);};
+    v.addEventListener('loadedmetadata',f);f();}
+})();
+</script>
+<style>
+/* Tokenblock (Werte sind neutrale Platzhalter; der Bau setzt sie aus MASK.md der Variante) */
+:root {
+  color-scheme: dark;
+  --b-grund: #171614; --b-flaeche: #221F1C; --b-text: #F3F0EA; --b-leise: #B5AFA4;
+  --b-linie: #4A453F; --b-rand: #8C857A; --b-marke: #8EBBA2;
+  --b-signal: #F2934A; --b-auf-signal: #1C1209; --b-signal-hover: #F7A766; --b-signal-druck: #E5823A;
+  --b-fokus: #F3F0EA;
+  --b-radius-flaeche: 14px; --b-radius-knopf: 999px;
+  --b-knopf-hoehe: 48px; --b-knopf-hoehe-klein: 44px;
+  --b-schrift: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --b-dauer: 120ms;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --b-grund: #F7F5F0; --b-flaeche: #FFFFFF; --b-text: #1E1C19; --b-leise: #5C564E;
+  --b-linie: #CFC9BE; --b-rand: #7A7368; --b-marke: #2E6A4E;
+  --b-signal: #B4470F; --b-auf-signal: #FFFFFF; --b-signal-hover: #963A0A; --b-signal-druck: #7E3108;
+  --b-fokus: #1E1C19;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+  color-scheme: light;
+  --b-grund: #F7F5F0; --b-flaeche: #FFFFFF; --b-text: #1E1C19; --b-leise: #5C564E;
+  --b-linie: #CFC9BE; --b-rand: #7A7368; --b-marke: #2E6A4E;
+  --b-signal: #B4470F; --b-auf-signal: #FFFFFF; --b-signal-hover: #963A0A; --b-signal-druck: #7E3108;
+  --b-fokus: #1E1C19;
+  }
+}
+@media (prefers-reduced-motion: reduce) { :root { --b-dauer: 0ms; } }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--b-grund); color: var(--b-text);
+  font: 400 17px/1.55 var(--b-schrift); }
+.sk { max-width: 1120px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 48px); }
+.sk-kopf { display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  min-height: 76px; border-bottom: 1px solid var(--b-linie); }
+.sk-marke { font-weight: 650; letter-spacing: -0.01em; }
+.sk-h1 { font-size: clamp(30px, 3.4vw, 44px); line-height: 1.12; letter-spacing: -0.02em;
+  font-weight: 700; margin: 48px 0 12px; }
+.sk-lead { color: var(--b-leise); max-width: 62ch; margin: 0; }
+.sk-teil { margin-top: 56px; }
+.sk-teil > h2 { font-size: 22px; line-height: 1.3; font-weight: 650; letter-spacing: -0.01em; margin: 0 0 8px; }
+.sk-teil > p { color: var(--b-leise); margin: 0 0 20px; max-width: 62ch; }
+.buehne { background: var(--b-flaeche); border: 1px solid var(--b-linie); border-radius: var(--b-radius-flaeche);
+  padding: clamp(24px, 4vw, 48px); }
+.zustaende { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px 16px; }
+.zustand { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+.zustand > span:not(.knopf) { font-size: 16px; color: var(--b-leise); }
+.masse { width: 100%; border-collapse: collapse; font-size: 16px; }
+.masse th, .masse td { text-align: left; padding: 10px 12px 10px 0; border-top: 1px solid var(--b-linie); vertical-align: top; }
+.masse th { font-weight: 600; }
+.masse td:last-child { color: var(--b-leise); white-space: nowrap; }
+.sk-fuss { margin-top: 72px; padding-top: 24px; padding-bottom: 40px; border-top: 1px solid var(--b-linie); color: var(--b-leise); font-size: 16px; }
+@media (max-width: 600px) {
+  .zustaende { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .masse th, .masse td { display: block; padding: 0 0 4px; border-top: 0; }
+  .masse th { padding-top: 12px; border-top: 1px solid var(--b-linie); }
+  .masse td:last-child { white-space: normal; padding-bottom: 12px; }
+}
+@media (max-width: 420px) {
+  .zustaende { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Knoepfe: eine Gestalt fuer alle vier Bausteine */
+.knopf { display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: var(--b-knopf-hoehe); padding: 0 22px; border-radius: var(--b-radius-knopf);
+  font: 600 17px/1 var(--b-schrift); text-decoration: none; white-space: nowrap; cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: background-color var(--b-dauer) ease-out, color var(--b-dauer) ease-out, border-color var(--b-dauer) ease-out; }
+.knopf svg { width: 20px; height: 20px; flex: none; }
+.knopf--haupt { background: var(--b-signal); color: var(--b-auf-signal); }
+.knopf--haupt:hover, .knopf--haupt.ist-hover { background: var(--b-signal-hover); }
+.knopf--haupt:active, .knopf--haupt.ist-aktiv { background: var(--b-signal-druck); }
+.knopf--neben { background: transparent; color: var(--b-text); border-color: var(--b-rand); }
+.knopf--neben:hover, .knopf--neben.ist-hover { border-color: var(--b-text); background: var(--b-flaeche); }
+.knopf--neben:active, .knopf--neben.ist-aktiv { background: var(--b-linie); }
+.knopf:active, .knopf.ist-aktiv { transform: translateY(1px); }
+:focus-visible, .ist-fokus { outline: 2px solid var(--b-fokus); outline-offset: 3px; }
+:focus:not(:focus-visible) { outline: none; }
+@media (prefers-reduced-motion: reduce) { .knopf:active, .knopf.ist-aktiv { transform: none; } }
+.sk-thema { min-height: var(--b-knopf-hoehe-klein); padding: 0 18px; font-size: 16px; }
+.nr { font-variant-numeric: tabular-nums; }
+
+/* Baustein G8 */
+
+.film { position: relative; margin: 0; border-radius: var(--b-radius-flaeche); overflow: hidden;
+  aspect-ratio: 16 / 9; background: var(--b-flaeche); border: 1px solid var(--b-linie); }
+.film video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.film-steuerung { position: absolute; left: 16px; bottom: 16px; display: flex; gap: 8px; }
+.film.ist-ganz .film-steuerung { display: none; }
+.vk { display: inline-flex; align-items: center; gap: 8px; min-height: var(--b-knopf-hoehe-klein);
+  padding: 0 18px 0 14px; border-radius: var(--b-radius-knopf); border: 1px solid var(--b-linie);
+  background: var(--b-flaeche); color: var(--b-text); font: 600 16px/1 var(--b-schrift); cursor: pointer;
+  transition: background-color var(--b-dauer) ease-out, border-color var(--b-dauer) ease-out; }
+.vk svg { width: 18px; height: 18px; flex: none; }
+.vk:hover, .vk.ist-hover { border-color: var(--b-text); }
+.vk:active, .vk.ist-aktiv { background: var(--b-linie); }
+.vk .vk-spiel { display: none; }
+.vk.ist-pausiert .vk-spiel { display: block; }
+.vk.ist-pausiert .vk-pause { display: none; }
+.vk .nr { color: var(--b-leise); font-weight: 500; }
+.film-unter { margin: 12px 0 0; font-size: 16px; color: var(--b-leise); }
+.still { position: relative; border-radius: var(--b-radius-flaeche); overflow: hidden; aspect-ratio: 16 / 9;
+  border: 1px solid var(--b-linie); background: var(--b-flaeche); }
+.still img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.zustaende .vk { pointer-events: none; }
+@media (max-width: 600px) {
+  .film-steuerung { left: 12px; bottom: 12px; }
+}
+@media (max-width: 420px) {
+  .vk-lang { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+
+</style>
+</head>
+<body>
+<header class="sk sk-kopf">
+  <span class="sk-marke">K2 Baustein</span>
+  <button class="knopf knopf--neben sk-thema" type="button">Hell oder dunkel</button>
+</header>
+<main class="sk">
+
+<h1 class="sk-h1">Pause-Knopf mit Dauer am Video</h1>
+<p class="sk-lead">Ein stummer Film läuft als Schleife, links unten im Bild stehen zwei gleich hohe Knöpfe: Pause und der ganze Film mit seiner Dauer. Die Knöpfe tragen keine Signalfarbe. Bei reduzierter Bewegung steht ein Standbild, der Knopf heißt dann Abspielen.</p>
+
+<section class="sk-teil" aria-labelledby="fi">
+  <h2 id="fi">Film im Einsatz</h2>
+  <p>Der Film ist selbst erzeugt (Fliesenraster, 12 Sekunden, ohne Ton).</p>
+  <figure class="film" data-g8>
+    <video muted loop playsinline preload="metadata" width="640" height="360" poster="medien/k2-poster.webp"
+      aria-label="Film: Fliesenraster mit wanderndem Licht, ohne Ton">
+      <source src="medien/k2-film.webm" type="video/webm">
+    </video>
+    <div class="film-steuerung">
+      <button class="vk ist-pausiert" type="button" data-g8-pause><svg class="vk-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor"><rect x="6.5" y="5" width="3.6" height="14" rx="1"/><rect x="13.9" y="5" width="3.6" height="14" rx="1"/></svg><svg class="vk-spiel" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor"><path d="M8 5.2v13.6a.8.8 0 0 0 1.2.7l10.6-6.8a.8.8 0 0 0 0-1.4L9.2 4.5A.8.8 0 0 0 8 5.2z"/></svg><span class="vk-text">Abspielen</span></button>
+      <button class="vk" type="button" data-g8-ganz><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M10 9.3v5.4l4.6-2.7z" fill="currentColor"/></svg><span class="vk-lang">Ganzer Film</span><span class="nr">12 Sek.</span></button>
+    </div>
+  </figure>
+  <p class="film-unter">Unter dem Film steht, was er zeigt. Der Film trägt keine Aussage, die nur im Film steht.</p>
+</section>
+
+<section class="sk-teil" aria-labelledby="zu">
+  <h2 id="zu">Zustände</h2>
+  <p>Ruhe, Zeiger darüber, Tastaturfokus, gedrückt; darunter der Knopf, wenn der Film steht.</p>
+  <div class="buehne">
+    <div class="zustaende" aria-hidden="true">
+      <div class="zustand"><button class="vk" type="button" tabindex="-1"><svg class="vk-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor"><rect x="6.5" y="5" width="3.6" height="14" rx="1"/><rect x="13.9" y="5" width="3.6" height="14" rx="1"/></svg><svg class="vk-spiel" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor"><path d="M8 5.2v13.6a.8.8 0 0 0 1.2.7l10.6-6.8a.8.8 0 0 0 0-1.4L9.2 4.5A.8.8 0 0 0 8 5.2z"/></svg><span class="vk-text">Pause</span></button><span>Ruhe</span></div>
+      <div class="zustand"><button class="vk ist-hover" type="button" tabindex="-1"><svg class="vk-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor"><rect x="6.5" y="5" width="3.6" height="14" rx="1"/><rect x="13.9" y="5" width="3.6" height="14" rx="1"/></svg><svg class="vk-spiel" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor"><path d="M8 5.2v13.6a.8.8 0 0 0 1.2.7l10.6-6.8a.8.8 0 0 0 0-1.4L9.2 4.5A.8.8 0 0 0 8 5.2z"/></svg><span class="vk-text">Pause</span></button><span>Hover</span></div>
+      <div class="zustand"><button class="vk ist-fokus" type="button" tabindex="-1"><svg class="vk-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor"><rect x="6.5" y="5" width="3.6" height="14" rx="1"/><rect x="13.9" y="5" width="3.6" height="14" rx="1"/></svg><svg class="vk-spiel" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor"><path d="M8 5.2v13.6a.8.8 0 0 0 1.2.7l10.6-6.8a.8.8 0 0 0 0-1.4L9.2 4.5A.8.8 0 0 0 8 5.2z"/></svg><span class="vk-text">Pause</span></button><span>Fokus</span></div>
+      <div class="zustand"><button class="vk ist-aktiv" type="button" tabindex="-1"><svg class="vk-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor"><rect x="6.5" y="5" width="3.6" height="14" rx="1"/><rect x="13.9" y="5" width="3.6" height="14" rx="1"/></svg><svg class="vk-spiel" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor"><path d="M8 5.2v13.6a.8.8 0 0 0 1.2.7l10.6-6.8a.8.8 0 0 0 0-1.4L9.2 4.5A.8.8 0 0 0 8 5.2z"/></svg><span class="vk-text">Pause</span></button><span>Aktiv</span></div>
+      <div class="zustand"><button class="vk ist-pausiert" type="button" tabindex="-1"><svg class="vk-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor"><rect x="6.5" y="5" width="3.6" height="14" rx="1"/><rect x="13.9" y="5" width="3.6" height="14" rx="1"/></svg><svg class="vk-spiel" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor"><path d="M8 5.2v13.6a.8.8 0 0 0 1.2.7l10.6-6.8a.8.8 0 0 0 0-1.4L9.2 4.5A.8.8 0 0 0 8 5.2z"/></svg><span class="vk-text">Abspielen</span></button><span>Film steht</span></div>
+      <div class="zustand"><button class="vk ist-pausiert ist-fokus" type="button" tabindex="-1"><svg class="vk-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor"><rect x="6.5" y="5" width="3.6" height="14" rx="1"/><rect x="13.9" y="5" width="3.6" height="14" rx="1"/></svg><svg class="vk-spiel" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor"><path d="M8 5.2v13.6a.8.8 0 0 0 1.2.7l10.6-6.8a.8.8 0 0 0 0-1.4L9.2 4.5A.8.8 0 0 0 8 5.2z"/></svg><span class="vk-text">Abspielen</span></button><span>Film steht, Fokus</span></div>
+      <div class="zustand"><button class="vk" type="button" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M10 9.3v5.4l4.6-2.7z" fill="currentColor"/></svg><span class="vk-lang">Ganzer Film</span><span class="nr">12 Sek.</span></button><span>Ganzer Film</span></div>
+      <div class="zustand"><button class="vk ist-fokus" type="button" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M10 9.3v5.4l4.6-2.7z" fill="currentColor"/></svg><span class="vk-lang">Ganzer Film</span><span class="nr">12 Sek.</span></button><span>Ganzer Film, Fokus</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="sk-teil" aria-labelledby="rb">
+  <h2 id="rb">Reduzierte Bewegung</h2>
+  <p>Kein Start, das Standbild aus dem poster-Attribut steht. Abspielen startet den Film erst auf Wunsch.</p>
+  <div class="still">
+    <img src="medien/k2-poster.webp" alt="" width="640" height="360">
+    <div class="film-steuerung" aria-hidden="true">
+      <button class="vk ist-pausiert" type="button" tabindex="-1"><svg class="vk-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor"><rect x="6.5" y="5" width="3.6" height="14" rx="1"/><rect x="13.9" y="5" width="3.6" height="14" rx="1"/></svg><svg class="vk-spiel" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor"><path d="M8 5.2v13.6a.8.8 0 0 0 1.2.7l10.6-6.8a.8.8 0 0 0 0-1.4L9.2 4.5A.8.8 0 0 0 8 5.2z"/></svg><span class="vk-text">Abspielen</span></button>
+      <button class="vk" type="button" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M10 9.3v5.4l4.6-2.7z" fill="currentColor"/></svg><span class="vk-lang">Ganzer Film</span><span class="nr">12 Sek.</span></button>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer class="sk sk-fuss">K2 Pause-Knopf mit Dauer am Video. Kunden-Baustein des Arsenals; alle Angaben in der Demo sind erfunden.</footer>
+</body>
+</html>
