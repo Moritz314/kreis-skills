@@ -13,9 +13,9 @@ This file holds the *what must be true* before a website ships. Copy
 mechanics live in `copywriting.md`, type choices in `typography.md`, media
 sourcing mechanics in `assets.md`, don't duplicate those here either.
 
-## Kreis Systems sites
+## <studio> sites
 
-Kreis-Systems-Seiten: Regeln R01 bis R39 in METHODE.md (`/srv/syncthing/stamm/Files/Arbeit/Projekte/Aktiv/plasmind/pieces/webdesign/METHODE.md`).
+<studio>-Seiten: Regeln R01 bis R39 in METHODE.md (`<dein-ordner>`).
 
 Every rule threshold for these sites stands only there. Practice values that
 carry no R rule stand in the one Arsenal file that checks them, each marked as
@@ -23,7 +23,7 @@ practice value. Arsenal files name the
 planning question, the build step or the check and point to the rule number
 (R01 to R39). R35 to R39 and the sharpened wording of existing rules are
 proposals until the overseer decides; until then they are in the draft
-`/srv/syncthing/stamm/Files/Arbeit/Projekte/Aktiv/plasmind/pieces/webdesign/kundenwebsite/METHODE.v2.entwurf.md`. Rows and paragraphs marked *[award 2026, proposal]* come from the German Web Award 2026
+`<dein-ordner>`. Rows and paragraphs marked *[award 2026, proposal]* come from the German Web Award 2026
 analysis.
 
 ## Rule set
@@ -40,11 +40,11 @@ Always applies on this path, no exceptions without a stated reason.
 | 6 | No entry from the floskel/banned-word list ships unreplaced (`copywriting.md` carries the full list and replacement principles). |
 | 7 | Media is authentic before it is stock: real product screenshots, real team/customer photos before any stock asset. Where stock is unavoidable, it's candid and from a niche source, never an overposed model. Licensing per image documented (`assets.md`). |
 | 8 | Legal pages exist and are linked from the footer on every page before the site counts as done: Impressum, Datenschutzerklärung, cookie consent banner if any non-essential script loads. See mandatory components below. |
-| 9 | Decorative shader/3D/motion effects are licensed on hero and brand surfaces but stay out of content-heavy sub-pages within the same site (long-form articles, docs, dense pricing tables) per the boundary in [shaders.md](shaders.md); don't re-litigate that boundary here. **Precedence on Kreis Systems sites** *[award 2026, proposal]*: R08 "effects off until justified" overrides this licence; an effect ships only with its reason under the `technik` dial in ARMOURY.md. |
+| 9 | Decorative shader/3D/motion effects are licensed on hero and brand surfaces but stay out of content-heavy sub-pages within the same site (long-form articles, docs, dense pricing tables) per the boundary in [shaders.md](shaders.md); don't re-litigate that boundary here. **Precedence on <studio> sites** *[award 2026, proposal]*: R08 "effects off until justified" overrides this licence; an effect ships only with its reason under the `technik` dial in ARMOURY.md. |
 | 10 | Every decorative effect carries the reduced-motion and mobile fallback required by [performance.md](performance.md). No exceptions for "just the hero". |
 | 11 | Structural layout ([layouts.md](layouts.md)) is chosen because the content has that shape, a hero item among minor ones, two comparable things, a long homogeneous stream. Homogeneous content gets an honest grid, not a bento grid for visual interest. |
 | 12 | Primary navigation may hide behind a hamburger below a breakpoint; unlike software, this is normal and expected on a shallow marketing site. |
-| 13 | *[award 2026, proposal]* The first screen ships in the HTML and stands without script: H1, supporting lines, primary action and proof are visible with JavaScript off. Numbers and texts carry their end value in the markup; animation may reveal them, never produce them. No loading notice in the hero. Kreis Systems sites: R35, R08. |
+| 13 | *[award 2026, proposal]* The first screen ships in the HTML and stands without script: H1, supporting lines, primary action and proof are visible with JavaScript off. Numbers and texts carry their end value in the markup; animation may reveal them, never produce them. No loading notice in the hero. <studio> sites: R35, R08. |
 
 ## Type-specific interview questions
 
@@ -90,7 +90,7 @@ regardless of visual polish elsewhere.
 | PRODUCT.md and DESIGN.md derived files | Present alongside SOUL.md/MASK.md so impeccable-driven build stages (critique, polish, overdrive) have their required gate files |
 | Reduced-motion fallback | For every decorative shader/3D/motion effect actually shipped, per [performance.md](performance.md) |
 | Mobile fallback for any WebGL/3D hero | Static image, CSS gradient, or omission below the breakpoint defined in [performance.md](performance.md) |
-| Mobile composition *[award 2026, proposal]* | `viewport` without zoom lock, text margin and no horizontal overflow at the R10 test widths, primary button within thumb reach in the first screen or as a fixed action bar at the bottom with the same label. Kreis Systems sites: R10 |
+| Mobile composition *[award 2026, proposal]* | `viewport` without zoom lock, text margin and no horizontal overflow at the R10 test widths, primary button within thumb reach in the first screen or as a fixed action bar at the bottom with the same label. <studio> sites: R10 |
 
 ## Check criteria
 

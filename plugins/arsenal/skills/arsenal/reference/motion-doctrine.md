@@ -103,7 +103,7 @@ Material 3 and Carbon do the opposite by default: fixed cubic bezier curves with
 analysis most homepages had `prefers-reduced-motion` in their CSS, but only a
 few showed a measurable effect; background videos kept running almost
 everywhere. Check with a second run under `reducedMotion: reduce`: videos
-stand, animations almost all gone. Limits: R23 on Kreis Systems sites.
+stand, animations almost all gone. Limits: R23 on <studio> sites.
 
 ## 6. The checklist
 

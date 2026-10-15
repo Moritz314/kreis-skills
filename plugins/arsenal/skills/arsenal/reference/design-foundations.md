@@ -71,7 +71,7 @@ What's added here:
     Never the straight or English-slanted form.
   - En dash (glyph: –) for parenthetical asides, ranges, and what German
     calls the Gedankenstrich. Plain hyphen (-) only inside compound words.
-    On Kreis Systems sites METHODE.md governs: client copy carries no
+    On <studio> sites METHODE.md governs: client copy carries no
     Gedankenstrich at all (R21); this note applies everywhere else.
   - A narrow non-breaking space before abbreviations ("z. B.") and between
     a number and its unit ("12 kg"), and no space around the hyphen in a
@@ -83,7 +83,7 @@ What's added here:
 - *[award 2026, proposal]* Emphasis on the H1: mark exactly one part of it with one sign
   (highlight, underline, circle, change of cut, symbol). The sign comes from
   the client's subject (a joint, a bulb, a tool), never from an agency's
-  hand. R07 governs on Kreis Systems sites; this is only the list of forms.
+  hand. R07 governs on <studio> sites; this is only the list of forms.
 
 ## 3. Color
 
@@ -158,7 +158,7 @@ What's added here:
   van Merriënboer, Paas 1998)
 - *[award 2026, proposal]* Source for derivations: the principles catalogue of the German Web
   Award 2026 analysis (121 principles in 16 categories,
-  `/srv/syncthing/stamm/Files/Arbeit/Sonstiges/Knowledge/german-web-award-2026-10/tiefenanalyse/teil-a-prinzipien/PRINZIPIEN.md`).
+  `<dein-ordner>`).
   Contested principles (golden ratio RA04, Z pattern B04, Zeigarnik K11)
   are used only descriptively, never as a rule.
 

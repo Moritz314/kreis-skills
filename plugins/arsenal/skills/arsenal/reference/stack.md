@@ -188,7 +188,7 @@ requirement means Tailwind 3.4 instead.
 
 *[award 2026, proposal]* **Two widths as tokens.** Define exactly two width tokens, a content
 width for grid and images and a reading width for body text (in `ch`), and
-use no third large `max-width`. Kreis Systems sites: R39.
+use no third large `max-width`. <studio> sites: R39.
 
 ```css
 @theme { --width-content: /* project value */; --width-read: /* in ch */; }

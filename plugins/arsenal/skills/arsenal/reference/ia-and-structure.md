@@ -79,7 +79,7 @@ law acting on the structural choice itself, not only on individual widgets).
 **Above the H1, website path** *[award 2026, proposal]*. Plan a short category line above the
 H1 and let the H1 say who the site is for; the page title names the category
 and, for a local business, the place. Ask in planning: what is the category
-line, who is the H1 for? Kreis Systems sites: R02.
+line, who is the H1 for? <studio> sites: R02.
 
 ## 2. The proven laws, applied correctly
 

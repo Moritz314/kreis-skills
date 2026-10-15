@@ -63,7 +63,7 @@ Systems sites.
 | GSAP ScrollTrigger sequences | Low | Low (transform/opacity only) | Instant end-state on reduced-motion |
 | Particle systems (canvas2d or WebGL) | Low to medium | Scales with particle count | Cap count on mobile, disable below breakpoint |
 
-**LCP element** *[award 2026, proposal]*. On Kreis Systems sites the LCP element is the H1 or an
+**LCP element** *[award 2026, proposal]*. On <studio> sites the LCP element is the H1 or an
 image within the R32 budget, never a video, and every image carries `width`
 and `height`. The fastest 2026 winner had a text H1 as LCP element.
 
@@ -105,4 +105,4 @@ A `scroll` or `resize` listener that reads or writes a layout property (see the 
 - **Keyboard.** Anything that reveals content on `:hover` also reveals it on `:focus-within` or `:focus`, verified with the mouse disconnected, `Tab` only.
 - **Touch.** Anything gated behind `:hover` has a tap or focus equivalent, see [product-motion.md](product-motion.md) section 2 for the pattern, verified under `(hover: none)` and `(pointer: coarse)` emulation, not assumed from desktop testing.
 - **Contrast under motion.** The darkest and brightest frame of any color, opacity or shader animation still clears 4.5:1 for body text, checked per [design-foundations.md](design-foundations.md) section 3, not only the resting frame.
-- **Skeleton** *[award 2026, proposal]*. Exactly one `main`, exactly one `h1`, a skip link as the first focus target, `lang` set, zoom not locked. Check with axe-core in full (WCAG A and AA plus `region` and `landmark-*`); the Lighthouse accessibility score alone misses missing landmarks. Kreis Systems sites: R27.
+- **Skeleton** *[award 2026, proposal]*. Exactly one `main`, exactly one `h1`, a skip link as the first focus target, `lang` set, zoom not locked. Check with axe-core in full (WCAG A and AA plus `region` and `landmark-*`); the Lighthouse accessibility score alone misses missing landmarks. <studio> sites: R27.

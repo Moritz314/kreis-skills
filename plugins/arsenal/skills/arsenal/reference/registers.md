@@ -82,7 +82,7 @@ What the page is allowed to ship. Governed by [stack.md](stack.md) and
 | `webgl` | The above plus shader and 3D layers | Islands only, never on the critical path, always with a static fallback |
 
 *[award 2026, proposal]* Video is part of the technical budget: no video unless ARMOURY.md names
-its purpose under `technik`. Kreis Systems sites: R36 (with R08).
+its purpose under `technik`. <studio> sites: R36 (with R08).
 
 ### 5. `tonfall` (voice)
 

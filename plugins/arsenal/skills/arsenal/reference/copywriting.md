@@ -67,7 +67,7 @@ copy in the target tone when exact final text isn't ready yet, and treat
 - *[award 2026, proposal]* Choose the proof while writing the brief, not at layout time: a
   number with its customer, result or timeframe, or an independent rating
   with a link to its source. A superlative needs its source in the same
-  section, otherwise it goes. Kreis Systems sites: R03, R21.
+  section, otherwise it goes. <studio> sites: R03, R21.
 
 ## Labels that say what happens
 
@@ -85,7 +85,7 @@ copy in the target tone when exact final text isn't ready yet, and treat
 - *[award 2026, proposal]* The primary action keeps one label in every place it appears, and
   the first button gets a microcopy line underneath that names the hurdle
   (how long, what it costs, what the visitor has to do). Length limit and
-  placement: R16 on Kreis Systems sites.
+  placement: R16 on <studio> sites.
 
 ## Error messages
 
