@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K4 Feste Handlungsleiste unten mobil</title>
+<!--
+Baustein K4: Feste Handlungsleiste unten mobil
+Zweck: Unter 768 px stehen Anrufen (Nebenknopf) und die Hauptaktion (Signalfarbe) in genau einer Zeile am unteren Rand.
+Herkunft: angeregt durch BOLD, Platz 14, German Web Award 2026 (BAUPLAN G11); eigene Gestalt, kein Material der Agentur.
+In sich geschlossen: CSS und JS inline, keine externen Abrufe, Schrift nur Systemschrift. Farben ueber die Tokens oben im style-Block
+(dunkel Standard, hell ueber [data-theme=light], ohne gesetztes Thema nach prefers-color-scheme). In einer Website folgt der Baustein
+dem Thema der Seite. Die Werte der Tokens sind neutral; der Bau einer Website setzt sie aus MASK.md der Variante.
+API: aside.leiste am Ende von body mit zwei Knoepfen; das kleine Skript blendet die Leiste nur aus, solange ein Eingabefeld den Fokus hat und die Bildschirmtastatur offen ist (visualViewport unter 75 % der Fensterhoehe); sonst bleibt sie per Tab erreichbar. Ueber 767 px ist sie nicht sichtbar, unter 400 px Fensterhoehe auch nicht.
+Verhalten bei prefers-reduced-motion: Die Leiste bewegt sich nie; bei reduzierter Bewegung entfaellt nur der Versatz beim Druecken.
+URL-Parameter: ?theme=light oder ?theme=dark (nur Demo).
+Demo-Inhalt: Betrieb, Nummer 089 9999 8123, Zeiten und Texte sind erfunden und glaubhaft gewaehlt (R37), kein echter Kunde.
+Gestalt und Masse: Vorgaben von Web Gestaltung (ap3-bausteine/VORGABEN.md, Abschnitt zu G11).
+-->
+<script>
+(function(){var d=document.documentElement;var q=new URLSearchParams(location.search).get('theme');
+var t=(q==='light'||q==='dark')?q:(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');d.setAttribute('data-theme',t);
+document.addEventListener('DOMContentLoaded',function(){var b=document.querySelector('.sk-thema');if(!b)return;
+var s=function(){b.textContent=d.getAttribute('data-theme')==='light'?'Dunkel zeigen':'Hell zeigen';};s();
+b.addEventListener('click',function(){d.setAttribute('data-theme',d.getAttribute('data-theme')==='light'?'dark':'light');s();});});})();
+(function(){
+
+  document.addEventListener('DOMContentLoaded',function(){var l=document.querySelector('.leiste');if(!l)return;
+    var f='input,textarea,select';
+    var tastatur=function(){var v=window.visualViewport;return !!v&&v.height<window.innerHeight*0.75;};
+    var pruefen=function(){var a=document.activeElement;l.classList.toggle('ist-weg',!!a&&a.matches(f)&&tastatur());};
+    document.addEventListener('focusin',pruefen);
+    document.addEventListener('focusout',function(){l.classList.remove('ist-weg');});
+    if(window.visualViewport)window.visualViewport.addEventListener('resize',pruefen);});
+})();
+</script>
+<style>
+/* Tokenblock (Werte sind neutrale Platzhalter; der Bau setzt sie aus MASK.md der Variante) */
+:root {
+  color-scheme: dark;
+  --b-grund: #171614; --b-flaeche: #221F1C; --b-text: #F3F0EA; --b-leise: #B5AFA4;
+  --b-linie: #4A453F; --b-rand: #8C857A; --b-marke: #8EBBA2;
+  --b-signal: #F2934A; --b-auf-signal: #1C1209; --b-signal-hover: #F7A766; --b-signal-druck: #E5823A;
+  --b-fokus: #F3F0EA;
+  --b-radius-flaeche: 14px; --b-radius-knopf: 999px;
+  --b-knopf-hoehe: 48px; --b-knopf-hoehe-klein: 44px;
+  --b-schrift: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --b-dauer: 120ms;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --b-grund: #F7F5F0; --b-flaeche: #FFFFFF; --b-text: #1E1C19; --b-leise: #5C564E;
+  --b-linie: #CFC9BE; --b-rand: #7A7368; --b-marke: #2E6A4E;
+  --b-signal: #B4470F; --b-auf-signal: #FFFFFF; --b-signal-hover: #963A0A; --b-signal-druck: #7E3108;
+  --b-fokus: #1E1C19;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+  color-scheme: light;
+  --b-grund: #F7F5F0; --b-flaeche: #FFFFFF; --b-text: #1E1C19; --b-leise: #5C564E;
+  --b-linie: #CFC9BE; --b-rand: #7A7368; --b-marke: #2E6A4E;
+  --b-signal: #B4470F; --b-auf-signal: #FFFFFF; --b-signal-hover: #963A0A; --b-signal-druck: #7E3108;
+  --b-fokus: #1E1C19;
+  }
+}
+@media (prefers-reduced-motion: reduce) { :root { --b-dauer: 0ms; } }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--b-grund); color: var(--b-text);
+  font: 400 17px/1.55 var(--b-schrift); }
+.sk { max-width: 1120px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 48px); }
+.sk-kopf { display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  min-height: 76px; border-bottom: 1px solid var(--b-linie); }
+.sk-marke { font-weight: 650; letter-spacing: -0.01em; }
+.sk-h1 { font-size: clamp(30px, 3.4vw, 44px); line-height: 1.12; letter-spacing: -0.02em;
+  font-weight: 700; margin: 48px 0 12px; }
+.sk-lead { color: var(--b-leise); max-width: 62ch; margin: 0; }
+.sk-teil { margin-top: 56px; }
+.sk-teil > h2 { font-size: 22px; line-height: 1.3; font-weight: 650; letter-spacing: -0.01em; margin: 0 0 8px; }
+.sk-teil > p { color: var(--b-leise); margin: 0 0 20px; max-width: 62ch; }
+.buehne { background: var(--b-flaeche); border: 1px solid var(--b-linie); border-radius: var(--b-radius-flaeche);
+  padding: clamp(24px, 4vw, 48px); }
+.zustaende { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px 16px; }
+.zustand { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+.zustand > span:not(.knopf) { font-size: 16px; color: var(--b-leise); }
+.masse { width: 100%; border-collapse: collapse; font-size: 16px; }
+.masse th, .masse td { text-align: left; padding: 10px 12px 10px 0; border-top: 1px solid var(--b-linie); vertical-align: top; }
+.masse th { font-weight: 600; }
+.masse td:last-child { color: var(--b-leise); white-space: nowrap; }
+.sk-fuss { margin-top: 72px; padding-top: 24px; padding-bottom: 40px; border-top: 1px solid var(--b-linie); color: var(--b-leise); font-size: 16px; }
+@media (max-width: 600px) {
+  .zustaende { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .masse th, .masse td { display: block; padding: 0 0 4px; border-top: 0; }
+  .masse th { padding-top: 12px; border-top: 1px solid var(--b-linie); }
+  .masse td:last-child { white-space: normal; padding-bottom: 12px; }
+}
+@media (max-width: 420px) {
+  .zustaende { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Knoepfe: eine Gestalt fuer alle vier Bausteine */
+.knopf { display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: var(--b-knopf-hoehe); padding: 0 22px; border-radius: var(--b-radius-knopf);
+  font: 600 17px/1 var(--b-schrift); text-decoration: none; white-space: nowrap; cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: background-color var(--b-dauer) ease-out, color var(--b-dauer) ease-out, border-color var(--b-dauer) ease-out; }
+.knopf svg { width: 20px; height: 20px; flex: none; }
+.knopf--haupt { background: var(--b-signal); color: var(--b-auf-signal); }
+.knopf--haupt:hover, .knopf--haupt.ist-hover { background: var(--b-signal-hover); }
+.knopf--haupt:active, .knopf--haupt.ist-aktiv { background: var(--b-signal-druck); }
+.knopf--neben { background: transparent; color: var(--b-text); border-color: var(--b-rand); }
+.knopf--neben:hover, .knopf--neben.ist-hover { border-color: var(--b-text); background: var(--b-flaeche); }
+.knopf--neben:active, .knopf--neben.ist-aktiv { background: var(--b-linie); }
+.knopf:active, .knopf.ist-aktiv { transform: translateY(1px); }
+:focus-visible, .ist-fokus { outline: 2px solid var(--b-fokus); outline-offset: 3px; }
+:focus:not(:focus-visible) { outline: none; }
+@media (prefers-reduced-motion: reduce) { .knopf:active, .knopf.ist-aktiv { transform: none; } }
+.sk-thema { min-height: var(--b-knopf-hoehe-klein); padding: 0 18px; font-size: 16px; }
+.nr { font-variant-numeric: tabular-nums; }
+
+/* Baustein G11 */
+
+.leiste { display: none; }
+.leiste .knopf { width: 100%; padding: 0 12px; font-size: 16px; }
+.leiste.ist-weg { display: none !important; }
+.muster-kopf { font-size: clamp(30px, 4vw, 48px); line-height: 1.1; letter-spacing: -0.02em; font-weight: 700; margin: 0 0 12px; }
+.muster-text { margin: 0 0 20px; color: var(--b-leise); max-width: 52ch; }
+.knopfreihe { display: flex; flex-wrap: wrap; gap: 12px; }
+.feld { display: grid; gap: 8px; max-width: 420px; }
+.feld label { font-weight: 600; font-size: 16px; }
+.feld input { min-height: 48px; padding: 0 14px; font: 400 17px/1 var(--b-schrift); color: var(--b-text);
+  background: var(--b-grund); border: 1.5px solid var(--b-rand); border-radius: var(--b-radius-flaeche); }
+.abschnitte { display: grid; gap: 24px; }
+.buehne > :last-child { margin-bottom: 0; }
+.hinweis-breit > p { margin: 0; }
+.hinweis-breit { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 48px; align-items: start; }
+.telefon { width: 400px; border: 1px solid var(--b-linie); border-radius: var(--b-radius-flaeche); overflow: hidden; background: var(--b-grund); }
+.telefon-inhalt { height: 300px; padding: 24px 16px; display: grid; align-content: start; gap: 12px; }
+.telefon-zeile { height: 14px; border-radius: var(--b-radius-flaeche); background: var(--b-linie); }
+.telefon-zeile.kurz { width: 62%; }
+.leiste-vorschau { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 8px 16px;
+  border-top: 1px solid var(--b-linie); background: var(--b-grund); }
+.leiste-vorschau .knopf { width: 100%; padding: 0 12px; font-size: 16px; }
+@media (max-width: 767px) {
+  .leiste { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+    padding: 8px 16px calc(8px + env(safe-area-inset-bottom));
+    background: var(--b-grund); border-top: 1px solid var(--b-linie); }
+  body { padding-bottom: calc(65px + env(safe-area-inset-bottom)); }
+  html { scroll-padding-bottom: 81px; }
+  .nur-breit { display: none; }
+  .knopfreihe .knopf { width: 100%; }
+}
+@media (max-width: 399px) {
+  .leiste, .leiste-vorschau { grid-template-columns: 48px minmax(0, 1fr); }
+  .leiste .knopf--neben, .leiste-vorschau .knopf--neben { padding: 0; }
+  .leiste .anruf-text, .leiste-vorschau .anruf-text { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+    overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
+}
+@media (max-width: 767px) and (max-height: 399px) {
+  .leiste { display: none; }
+  body { padding-bottom: 0; }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hinweis-breit { grid-template-columns: 1fr; justify-items: center; }
+}
+
+</style>
+</head>
+<body>
+<header class="sk sk-kopf">
+  <span class="sk-marke">K4 Baustein</span>
+  <button class="knopf knopf--neben sk-thema" type="button">Hell oder dunkel</button>
+</header>
+<main class="sk">
+
+<h1 class="sk-h1">Feste Handlungsleiste unten mobil</h1>
+<p class="sk-lead">Unter 768 px Breite steht am unteren Rand eine Leiste mit genau zwei gleich breiten Knöpfen in einer Zeile: Anrufen als Nebenknopf links, die Hauptaktion in Signalfarbe rechts im Daumenbereich. Breiter erscheint sie nicht; dort stehen die Knöpfe im Kopf und in der ersten Ansicht.</p>
+
+<section class="sk-teil nur-breit" aria-labelledby="vs">
+  <h2 id="vs">So sieht die Leiste ab 400 px aus</h2>
+  <div class="hinweis-breit">
+    <p>Ziehen Sie das Fenster schmaler als 768 px, dann steht die echte Leiste unten. Die Vorschau rechts zeigt sie im Maßstab 1:1 auf 400 px Breite; schmaler steht beim Anrufen nur der Hörer.</p>
+    <div class="telefon" aria-hidden="true">
+      <div class="telefon-inhalt"><div class="telefon-zeile"></div><div class="telefon-zeile"></div><div class="telefon-zeile kurz"></div></div>
+      <div class="leiste-vorschau">
+        <span class="knopf knopf--neben"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg><span class="anruf-text">Anrufen</span></span>
+        <span class="knopf knopf--haupt">Termin anfragen</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="abschnitte sk-teil">
+  <section class="buehne" aria-labelledby="b1">
+    <h2 class="muster-kopf" id="b1">Ihr Bad, neu verlegt.</h2>
+    <p class="muster-text">Fliesenlegerei mit eigenem Team, Termine ab sofort. Die Hauptaktion trägt hier dieselbe Beschriftung wie in der Leiste.</p>
+    <div class="knopfreihe">
+      <a class="knopf knopf--haupt" href="#termin">Termin anfragen</a>
+      <a class="knopf knopf--neben" href="tel:+498999998123" aria-label="Anrufen: 089 9999 8123"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg><span class="nr">089 9999 8123</span></a>
+    </div>
+  </section>
+  <section class="buehne" aria-labelledby="b2">
+    <h2 class="muster-kopf" id="b2">Leistungen</h2>
+    <p class="muster-text">Die Leiste bleibt unten stehen und verdeckt keinen Inhalt, weil die Seite unten 65 px Platz hält.</p>
+  </section>
+  <section class="buehne" aria-labelledby="termin">
+    <h2 class="muster-kopf" id="termin">Termin anfragen</h2>
+    <p class="muster-text">Sobald ein Eingabefeld den Fokus hat, tritt die Leiste zurück, damit sie nicht über der Bildschirmtastatur steht.</p>
+    <div class="feld"><label for="tel-feld">Ihre Telefonnummer</label><input id="tel-feld" type="tel" autocomplete="tel"></div>
+  </section>
+</div>
+
+<section class="sk-teil" aria-labelledby="zu">
+  <h2 id="zu">Zustände der Leistenknöpfe</h2>
+  <p>Wie G5: Ruhe, Zeiger darüber, Tastaturfokus, gedrückt. Die Leiste selbst bewegt sich nie.</p>
+  <div class="buehne">
+    <div class="zustaende" aria-hidden="true">
+      <div class="zustand"><span class="knopf knopf--haupt">Termin anfragen</span><span>Ruhe</span></div>
+      <div class="zustand"><span class="knopf knopf--haupt ist-hover">Termin anfragen</span><span>Hover</span></div>
+      <div class="zustand"><span class="knopf knopf--haupt ist-fokus">Termin anfragen</span><span>Fokus</span></div>
+      <div class="zustand"><span class="knopf knopf--haupt ist-aktiv">Termin anfragen</span><span>Aktiv</span></div>
+      <div class="zustand"><span class="knopf knopf--neben"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg>Anrufen</span><span>Ruhe, Nebenknopf</span></div>
+      <div class="zustand"><span class="knopf knopf--neben ist-hover"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg>Anrufen</span><span>Hover, Nebenknopf</span></div>
+      <div class="zustand"><span class="knopf knopf--neben ist-fokus"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg>Anrufen</span><span>Fokus, Nebenknopf</span></div>
+      <div class="zustand"><span class="knopf knopf--neben ist-aktiv"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg>Anrufen</span><span>Aktiv, Nebenknopf</span></div>
+    </div>
+  </div>
+</section>
+
+
+</main>
+<footer class="sk sk-fuss">K4 Feste Handlungsleiste unten mobil. Kunden-Baustein des Arsenals; alle Angaben in der Demo sind erfunden.</footer>
+<aside class="leiste" aria-label="Schnellkontakt">
+  <a class="knopf knopf--neben" href="tel:+498999998123" aria-label="Anrufen: 089 9999 8123"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg><span class="anruf-text">Anrufen</span></a>
+  <a class="knopf knopf--haupt" href="#termin">Termin anfragen</a>
+</aside>
+</body>
+</html>

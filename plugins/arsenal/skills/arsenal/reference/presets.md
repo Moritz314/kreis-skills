@@ -152,3 +152,31 @@ still templated.
   specifically, start from Kinetic Showpiece instead. It's also the wrong
   starting point for a dense daily-use tool, Dense Instrument is closer to
   right there even though both are "software."
+
+## Stances of the 2026 award winners (a question, not a preset)
+
+*[award 2026, proposal]* Use these five stances as a classification question in `plan`, never as
+a template to build. Two axes separate them: does the site sell an attitude
+first or performance and proof first, and does the form speak quietly or
+loudly (by hand, contrast, distortion). Source: design philosophy page of the
+German Web Award 2026 analysis (`zelle-designphilosophie.html`, review 4
+approved). Rank sorts nothing: first and last place share one stance.
+
+- **Brand as total experience.** Attitude before performance, few colours,
+  one large image or sign. *Careful:* no superlative without an independent
+  source, no chat bubble or dialog over the first screen, scroll reveals
+  must not hide content.
+- **Product design with proof.** Behaviour and result first, numbers and
+  method visible, calm type with one striking mark. *Careful:* the deciding
+  factor is commitment to a typeface, not its name; one primary action, never
+  two buttons of equal weight.
+- **Personality as craft.** Hand-made marks, a friendly tone, one light line
+  per page. *Careful:* do not copy an agency's hand; the mark comes from the
+  client's subject. Yellow or lime on black is the reflex, not a choice.
+- **Conversion pragmatism.** Clear service structure, ratings, partner
+  badges, one strong own photo. *Careful:* no wall of seals; a strong photo
+  followed by stock illustration loses the gain; no dialog over the hero.
+- **Subculture boldness.** One named scene, short texts, high contrast,
+  distortion look. *Careful:* carries only with a small, clearly defined
+  audience; for a broad local business there is no evidence (see the guard
+  rail in [registers.md](registers.md)).

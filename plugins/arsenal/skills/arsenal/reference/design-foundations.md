@@ -71,6 +71,8 @@ What's added here:
     Never the straight or English-slanted form.
   - En dash (glyph: –) for parenthetical asides, ranges, and what German
     calls the Gedankenstrich. Plain hyphen (-) only inside compound words.
+    On Kreis Systems sites METHODE.md governs: client copy carries no
+    Gedankenstrich at all (R21); this note applies everywhere else.
   - A narrow non-breaking space before abbreviations ("z. B.") and between
     a number and its unit ("12 kg"), and no space around the hyphen in a
     compound (Divis).
@@ -78,6 +80,10 @@ What's added here:
 - Font pairing itself, the rule that two similar typefaces read as a
   mistake rather than a decision, is already stated in typography.md, don't
   duplicate it, just enforce it.
+- *[award 2026, proposal]* Emphasis on the H1: mark exactly one part of it with one sign
+  (highlight, underline, circle, change of cut, symbol). The sign comes from
+  the client's subject (a joint, a bulb, a tool), never from an agency's
+  hand. R07 governs on Kreis Systems sites; this is only the list of forms.
 
 ## 3. Color
 
@@ -123,6 +129,9 @@ What's added here:
 - The "semantic versus decorative color" label itself comes from design-
   system practice, not an academic source, treat the label as informal.
   The binding rule behind it is WCAG 1.4.1 above, cite that, not the label.
+- *[award 2026, proposal]* Colour effect claims ("blue means trust") are not supported by
+  evidence (Elliot and Maier 2014). Check where a colour comes from (the
+  client's subject), not its supposed effect.
 
 ## 4. Perception
 
@@ -147,6 +156,11 @@ What's added here:
   but every one of them still has to clear this test, density is not an
   exemption from justifying an element's presence. (Sweller 1988; Sweller,
   van Merriënboer, Paas 1998)
+- *[award 2026, proposal]* Source for derivations: the principles catalogue of the German Web
+  Award 2026 analysis (121 principles in 16 categories,
+  `/srv/syncthing/stamm/Files/Arbeit/Sonstiges/Knowledge/german-web-award-2026-10/tiefenanalyse/teil-a-prinzipien/PRINZIPIEN.md`).
+  Contested principles (golden ratio RA04, Z pattern B04, Zeigarnik K11)
+  are used only descriptively, never as a rule.
 
 ## 5. The checklist
 
@@ -204,6 +218,13 @@ finished design, not just judge by eye.
     the grid.
 14. **Squint test.** Blur or shrink a screenshot of the finished design,
     confirm the single most important element still reads as dominant.
+15. **Practice values, hand-built pages** *[award 2026, proposal]*. No METHODE rule carries
+    these, so they live here: about eight distinct spacing values at most
+    (award winners all had 14 or more; a target for our hand-built pages,
+    calibrate on own demos); gap to the next group at least twice the gap
+    within a group (2 : 1); at most three alignment axes; at most four
+    colours. The last three are not yet measured on real pages. Mobile text
+    margin and radius count are rules, not practice values: R10 and R22.
 
 ## 6. Anti-patterns
 

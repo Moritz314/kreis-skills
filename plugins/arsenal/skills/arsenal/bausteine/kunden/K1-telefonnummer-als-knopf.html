@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K1 Telefonnummer als Knopf mit Telefonzeiten</title>
+<!--
+Baustein K1: Telefonnummer als Knopf mit Telefonzeiten
+Zweck: Die Nummer ist die Beschriftung eines tel:-Knopfs, die Telefonzeiten stehen direkt darunter (Fall A: Telefon ist die Hauptaktion, Fall B: Telefon als Nebenknopf neben der Hauptaktion).
+Herkunft: angeregt durch Exportarts, Platz 8, und Tricks, Platz 6, German Web Award 2026 (BAUPLAN G5); eigene Gestalt, kein Material der Agenturen.
+In sich geschlossen: CSS und JS inline, keine externen Abrufe, Schrift nur Systemschrift. Farben ueber die Tokens oben im style-Block
+(dunkel Standard, hell ueber [data-theme=light], ohne gesetztes Thema nach prefers-color-scheme). In einer Website folgt der Baustein
+dem Thema der Seite. Die Werte der Tokens sind neutral; der Bau einer Website setzt sie aus MASK.md der Variante.
+API: Kein Skript noetig: echter Link a[href^="tel:"] mit Klasse knopf--haupt oder knopf--neben, darunter p.tel-zeiten. Zugaenglicher Name enthaelt die sichtbare Nummer.
+Verhalten bei prefers-reduced-motion: Nichts bewegt sich; beim Druecken entfaellt der Versatz, Farbwechsel ohne Uebergang.
+URL-Parameter: ?theme=light oder ?theme=dark (nur Demo).
+Demo-Inhalt: Betrieb, Nummer 089 9999 8123, Zeiten und Texte sind erfunden und glaubhaft gewaehlt (R37), kein echter Kunde.
+Gestalt und Masse: Vorgaben von Web Gestaltung (ap3-bausteine/VORGABEN.md, Abschnitt zu G5).
+-->
+<script>
+(function(){var d=document.documentElement;var q=new URLSearchParams(location.search).get('theme');
+var t=(q==='light'||q==='dark')?q:(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');d.setAttribute('data-theme',t);
+document.addEventListener('DOMContentLoaded',function(){var b=document.querySelector('.sk-thema');if(!b)return;
+var s=function(){b.textContent=d.getAttribute('data-theme')==='light'?'Dunkel zeigen':'Hell zeigen';};s();
+b.addEventListener('click',function(){d.setAttribute('data-theme',d.getAttribute('data-theme')==='light'?'dark':'light');s();});});})();
+</script>
+<style>
+/* Tokenblock (Werte sind neutrale Platzhalter; der Bau setzt sie aus MASK.md der Variante) */
+:root {
+  color-scheme: dark;
+  --b-grund: #171614; --b-flaeche: #221F1C; --b-text: #F3F0EA; --b-leise: #B5AFA4;
+  --b-linie: #4A453F; --b-rand: #8C857A; --b-marke: #8EBBA2;
+  --b-signal: #F2934A; --b-auf-signal: #1C1209; --b-signal-hover: #F7A766; --b-signal-druck: #E5823A;
+  --b-fokus: #F3F0EA;
+  --b-radius-flaeche: 14px; --b-radius-knopf: 999px;
+  --b-knopf-hoehe: 48px; --b-knopf-hoehe-klein: 44px;
+  --b-schrift: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --b-dauer: 120ms;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --b-grund: #F7F5F0; --b-flaeche: #FFFFFF; --b-text: #1E1C19; --b-leise: #5C564E;
+  --b-linie: #CFC9BE; --b-rand: #7A7368; --b-marke: #2E6A4E;
+  --b-signal: #B4470F; --b-auf-signal: #FFFFFF; --b-signal-hover: #963A0A; --b-signal-druck: #7E3108;
+  --b-fokus: #1E1C19;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+  color-scheme: light;
+  --b-grund: #F7F5F0; --b-flaeche: #FFFFFF; --b-text: #1E1C19; --b-leise: #5C564E;
+  --b-linie: #CFC9BE; --b-rand: #7A7368; --b-marke: #2E6A4E;
+  --b-signal: #B4470F; --b-auf-signal: #FFFFFF; --b-signal-hover: #963A0A; --b-signal-druck: #7E3108;
+  --b-fokus: #1E1C19;
+  }
+}
+@media (prefers-reduced-motion: reduce) { :root { --b-dauer: 0ms; } }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--b-grund); color: var(--b-text);
+  font: 400 17px/1.55 var(--b-schrift); }
+.sk { max-width: 1120px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 48px); }
+.sk-kopf { display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  min-height: 76px; border-bottom: 1px solid var(--b-linie); }
+.sk-marke { font-weight: 650; letter-spacing: -0.01em; }
+.sk-h1 { font-size: clamp(30px, 3.4vw, 44px); line-height: 1.12; letter-spacing: -0.02em;
+  font-weight: 700; margin: 48px 0 12px; }
+.sk-lead { color: var(--b-leise); max-width: 62ch; margin: 0; }
+.sk-teil { margin-top: 56px; }
+.sk-teil > h2 { font-size: 22px; line-height: 1.3; font-weight: 650; letter-spacing: -0.01em; margin: 0 0 8px; }
+.sk-teil > p { color: var(--b-leise); margin: 0 0 20px; max-width: 62ch; }
+.buehne { background: var(--b-flaeche); border: 1px solid var(--b-linie); border-radius: var(--b-radius-flaeche);
+  padding: clamp(24px, 4vw, 48px); }
+.zustaende { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px 16px; }
+.zustand { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+.zustand > span:not(.knopf) { font-size: 16px; color: var(--b-leise); }
+.masse { width: 100%; border-collapse: collapse; font-size: 16px; }
+.masse th, .masse td { text-align: left; padding: 10px 12px 10px 0; border-top: 1px solid var(--b-linie); vertical-align: top; }
+.masse th { font-weight: 600; }
+.masse td:last-child { color: var(--b-leise); white-space: nowrap; }
+.sk-fuss { margin-top: 72px; padding-top: 24px; padding-bottom: 40px; border-top: 1px solid var(--b-linie); color: var(--b-leise); font-size: 16px; }
+@media (max-width: 600px) {
+  .zustaende { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .masse th, .masse td { display: block; padding: 0 0 4px; border-top: 0; }
+  .masse th { padding-top: 12px; border-top: 1px solid var(--b-linie); }
+  .masse td:last-child { white-space: normal; padding-bottom: 12px; }
+}
+@media (max-width: 420px) {
+  .zustaende { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Knoepfe: eine Gestalt fuer alle vier Bausteine */
+.knopf { display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: var(--b-knopf-hoehe); padding: 0 22px; border-radius: var(--b-radius-knopf);
+  font: 600 17px/1 var(--b-schrift); text-decoration: none; white-space: nowrap; cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: background-color var(--b-dauer) ease-out, color var(--b-dauer) ease-out, border-color var(--b-dauer) ease-out; }
+.knopf svg { width: 20px; height: 20px; flex: none; }
+.knopf--haupt { background: var(--b-signal); color: var(--b-auf-signal); }
+.knopf--haupt:hover, .knopf--haupt.ist-hover { background: var(--b-signal-hover); }
+.knopf--haupt:active, .knopf--haupt.ist-aktiv { background: var(--b-signal-druck); }
+.knopf--neben { background: transparent; color: var(--b-text); border-color: var(--b-rand); }
+.knopf--neben:hover, .knopf--neben.ist-hover { border-color: var(--b-text); background: var(--b-flaeche); }
+.knopf--neben:active, .knopf--neben.ist-aktiv { background: var(--b-linie); }
+.knopf:active, .knopf.ist-aktiv { transform: translateY(1px); }
+:focus-visible, .ist-fokus { outline: 2px solid var(--b-fokus); outline-offset: 3px; }
+:focus:not(:focus-visible) { outline: none; }
+@media (prefers-reduced-motion: reduce) { .knopf:active, .knopf.ist-aktiv { transform: none; } }
+.sk-thema { min-height: var(--b-knopf-hoehe-klein); padding: 0 18px; font-size: 16px; }
+.nr { font-variant-numeric: tabular-nums; }
+
+/* Baustein G5 */
+
+.tel { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.tel .knopf { font-size: 18px; letter-spacing: 0; }
+.tel-zeiten { margin: 0; font-size: 16px; line-height: 1.4; color: var(--b-leise); }
+.tel-zeiten b { font-weight: 600; color: var(--b-text); }
+.reihe { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px; }
+.reihe .tel-zeiten { flex-basis: 100%; margin-top: -4px; }
+.reihe .knopf { font-size: 18px; letter-spacing: 0; }
+.beispiel-titel { font-size: clamp(24px, 2.4vw, 30px); line-height: 1.12; letter-spacing: -0.02em; font-weight: 700; margin: 0 0 12px; }
+.beispiel-text { margin: 0 0 28px; color: var(--b-leise); max-width: 52ch; }
+.zwei { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
+@media (max-width: 860px) { .zwei { grid-template-columns: 1fr; } }
+@media (max-width: 600px) {
+  .tel, .reihe { display: flex; flex-direction: column; align-items: stretch; width: 100%; }
+  .tel .knopf, .reihe .knopf { width: 100%; }
+}
+
+</style>
+</head>
+<body>
+<header class="sk sk-kopf">
+  <span class="sk-marke">K1 Baustein</span>
+  <button class="knopf knopf--neben sk-thema" type="button">Hell oder dunkel</button>
+</header>
+<main class="sk">
+
+<h1 class="sk-h1">Telefonnummer als Knopf</h1>
+<p class="sk-lead">Die Nummer selbst ist die Beschriftung, in Blöcken zu höchstens vier Ziffern. Die Telefonzeiten stehen direkt darunter. Ist das Telefon die Hauptaktion, trägt der Knopf die Signalfarbe; sonst steht er als Nebenknopf neben der Hauptaktion.</p>
+
+<div class="zwei sk-teil">
+  <section class="buehne" aria-labelledby="fa">
+    <h2 class="beispiel-titel" id="fa">Fall A: Telefon ist die Hauptaktion</h2>
+    <p class="beispiel-text">Für Betriebe, bei denen der Anruf der übliche erste Schritt ist.</p>
+    <div class="tel">
+      <a class="knopf knopf--haupt" href="tel:+498999998123" aria-label="Anrufen: 089 9999 8123" aria-describedby="za"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg><span class="nr">089 9999 8123</span></a>
+      <p class="tel-zeiten" id="za"><b>Telefonzeiten</b> Mo bis Fr, 7 bis 17 Uhr</p>
+    </div>
+  </section>
+  <section class="buehne" aria-labelledby="fb">
+    <h2 class="beispiel-titel" id="fb">Fall B: Termin ist die Hauptaktion</h2>
+    <p class="beispiel-text">Das Telefon steht gleich hoch daneben, als Nebenknopf ohne Signalfarbe.</p>
+    <div class="reihe">
+      <a class="knopf knopf--haupt" href="#fb">Termin anfragen</a>
+      <a class="knopf knopf--neben" href="tel:+498999998123" aria-label="Anrufen: 089 9999 8123" aria-describedby="zb"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg><span class="nr">089 9999 8123</span></a>
+      <p class="tel-zeiten" id="zb"><b>Telefonzeiten</b> Mo bis Fr, 7 bis 17 Uhr</p>
+    </div>
+  </section>
+</div>
+
+<section class="sk-teil" aria-labelledby="zu">
+  <h2 id="zu">Zustände</h2>
+  <p>Ruhe, Zeiger darüber, Tastaturfokus, gedrückt. Bei reduzierter Bewegung entfällt nur der Versatz beim Drücken; die Farbwechsel kommen ohne Übergang.</p>
+  <div class="buehne">
+    <div class="zustaende">
+      <div class="zustand"><a class="knopf knopf--haupt" href="tel:+498999998123" aria-label="Anrufen: 089 9999 8123"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg><span class="nr">089 9999 8123</span></a><span>Ruhe</span></div>
+      <div class="zustand"><a class="knopf knopf--haupt ist-hover" href="tel:+498999998123" aria-label="Anrufen: 089 9999 8123"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg><span class="nr">089 9999 8123</span></a><span>Hover</span></div>
+      <div class="zustand"><a class="knopf knopf--haupt ist-fokus" href="tel:+498999998123" aria-label="Anrufen: 089 9999 8123"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg><span class="nr">089 9999 8123</span></a><span>Fokus</span></div>
+      <div class="zustand"><a class="knopf knopf--haupt ist-aktiv" href="tel:+498999998123" aria-label="Anrufen: 089 9999 8123"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg><span class="nr">089 9999 8123</span></a><span>Aktiv</span></div>
+      <div class="zustand"><a class="knopf knopf--neben" href="tel:+498999998123" aria-label="Anrufen: 089 9999 8123"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg><span class="nr">089 9999 8123</span></a><span>Ruhe, Nebenknopf</span></div>
+      <div class="zustand"><a class="knopf knopf--neben ist-hover" href="tel:+498999998123" aria-label="Anrufen: 089 9999 8123"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg><span class="nr">089 9999 8123</span></a><span>Hover, Nebenknopf</span></div>
+      <div class="zustand"><a class="knopf knopf--neben ist-fokus" href="tel:+498999998123" aria-label="Anrufen: 089 9999 8123"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg><span class="nr">089 9999 8123</span></a><span>Fokus, Nebenknopf</span></div>
+      <div class="zustand"><a class="knopf knopf--neben ist-aktiv" href="tel:+498999998123" aria-label="Anrufen: 089 9999 8123"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6.6 3.5h2.7l1.4 4.1-2.1 1.3a10.5 10.5 0 0 0 6.5 6.5l1.3-2.1 4.1 1.4v2.7a2 2 0 0 1-2.2 2A16.8 16.8 0 0 1 4.6 5.7a2 2 0 0 1 2-2.2z"/></svg><span class="nr">089 9999 8123</span></a><span>Aktiv, Nebenknopf</span></div>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer class="sk sk-fuss">K1 Telefonnummer als Knopf mit Telefonzeiten. Kunden-Baustein des Arsenals; alle Angaben in der Demo sind erfunden.</footer>
+</body>
+</html>

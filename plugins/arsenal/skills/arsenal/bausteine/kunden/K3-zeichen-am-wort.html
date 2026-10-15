@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>K3 Zeichen am Wort der H1</title>
+<!--
+Baustein K3: Zeichen am Wort der H1
+Zweck: Genau ein Wort der H1 bekommt ein selbst gezeichnetes Zeichen aus dem Gewerk (Fuge, Gluehbirne, Zollstock), in der Markenfarbe, nie in der Signalfarbe.
+Herkunft: angeregt durch DUMBO, Platz 5, nyce, Platz 13, und Magier, Platz 11, German Web Award 2026 (BAUPLAN G10); eigene Zeichen, kein Material der Agenturen.
+In sich geschlossen: CSS und JS inline, keine externen Abrufe, Schrift nur Systemschrift. Farben ueber die Tokens oben im style-Block
+(dunkel Standard, hell ueber [data-theme=light], ohne gesetztes Thema nach prefers-color-scheme). In einer Website folgt der Baustein
+dem Thema der Seite. Die Werte der Tokens sind neutral; der Bau einer Website setzt sie aus MASK.md der Variante.
+API: Kein Skript: span.zw um das Wort, darin svg.zeichen (aria-hidden, currentColor) mit zeichen--unter oder zeichen--hinter. Groesse in em, waechst mit der Schrift.
+Verhalten bei prefers-reduced-motion: Das Zeichen steht und bewegt sich nie; unveraendert.
+URL-Parameter: ?theme=light oder ?theme=dark (nur Demo).
+Demo-Inhalt: Betrieb, Nummer 089 9999 8123, Zeiten und Texte sind erfunden und glaubhaft gewaehlt (R37), kein echter Kunde.
+Gestalt und Masse: Vorgaben von Web Gestaltung (ap3-bausteine/VORGABEN.md, Abschnitt zu G10).
+-->
+<script>
+(function(){var d=document.documentElement;var q=new URLSearchParams(location.search).get('theme');
+var t=(q==='light'||q==='dark')?q:(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');d.setAttribute('data-theme',t);
+document.addEventListener('DOMContentLoaded',function(){var b=document.querySelector('.sk-thema');if(!b)return;
+var s=function(){b.textContent=d.getAttribute('data-theme')==='light'?'Dunkel zeigen':'Hell zeigen';};s();
+b.addEventListener('click',function(){d.setAttribute('data-theme',d.getAttribute('data-theme')==='light'?'dark':'light');s();});});})();
+</script>
+<style>
+/* Tokenblock (Werte sind neutrale Platzhalter; der Bau setzt sie aus MASK.md der Variante) */
+:root {
+  color-scheme: dark;
+  --b-grund: #171614; --b-flaeche: #221F1C; --b-text: #F3F0EA; --b-leise: #B5AFA4;
+  --b-linie: #4A453F; --b-rand: #8C857A; --b-marke: #8EBBA2;
+  --b-signal: #F2934A; --b-auf-signal: #1C1209; --b-signal-hover: #F7A766; --b-signal-druck: #E5823A;
+  --b-fokus: #F3F0EA;
+  --b-radius-flaeche: 14px; --b-radius-knopf: 999px;
+  --b-knopf-hoehe: 48px; --b-knopf-hoehe-klein: 44px;
+  --b-schrift: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --b-dauer: 120ms;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --b-grund: #F7F5F0; --b-flaeche: #FFFFFF; --b-text: #1E1C19; --b-leise: #5C564E;
+  --b-linie: #CFC9BE; --b-rand: #7A7368; --b-marke: #2E6A4E;
+  --b-signal: #B4470F; --b-auf-signal: #FFFFFF; --b-signal-hover: #963A0A; --b-signal-druck: #7E3108;
+  --b-fokus: #1E1C19;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+  color-scheme: light;
+  --b-grund: #F7F5F0; --b-flaeche: #FFFFFF; --b-text: #1E1C19; --b-leise: #5C564E;
+  --b-linie: #CFC9BE; --b-rand: #7A7368; --b-marke: #2E6A4E;
+  --b-signal: #B4470F; --b-auf-signal: #FFFFFF; --b-signal-hover: #963A0A; --b-signal-druck: #7E3108;
+  --b-fokus: #1E1C19;
+  }
+}
+@media (prefers-reduced-motion: reduce) { :root { --b-dauer: 0ms; } }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--b-grund); color: var(--b-text);
+  font: 400 17px/1.55 var(--b-schrift); }
+.sk { max-width: 1120px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 48px); }
+.sk-kopf { display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  min-height: 76px; border-bottom: 1px solid var(--b-linie); }
+.sk-marke { font-weight: 650; letter-spacing: -0.01em; }
+.sk-h1 { font-size: clamp(30px, 3.4vw, 44px); line-height: 1.12; letter-spacing: -0.02em;
+  font-weight: 700; margin: 48px 0 12px; }
+.sk-lead { color: var(--b-leise); max-width: 62ch; margin: 0; }
+.sk-teil { margin-top: 56px; }
+.sk-teil > h2 { font-size: 22px; line-height: 1.3; font-weight: 650; letter-spacing: -0.01em; margin: 0 0 8px; }
+.sk-teil > p { color: var(--b-leise); margin: 0 0 20px; max-width: 62ch; }
+.buehne { background: var(--b-flaeche); border: 1px solid var(--b-linie); border-radius: var(--b-radius-flaeche);
+  padding: clamp(24px, 4vw, 48px); }
+.zustaende { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px 16px; }
+.zustand { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+.zustand > span:not(.knopf) { font-size: 16px; color: var(--b-leise); }
+.masse { width: 100%; border-collapse: collapse; font-size: 16px; }
+.masse th, .masse td { text-align: left; padding: 10px 12px 10px 0; border-top: 1px solid var(--b-linie); vertical-align: top; }
+.masse th { font-weight: 600; }
+.masse td:last-child { color: var(--b-leise); white-space: nowrap; }
+.sk-fuss { margin-top: 72px; padding-top: 24px; padding-bottom: 40px; border-top: 1px solid var(--b-linie); color: var(--b-leise); font-size: 16px; }
+@media (max-width: 600px) {
+  .zustaende { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .masse th, .masse td { display: block; padding: 0 0 4px; border-top: 0; }
+  .masse th { padding-top: 12px; border-top: 1px solid var(--b-linie); }
+  .masse td:last-child { white-space: normal; padding-bottom: 12px; }
+}
+@media (max-width: 420px) {
+  .zustaende { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Knoepfe: eine Gestalt fuer alle vier Bausteine */
+.knopf { display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: var(--b-knopf-hoehe); padding: 0 22px; border-radius: var(--b-radius-knopf);
+  font: 600 17px/1 var(--b-schrift); text-decoration: none; white-space: nowrap; cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: background-color var(--b-dauer) ease-out, color var(--b-dauer) ease-out, border-color var(--b-dauer) ease-out; }
+.knopf svg { width: 20px; height: 20px; flex: none; }
+.knopf--haupt { background: var(--b-signal); color: var(--b-auf-signal); }
+.knopf--haupt:hover, .knopf--haupt.ist-hover { background: var(--b-signal-hover); }
+.knopf--haupt:active, .knopf--haupt.ist-aktiv { background: var(--b-signal-druck); }
+.knopf--neben { background: transparent; color: var(--b-text); border-color: var(--b-rand); }
+.knopf--neben:hover, .knopf--neben.ist-hover { border-color: var(--b-text); background: var(--b-flaeche); }
+.knopf--neben:active, .knopf--neben.ist-aktiv { background: var(--b-linie); }
+.knopf:active, .knopf.ist-aktiv { transform: translateY(1px); }
+:focus-visible, .ist-fokus { outline: 2px solid var(--b-fokus); outline-offset: 3px; }
+:focus:not(:focus-visible) { outline: none; }
+@media (prefers-reduced-motion: reduce) { .knopf:active, .knopf.ist-aktiv { transform: none; } }
+.sk-thema { min-height: var(--b-knopf-hoehe-klein); padding: 0 18px; font-size: 16px; }
+.nr { font-variant-numeric: tabular-nums; }
+
+/* Baustein G10 */
+
+.zw { position: relative; display: inline-block; white-space: nowrap; color: inherit; }
+.zeichen { color: var(--b-marke); }
+.zeichen--unter { position: absolute; left: 0; width: 100%; bottom: 0.02em; height: 0.11em; display: block; }
+.zeichen--mass { height: 0.16em; bottom: -0.02em; }
+.zeichen--mass line { stroke: currentColor; stroke-width: max(2px, 0.035em); stroke-linecap: square; }
+.zeichen--hinter { display: inline-block; width: 0.42em; height: 0.56em; margin-left: 0.06em; vertical-align: 0.36em; }
+.gross { font-size: clamp(40px, 6.2vw, 84px); line-height: 1.1; letter-spacing: -0.025em; font-weight: 750; margin: 0; max-width: 16ch; text-wrap: balance; }
+.gewerk { margin: 0 0 16px; font-size: 16px; color: var(--b-leise); }
+.reihe-klein { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.klein { font-size: 26px; line-height: 1.2; letter-spacing: -0.015em; font-weight: 700; margin: 0; }
+.mit-zeichen { display: flex; flex-direction: column; gap: 12px; }
+.mit-zeichen p { margin: 0; color: var(--b-leise); font-size: 16px; }
+.beispiele { display: grid; gap: 24px; }
+@media (max-width: 860px) { .reihe-klein { grid-template-columns: 1fr; } }
+
+</style>
+</head>
+<body>
+<header class="sk sk-kopf">
+  <span class="sk-marke">K3 Baustein</span>
+  <button class="knopf knopf--neben sk-thema" type="button">Hell oder dunkel</button>
+</header>
+<main class="sk">
+
+<p class="sk-h1">Ein Zeichen am Wort der H1</p>
+<p class="sk-lead">Ein selbst gezeichnetes Zeichen aus dem Gewerk betont genau ein Wort der H1. Es steht in der Markenfarbe, nie in der Signalfarbe, und wächst mit der Schrift. Drei Beispiele; die erste Zeile ist die H1 dieser Seite.</p>
+<section class="sk-teil" aria-labelledby="h1">
+  <div class="beispiele">
+    <div class="buehne">
+      <p class="gewerk">Beispiel Fliesenleger, Zeichen: Fugenreihe unter dem Wort</p>
+      <h1 class="gross" id="h1">Fliesen, die <span class="zw">halten<svg class="zeichen zeichen--unter" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect x="0" y="0" width="18.4" height="10" fill="currentColor"/><rect x="20.4" y="0" width="18.4" height="10" fill="currentColor"/><rect x="40.8" y="0" width="18.4" height="10" fill="currentColor"/><rect x="61.2" y="0" width="18.4" height="10" fill="currentColor"/><rect x="81.6" y="0" width="18.4" height="10" fill="currentColor"/></svg></span>.</h1>
+    </div>
+    <div class="buehne">
+      <p class="gewerk">Beispiel Elektriker, Zeichen: Glühbirne hinter dem Wort</p>
+      <h2 class="gross">Mehr <span class="zw">Licht<svg class="zeichen zeichen--hinter" viewBox="0 0 24 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9.5a7 7 0 0 0-4.2 12.6c.9.7 1.4 1.6 1.4 2.6v.8h5.6v-.8c0-1 .5-1.9 1.4-2.6A7 7 0 0 0 12 9.5z"/><path d="M9.6 28.6h4.8"/><path d="M12 2.2v3"/><path d="M4.6 5.2l2 2.1"/><path d="M19.4 5.2l-2 2.1"/></svg></span> im Haus.</h2>
+    </div>
+    <div class="buehne">
+      <p class="gewerk">Beispiel Schreiner, Zeichen: Zollstock unter dem Wort</p>
+      <h2 class="gross">Möbel nach <span class="zw">Maß<svg class="zeichen zeichen--unter zeichen--mass" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="1" x2="100" y2="1" vector-effect="non-scaling-stroke"/><line x1="0.5" y1="1" x2="0.5" y2="10" vector-effect="non-scaling-stroke"/><line x1="10.4" y1="1" x2="10.4" y2="5.5" vector-effect="non-scaling-stroke"/><line x1="20.3" y1="1" x2="20.3" y2="5.5" vector-effect="non-scaling-stroke"/><line x1="30.2" y1="1" x2="30.2" y2="5.5" vector-effect="non-scaling-stroke"/><line x1="40.1" y1="1" x2="40.1" y2="5.5" vector-effect="non-scaling-stroke"/><line x1="50.0" y1="1" x2="50.0" y2="10" vector-effect="non-scaling-stroke"/><line x1="59.9" y1="1" x2="59.9" y2="5.5" vector-effect="non-scaling-stroke"/><line x1="69.8" y1="1" x2="69.8" y2="5.5" vector-effect="non-scaling-stroke"/><line x1="79.7" y1="1" x2="79.7" y2="5.5" vector-effect="non-scaling-stroke"/><line x1="89.6" y1="1" x2="89.6" y2="5.5" vector-effect="non-scaling-stroke"/><line x1="99.5" y1="1" x2="99.5" y2="10" vector-effect="non-scaling-stroke"/></svg></span>.</h2>
+    </div>
+  </div>
+</section>
+
+<section class="sk-teil" aria-labelledby="wd">
+  <h2 id="wd">Wiederholung weiter unten (R07)</h2>
+  <p>Dasselbe Zeichen erscheint mindestens zweimal kleiner an Abschnittstiteln (oben die Fuge an zwei Titeln), nie als Schmuck an jedem Titel.</p>
+  <div class="reihe-klein">
+    <div class="mit-zeichen"><h3 class="klein">Bad in <span class="zw">vier<svg class="zeichen zeichen--unter" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect x="0" y="0" width="18.4" height="10" fill="currentColor"/><rect x="20.4" y="0" width="18.4" height="10" fill="currentColor"/><rect x="40.8" y="0" width="18.4" height="10" fill="currentColor"/><rect x="61.2" y="0" width="18.4" height="10" fill="currentColor"/><rect x="81.6" y="0" width="18.4" height="10" fill="currentColor"/></svg></span> Wochen</h3><p>Fuge, 26 px Titel, wie die H1 dieser Seite</p></div>
+    <div class="mit-zeichen"><h3 class="klein">Fugen, die <span class="zw">dicht<svg class="zeichen zeichen--unter" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true" focusable="false"><rect x="0" y="0" width="18.4" height="10" fill="currentColor"/><rect x="20.4" y="0" width="18.4" height="10" fill="currentColor"/><rect x="40.8" y="0" width="18.4" height="10" fill="currentColor"/><rect x="61.2" y="0" width="18.4" height="10" fill="currentColor"/><rect x="81.6" y="0" width="18.4" height="10" fill="currentColor"/></svg></span> bleiben</h3><p>Fuge, 26 px Titel, zweiter Titel mit demselben Zeichen</p></div>
+    <div class="mit-zeichen"><h3 class="klein">Prüfung der <span class="zw">Leitung<svg class="zeichen zeichen--hinter" viewBox="0 0 24 32" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9.5a7 7 0 0 0-4.2 12.6c.9.7 1.4 1.6 1.4 2.6v.8h5.6v-.8c0-1 .5-1.9 1.4-2.6A7 7 0 0 0 12 9.5z"/><path d="M9.6 28.6h4.8"/><path d="M12 2.2v3"/><path d="M4.6 5.2l2 2.1"/><path d="M19.4 5.2l-2 2.1"/></svg></span></h3><p>Glühbirne, 26 px Titel, anderes Gewerk, nur zum Vergleich</p></div>
+    <div class="mit-zeichen"><h3 class="klein">Aufmaß vor <span class="zw">Ort<svg class="zeichen zeichen--unter zeichen--mass" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true" focusable="false"><line x1="0" y1="1" x2="100" y2="1" vector-effect="non-scaling-stroke"/><line x1="0.5" y1="1" x2="0.5" y2="10" vector-effect="non-scaling-stroke"/><line x1="10.4" y1="1" x2="10.4" y2="5.5" vector-effect="non-scaling-stroke"/><line x1="20.3" y1="1" x2="20.3" y2="5.5" vector-effect="non-scaling-stroke"/><line x1="30.2" y1="1" x2="30.2" y2="5.5" vector-effect="non-scaling-stroke"/><line x1="40.1" y1="1" x2="40.1" y2="5.5" vector-effect="non-scaling-stroke"/><line x1="50.0" y1="1" x2="50.0" y2="10" vector-effect="non-scaling-stroke"/><line x1="59.9" y1="1" x2="59.9" y2="5.5" vector-effect="non-scaling-stroke"/><line x1="69.8" y1="1" x2="69.8" y2="5.5" vector-effect="non-scaling-stroke"/><line x1="79.7" y1="1" x2="79.7" y2="5.5" vector-effect="non-scaling-stroke"/><line x1="89.6" y1="1" x2="89.6" y2="5.5" vector-effect="non-scaling-stroke"/><line x1="99.5" y1="1" x2="99.5" y2="10" vector-effect="non-scaling-stroke"/></svg></span></h3><p>Zollstock, 26 px Titel, anderes Gewerk, nur zum Vergleich</p></div>
+  </div>
+</section>
+
+</main>
+<footer class="sk sk-fuss">K3 Zeichen am Wort der H1. Kunden-Baustein des Arsenals; alle Angaben in der Demo sind erfunden.</footer>
+</body>
+</html>
