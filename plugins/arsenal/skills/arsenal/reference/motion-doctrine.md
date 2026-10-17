@@ -4,6 +4,13 @@ This file answers whether motion belongs on a page at all, and if it does, which
 
 All claims trace to a checked research pass (2026-09-08). Citations below are inline and brief; consult the research file for full source URLs. A point marked unverified carries no rule weight and must not be treated as settled.
 
+## 0. Must-haves (Moritz, 2026-10-18)
+
+Two rules apply to every animation, on websites, in apps and in navigation, before anything else in this file:
+
+1. **Easing, never linear.** Elements that move, scale or fade in a UI never use `linear` timing (exceptions: progress that maps to real time or scroll position, continuous loops like a spinner or marquee). Entrances decelerate (ease-out), exits accelerate (ease-in), moves on screen use ease-in-out; the curves come from section 3.
+2. **Spatial consistency (origin and home).** Every element has a place it lives in, and motion shows it. What opens from a control grows out of that control and shrinks back into it (`transform-origin` at the trigger, or a shared-element/view transition); a panel that lives at the top slides in from the top and leaves the same way; a dialog opened from a card expands from the card. Open and close are mirror images of each other. Reference: iOS volume indicator next to the hardware button, app launch zooming out of its icon, Control Center pulled down from the top, Dynamic Island expanding and collapsing. Check question: could a user tell from the motion alone where the element lives and how to get it back or away?
+
 ## 1. The twelve principles, honestly sorted
 
 Frank Thomas and Ollie Johnston set out twelve principles of animation for hand-drawn Disney characters on a cinema screen (*The Illusion of Life*, Disney Editions, 1981): Squash and Stretch, Anticipation, Staging, Straight Ahead Action and Pose to Pose, Follow Through and Overlapping Action, Slow In and Slow Out, Arcs, Secondary Action, Timing, Exaggeration, Solid Drawing, Appeal. They were built for drawn characters, not for surfaces that acknowledge user input, and they do not transfer evenly.
@@ -117,6 +124,8 @@ stand, animations almost all gone. Limits: R23 on <studio> sites.
 
 Verifiable against a finished page, not a spec document:
 
+- [ ] No UI element moves on a `linear` curve (section 0, rule 1).
+- [ ] Every opening element comes out of its trigger or its home edge and returns there on close (section 0, rule 2).
 - [ ] Every animation on the page can name which of the four functions (orientation, spatial relationship, feedback, attention) it serves.
 - [ ] For each one: is the page measurably harder to understand without it, or was it added to fill a moment that felt unfinished?
 - [ ] No animation blocks input; every animation stays interruptible.
