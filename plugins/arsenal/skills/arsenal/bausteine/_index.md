@@ -1,75 +1,118 @@
-# Bausteine
+# Bausteine (mitgelieferte Vorlagen)
 
-Fertige, wiederverwendbare Bausteine. Zuerst hier nachsehen, bevor ein Effekt neu gebaut wird.
+Status: **ungeprüft**. Art, Unterart, `braucht` und Größe sind aus Kopfkommentar und Code abgeleitet (18.10.2026), nicht im Browser geprüft.
 
-- Jede Datei ist in sich geschlossen: CSS und JS inline, keine externen Abrufe, keine Abhaengigkeit von anderen Dateien (Ausnahme: F2 und F3 lesen kleine Medien aus `plasmind/medien/`).
-- Farben ueber CSS-Variablen im Tokenblock oben in der Datei, dunkel (Standard) und hell (`[data-theme=light]`, in der Demo auch `?theme=light`).
-- Schrift: Martian Mono ist nicht eingebettet; die Schrift faellt auf `ui-monospace` zurueck. Fuer die Originalschrift Martian Mono (OFL) selbst einbinden.
-- H- und E-Dateien: `PMEL.<Kennung>.init(el,{theme})` liefert ein Handle mit `setTheme(t)` und `destroy()`; `el` braucht `position:relative` und eine Hoehe. Pausiert ausserhalb des Bildschirms, Standbild bei `prefers-reduced-motion`. Details im Kopfkommentar jeder Datei.
-- Bilder: `plasmind/bilder/`, Quellen und Lizenz in `plasmind/bilder/QUELLEN.md` (eigenes Werk von <studio>).
-- Herkunft aller Bausteine ausser den Kunden-Bausteinen K1 bis K4: plasmind Elementeschau 2026-10-03. Die Kunden-Bausteine (Ordner `kunden/`) sind eigene Gestalt, jeweils mit der Anregung in der Spalte Herkunft. Markierung "Gewaehlt" = vom Nutzer ausdruecklich ausgesucht.
+Die Heimat aller Bausteine ist die Galerie im Zustandsordner (`library/galerie/`, Index `library/galerie/_index.md`; Arten und Unterarten wie dort und in `library/galerie/_ordnung.json`). Hier liegen nur zwei Sätze als Vorlagen: der **plasmind-Satz** (Kennungen H, E, F, B; Hausmarke plasmind, aus der Elementeschau vom 03.10.2026) und die **Kunden-Bausteine** K1 bis K4 (eigene Gestalt, angeregt durch Seiten der German Web Awards 2026, BAUPLAN G5 bis G11 in `<dein-ordner>`). Die Planung wählt per `wofür` und `braucht`; die Gestalt kommt aus dem MASK (PR15).
 
-Pfade relativ zu `arsenal/bausteine/`.
+- Jede Datei ist in sich geschlossen: CSS und JS inline, keine fremden Abrufe, keine Abhängigkeiten (Ausnahme: F2 und F3 lesen kleine Medien aus `plasmind/medien/`, K2 aus `kunden/medien/`). Schrift fällt auf Systemschrift zurück; Martian Mono (OFL) bei Bedarf selbst einbinden.
+- Beim Einbau ins Projekt: CSS und JS in eigene Dateien (S10), Kurven und Dauern aus dem Satz des Projekts (BE04), die Gestalt aus dem MASK.
+- Thema: dunkel als Standard, hell über `[data-theme=light]` (Demo: `?theme=light`); im Projekt gilt das Thema-Skript nach TE08. H- und E-Dateien pausieren außerhalb des Bildes und zeigen bei reduzierter Bewegung ein Standbild.
+- Vorschau: `<ordner>/vorschau/<Kennung>.webp` (F1 bis F12: `.png`). Bildquellen: `plasmind/bilder/QUELLEN.md` (eigenes Werk).
+- ★ = von <dein-name> ausgewählt. `braucht` = niedrigste passende Reglerstufe (Vorschlag).
+- Zeiger-Effekte: Flächen, die auf den Zeiger reagieren (H2, H6, H8, H11), und Tooltips mit Information (E5) sind erlaubt. Schmuck, der als Form oder Spur am Zeiger hängt (E15, H1, H3, H4, H12), ist ein eigener Zeiger und darum nur Muster (S20).
+- `ux`/`vorfuehrung` (F1, F3, F6 bis F12) gibt es in der Galerie noch nicht; Vorschlag an die Bauleitung.
 
-| Kennung | Name | Art | Ein Satz | Datei | Vorschau | Herkunft | Gewaehlt |
+## UI-Elemente (`ui`)
+
+| Kennung | Unterart | Name | wofür | Parameter | KB | braucht | Datei |
 |---|---|---|---|---|---|---|---|
-| H1 | Blobs follow the pointer | Hintergrund | Soft cells trail the pointer with different lag and stretch along their motion. | `plasmind/H1-blobs-follow-the-pointer.html` | `plasmind/vorschau/H1.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| H2 | Blobs dodge the pointer | Hintergrund | Cells keep their place and slide out of the way when the pointer comes close. | `plasmind/H2-blobs-dodge-the-pointer.html` | `plasmind/vorschau/H2.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| H3 | Metaball fusion | Hintergrund | Cells merge into one body when they touch and pull apart again, the pointer is one of them. | `plasmind/H3-metaball-fusion.html` | `plasmind/vorschau/H3.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| H4 | Inversion surface | Hintergrund | A blob at the pointer flips every colour beneath it, the field underneath stays readable. | `plasmind/H4-inversion-surface.html` | `plasmind/vorschau/H4.webp` | plasmind Elementeschau 2026-10-03 | ja |
-| H5 | Cell division on click | Hintergrund | Click a cell and it splits in two through a narrowing neck. Click empty space to seed a new one. | `plasmind/H5-cell-division-on-click.html` | `plasmind/vorschau/H5.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| H6 | Soft noise | Hintergrund | Slow cloud noise in the palette tones with a fine grain, the pointer pushes it aside. | `plasmind/H6-soft-noise.html` | `plasmind/vorschau/H6.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| H7 | Depth parallax | Hintergrund | Blobs sit in five layers and shift at different speeds while the page scrolls. | `plasmind/H7-depth-parallax.html` | `plasmind/vorschau/H7.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| H8 | 3D blob with light | Hintergrund | A raymarched, deformed sphere with key light and rim, it looks at the pointer and follows it with a damped turn. | `plasmind/H8-3d-blob-with-light.html` | `plasmind/vorschau/H8.webp` | plasmind Elementeschau 2026-10-03 | ja |
-| H9 | CSS 3D blob | Hintergrund | A wire globe of rings in CSS 3D with a lit core, a light alternative that needs no WebGL. | `plasmind/H9-css-3d-blob.html` | `plasmind/vorschau/H9.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| H10 | Colony with threads | Hintergrund | Agents drift as small cells, threads link neighbours and signals run along them. | `plasmind/H10-colony-with-threads.html` | `plasmind/vorschau/H10.webp` | plasmind Elementeschau 2026-10-03 | ja |
-| H11 | Contour lines | Hintergrund | Height lines of a moving field, the pointer raises a hill that the lines wrap around. | `plasmind/H11-contour-lines.html` | `plasmind/vorschau/H11.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| H12 | Cell trail | Hintergrund | The pointer drops small cells that swell, merge into a strand and fade out. | `plasmind/H12-cell-trail.html` | `plasmind/vorschau/H12.webp` | plasmind Elementeschau 2026-10-03 | ja |
-| H13 | Built: CSS 3D to WebGL | Hintergrund | Scroll section with four steps: Design, Agents, Core, Window. The wire globe contracts and the real blob grows out of it. Scroll back and it runs in reverse. Follows the page theme. | `plasmind/H13-built-css-3d-to-webgl.html` | `plasmind/vorschau/H13.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| E1 | Buttons with cell edge | Element | Primary, secondary and quiet buttons whose outline wobbles like a cell on hover and squashes on press. | `plasmind/E1-buttons-with-cell-edge.html` | `plasmind/vorschau/E1.webp` | plasmind Elementeschau 2026-10-03 | ja |
-| E2 | Card with cell outline | Element | The border of the card is a slow living curve that stirs when the pointer is over it. | `plasmind/E2-card-with-cell-outline.html` | `plasmind/vorschau/E2.webp` | plasmind Elementeschau 2026-10-03 | ja |
-| E3 | Scrollbar W1b | Element | A thin wobbling cell as thumb, bigger on hover, wider and alive while dragging. | `plasmind/E3-scrollbar-w1b.html` | `plasmind/vorschau/E3.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| E4 | Text selection W2d2 | Element | Selected text gets a glow trail with a soft, clearly visible edge at both ends. | `plasmind/E4-text-selection-w2d2.html` | `plasmind/vorschau/E4.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| E5 | Tooltip W4d | Element | The tooltip follows the pointer sideways, shows label and value in mono, and also appears on keyboard focus. | `plasmind/E5-tooltip-w4d.html` | `plasmind/vorschau/E5.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| E6 | Notification W5b | Element | Notices slide in from the right with a small cell that pops. Important ones stay as an inverted surface. | `plasmind/E6-notification-w5b.html` | `plasmind/vorschau/E6.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| E7 | Sleeping cell W6c | Element | The empty state: a cell with closed eyes that barely breathes, plus one sentence on what wakes it. | `plasmind/E7-sleeping-cell-w6c.html` | `plasmind/vorschau/E7.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| E8 | Drag preview W7b/c/d | Element | Placeholder and tilt at the origin, ghost trail on the dragged item, insertion mark at the target. | `plasmind/E8-drag-preview-w7b-c-d.html` | `plasmind/vorschau/E8.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| E9 | Window buttons W8b2 | Element | Three small cells in the title bar. The sign shows on hover or focus, minimise is two arrows to the middle. | `plasmind/E9-window-buttons-w8b2.html` | `plasmind/vorschau/E9.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| E10 | Taskbar liquid W10a | Element | The app cell fills from below with progress, the surface waves slowly, the eyes stay on top. | `plasmind/E10-taskbar-liquid-w10a.html` | `plasmind/vorschau/E10.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| E11 | Tones W11d | Element | Three short triangle tones through a low-pass, like a meter: click, confirm, notice. Started only on a press. | `plasmind/E11-tones-w11d.html` | `plasmind/vorschau/E11.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| E12 | Loader LF3 | Element | The lively loading sign: two cells that pull apart and rejoin. | `plasmind/E12-loader-lf3.html` | `plasmind/vorschau/E12.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| E13 | Loader LK2 | Element | The medium loading ring: a cell on a circle splits and rejoins as it orbits. | `plasmind/E13-loader-lk2.html` | `plasmind/vorschau/E13.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| E14 | Wave bar | Element | A progress bar as one calm body with a wave running through its thickness, no parts leave the front. | `plasmind/E14-wave-bar.html` | `plasmind/vorschau/E14.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| E15 | Cursor CU1 | Element | The calm, tight blob cursor as an option: it follows, squashes on click and fuses with cells. | `plasmind/E15-cursor-cu1.html` | `plasmind/vorschau/E15.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| E16 | Counting numbers | Element | Figures count up once they come into view, with a replay. Under reduced motion they show the end value at once. Checked 2026-10-14: the script builds the figures at runtime, the end value is not in the HTML. *[award 2026, proposal]* On <studio> sites use only with the end value in the HTML (R08, R35). | `plasmind/E16-counting-numbers.html` | `plasmind/vorschau/E16.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| E17 | Quote box | Element | A quote set in a box with a cell corner, for a rule of the product or a user remark. | `plasmind/E17-quote-box.html` | `plasmind/vorschau/E17.webp` | plasmind Elementeschau 2026-10-03 | ja |
-| E18 | Comparison table | Element | Two plans side by side, the recommended column on an inverted surface, readable as a stack on a phone. | `plasmind/E18-comparison-table.html` | `plasmind/vorschau/E18.webp` | plasmind Elementeschau 2026-10-03 | ja |
-| E19 | Footer with cell pattern | Element | A footer whose background is a grid of small cells that swell and wobble near the pointer. | `plasmind/E19-footer-with-cell-pattern.html` | `plasmind/vorschau/E19.webp` | plasmind Elementeschau 2026-10-03 | ja |
-| E20 | Section transitions | Element | Three ways to change section, played as a preview: morph, wipe, split. | `plasmind/E20-section-transitions.html` | `plasmind/vorschau/E20.webp` | plasmind Elementeschau 2026-10-03 | ja |
-| E21 | Theme switch | Element | The dark and light switch: a cell slides across the track and flattens as it moves. Previews both themes. | `plasmind/E21-theme-switch.html` | `plasmind/vorschau/E21.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| E22 | Budget ring | Element | A progress ring for the spent share of a budget. The head is a small cell and the state is also written out. | `plasmind/E22-budget-ring.html` | `plasmind/vorschau/E22.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| F1 | Mini-Overseer | Feature-Demo | Ein Overseer-Blob zerlegt einen getippten Auftrag in Briefings fuer Agenten, einer wartet auf ein Ja. | `plasmind/F1-mini-overseer.html` | `plasmind/vorschau/F1.png` | plasmind Elementeschau 2026-10-03 | nein |
-| F2 | Video bei Hover | Feature-Demo | Standbild der Blob-Ansicht, das bei Hover oder Fokus als stummes Video laeuft (Bildfolge als Rueckfall). | `plasmind/F2-video-hover.html` | `plasmind/vorschau/F2.png` | plasmind Elementeschau 2026-10-03 | nein |
-| F3 | Schritte auf Bildschirmfotos | Feature-Demo | Vier Schritte fuehren mit Hervorhebung, Zoom und Lupe ueber Fotos eines App-Fensters. | `plasmind/F3-screenshot-steps.html` | `plasmind/vorschau/F3.png` | plasmind Elementeschau 2026-10-03 | nein |
-| F4 | Vorher/nachher | Feature-Demo | Ein Regler blendet zwischen zwei Zustaenden eines Briefings ueber. | `plasmind/F4-compare-slider.html` | `plasmind/vorschau/F4.png` | plasmind Elementeschau 2026-10-03 | nein |
-| F5 | Zahlentafel | Feature-Demo | Vier Kacheln mit zaehlenden Beispielzahlen und Verlaufslinien. | `plasmind/F5-live-board.html` | `plasmind/vorschau/F5.png` | plasmind Elementeschau 2026-10-03 | nein |
-| F6 | Freigabe-Probe | Feature-Demo | Zeigt, dass der Agent vor jedem Senden neu um ein einmaliges Ja bittet. | `plasmind/F6-approval-rehearsal.html` | `plasmind/vorschau/F6.png` | plasmind Elementeschau 2026-10-03 | nein |
-| F7 | Ablaufprotokoll | Feature-Demo | Ein Beispiel-Lauf wird Zeile fuer Zeile abgespielt, drei Pruefpunkte leuchten auf. | `plasmind/F7-run-log.html` | `plasmind/vorschau/F7.png` | plasmind Elementeschau 2026-10-03 | nein |
-| F8 | Agentenkarte mit Budget | Feature-Demo | Ein Regler fuellt den Budgetring, bei 80 % Warnung, bei 100 % Stopp. | `plasmind/F8-budget-card.html` | `plasmind/vorschau/F8.png` | plasmind Elementeschau 2026-10-03 | nein |
-| F9 | Dateiraster | Feature-Demo | Pakete werden Dateien zugewiesen, jede Datei gehoert genau einem Paket. | `plasmind/F9-file-grid.html` | `plasmind/vorschau/F9.png` | plasmind Elementeschau 2026-10-03 | nein |
-| F10 | Schlafender Resident | Feature-Demo | Ein schlafender Agent wacht fuer eine kleine Aufgabe auf und schlaeft wieder ein. | `plasmind/F10-sleeping-resident.html` | `plasmind/vorschau/F10.png` | plasmind Elementeschau 2026-10-03 | nein |
-| F11 | Maskierung | Feature-Demo | Zeigt live, was ein Modell statt eines getippten Schluessels oder Passworts sieht. | `plasmind/F11-key-masking.html` | `plasmind/vorschau/F11.png` | plasmind Elementeschau 2026-10-03 | nein |
-| F12 | Begleiter | Feature-Demo | Ein ziehbarer Blob rastet an einem Rand des Beispielfensters ein und zeigt Meldungen. | `plasmind/F12-companion.html` | `plasmind/vorschau/F12.png` | plasmind Elementeschau 2026-10-03 | nein |
-| B1 | Hero mit Logo W12 | Bild | Logo W12 (gestapelt) auf einem Feld aus weichen Zellen. SVG und PNG, dunkel und hell. | `plasmind/bilder/B1-dark.svg (+ -light, .png)` | `plasmind/vorschau/B1.webp` | plasmind Elementeschau 2026-10-03 | ja |
-| B1a | Hero with logo, alive | Bild (animiert) | Logo W12 on the light surface. The blob breathes, the eyes follow the pointer a little, the line appears row by row, and the first click splits the blob in two and joins it again. | `plasmind/B1a-hero-with-logo-alive.html` | `plasmind/vorschau/B1a.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| B2 | Colony field | Bild | 34 Zellen mit Augen, Faeden zu Nachbarn, Signalpunkte. SVG und PNG, dunkel und hell. | `plasmind/bilder/B2-dark.svg (+ -light, .png)` | `plasmind/vorschau/B2.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| B3 | Growth rings | Bild | Wachstumsringe aus ineinanderliegenden Zellkonturen. SVG und PNG, dunkel und hell. | `plasmind/bilder/B3-dark.svg (+ -light, .png)` | `plasmind/vorschau/B3.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| B4 | Cell pattern | Bild | Wabenraster aus kleinen Zellen fuer Fusszeilen und Flaechen. SVG und PNG, dunkel und hell. | `plasmind/bilder/B4-dark.svg (+ -light, .png)` | `plasmind/vorschau/B4.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| B5 | Rendered blob | Bild | Glaenzender Blob mit Augen, Verlaeufe fuer Licht, Randlicht, Glanz, Schatten. SVG und PNG, dunkel und hell. | `plasmind/bilder/B5-dark.svg (+ -light, .png)` | `plasmind/vorschau/B5.webp` | plasmind Elementeschau 2026-10-03 | ja |
-| B6 | Inversion plane | Bild | Dieselbe Szene zweimal, zweite mit vertauschten Farben, mit drei Blobformen beschnitten. SVG und PNG, dunkel und hell. | `plasmind/bilder/B6-dark.svg (+ -light, .png)` | `plasmind/vorschau/B6.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| B7 | Division strip | Bild | Fuenf Phasen einer Zellteilung ueber einen schmaler werdenden Hals. SVG und PNG, dunkel und hell. | `plasmind/bilder/B7-dark.svg (+ -light, .png)` | `plasmind/vorschau/B7.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| B8 | Metaball merge | Bild | Verschmelzende Zellen per SVG-Filter (Weichzeichnen plus Schwellwert). SVG und PNG, dunkel und hell. | `plasmind/bilder/B8-dark.svg (+ -light, .png)` | `plasmind/vorschau/B8.webp` | plasmind Elementeschau 2026-10-03 | nein |
-| K1 | Telefonnummer als Knopf mit Telefonzeiten | Element | Die Nummer selbst ist die Beschriftung eines tel:-Knopfs, die Telefonzeiten stehen direkt darunter; Haupt- oder Nebenknopf. | `kunden/K1-telefonnummer-als-knopf.html` | `kunden/vorschau/K1.webp` | angeregt durch Exportarts, Platz 8, und Tricks, Platz 6, German Web Award 2026 (BAUPLAN G5) | nein |
-| K2 | Pause-Knopf mit Dauer am Video | Element | Stummer Film als Schleife, links unten Pause und Ganzer Film mit der Dauer aus der Datei; bei reduzierter Bewegung steht das Standbild. | `kunden/K2-pause-knopf-am-video.html` | `kunden/vorschau/K2.webp` | angeregt durch Tricks, Platz 6, German Web Award 2026 (BAUPLAN G8) | nein |
-| K3 | Zeichen am Wort der H1 | Element | Ein selbst gezeichnetes Gewerk-Zeichen (Fuge, Glühbirne, Zollstock) an genau einem Wort der H1, in der Markenfarbe. | `kunden/K3-zeichen-am-wort.html` | `kunden/vorschau/K3.webp` | angeregt durch DUMBO, Platz 5, nyce, Platz 13, und Magier, Platz 11, German Web Award 2026 (BAUPLAN G10) | nein |
-| K4 | Feste Handlungsleiste unten mobil | Element | Unter 768 px eine feste Zeile mit Anrufen und Hauptaktion, weicht der Bildschirmtastatur. | `kunden/K4-handlungsleiste-mobil.html` | `kunden/vorschau/K4.webp` | angeregt durch BOLD, Platz 14, German Web Award 2026 (BAUPLAN G11) | nein |
+| E21 | `formular` | Theme switch | Hell-Dunkel-Schalter: Eine Zelle gleitet über die Bahn und flacht dabei ab; zeigt beide Themen. | `PMEL.E21.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 15.2 | bewegung 1, inseln | `plasmind/E21-theme-switch.html` |
+| E2 | `karte` | Card with cell outline ★ | Der Rand der Karte ist eine langsam lebende Kurve, die sich unter dem Zeiger regt. | `PMEL.E2.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 15.1 | bewegung 2, inseln | `plasmind/E2-card-with-cell-outline.html` |
+| E17 | `karte` | Quote box ★ | Zitat in einem Kasten mit Zellenecke, für eine Regel des Produkts oder eine Stimme. | `PMEL.E17.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 14.5 | bewegung 1, inseln | `plasmind/E17-quote-box.html` |
+| E18 | `karte` | Comparison table ★ | Zwei Pakete nebeneinander, die empfohlene Spalte auf umgekehrter Fläche; am Telefon als Stapel lesbar. | `PMEL.E18.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 15.1 | bewegung 1, inseln | `plasmind/E18-comparison-table.html` |
+| F4 | `karussell` | Vorher/nachher | Ein Regler blendet zwischen zwei Zuständen eines Briefings über. | Demo, Thema über `data-theme` | 13.5 | bewegung 1, statisch | `plasmind/F4-compare-slider.html` |
+| K1 | `knopf` | Telefonnummer als Knopf mit Telefonzeiten | Die Nummer selbst ist die Beschriftung eines tel:-Knopfs, die Telefonzeiten stehen direkt darunter; Haupt- oder Nebenknopf. | Kein Skript: echter Link `a[href^="tel:"]` mit Klasse `knopf--haupt` oder `knopf--neben`, darunter `p.tel-zeiten`. Der zugängliche Name enthält die sichtbare Nummer. | 14.7 | bewegung 0, statisch | `kunden/K1-telefonnummer-als-knopf.html` |
+| E1 | `knopf` | Buttons with cell edge ★ | Haupt-, Neben- und stille Knöpfe; die Kontur wabert bei Hover wie eine Zelle und staucht beim Druck. | `PMEL.E1.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 15.0 | bewegung 1, inseln | `plasmind/E1-buttons-with-cell-edge.html` |
+| E9 | `knopf` | Window buttons W8b2 | Drei kleine Zellen in der Titelleiste; das Zeichen erscheint bei Hover oder Fokus, Minimieren sind zwei Pfeile zur Mitte. | `PMEL.E9.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 16.5 | bewegung 1, inseln | `plasmind/E9-window-buttons-w8b2.html` |
+| K4 | `navigation` | Feste Handlungsleiste unten mobil | Unter 768 px eine feste Zeile mit Anrufen und Hauptaktion, weicht der Bildschirmtastatur. | `aside.leiste` am Ende von `body` mit zwei Knöpfen. Das Skript blendet sie nur aus, solange ein Eingabefeld den Fokus hat und die Bildschirmtastatur offen ist (`visualViewport` unter 75 % der Fensterhöhe). Über 767 px Breite und unter 400 px Fensterhöhe unsichtbar. | 16.6 | bewegung 0, statisch | `kunden/K4-handlungsleiste-mobil.html` |
+| E3 | `navigation` | Scrollbar W1b | Scrollbalken: dünne wabernde Zelle als Griff, größer bei Hover, breiter und lebendig beim Ziehen. | `PMEL.E3.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 16.4 | bewegung 1, inseln | `plasmind/E3-scrollbar-w1b.html` |
+
+## UX-Muster (`ux`)
+
+| Kennung | Unterart | Name | wofür | Parameter | KB | braucht | Datei |
+|---|---|---|---|---|---|---|---|
+| E6 | `bestaetigen` | Notification W5b | Meldungen gleiten von rechts mit einer kleinen Zelle herein; wichtige bleiben als umgekehrte Fläche stehen. | `PMEL.E6.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 16.1 | bewegung 1, inseln | `plasmind/E6-notification-w5b.html` |
+| E7 | `laden` | Sleeping cell W6c | Leerzustand: eine Zelle mit geschlossenen Augen, die kaum atmet, dazu ein Satz, was sie weckt. | `PMEL.E7.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 15.3 | bewegung 1, inseln | `plasmind/E7-sleeping-cell-w6c.html` |
+| E10 | `laden` | Taskbar liquid W10a | Die App-Zelle füllt sich von unten mit dem Fortschritt, die Oberfläche wellt sich langsam, die Augen bleiben oben. | `PMEL.E10.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 16.0 | bewegung 1, inseln | `plasmind/E10-taskbar-liquid-w10a.html` |
+| E12 | `laden` | Loader LF3 | Lebendiges Ladezeichen: zwei Zellen ziehen sich auseinander und finden wieder zusammen. | `PMEL.E12.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 25.9 | bewegung 1, inseln | `plasmind/E12-loader-lf3.html` |
+| E13 | `laden` | Loader LK2 | Mittlerer Ladering: Eine Zelle auf einem Kreis teilt sich und findet im Umlauf wieder zusammen. | `PMEL.E13.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 25.9 | bewegung 1, inseln | `plasmind/E13-loader-lk2.html` |
+| E14 | `laden` | Wave bar | Fortschrittsbalken als ein ruhiger Körper, eine Welle läuft durch seine Dicke, nichts löst sich von der Front. | `PMEL.E14.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 26.4 | bewegung 1, inseln | `plasmind/E14-wave-bar.html` |
+| E22 | `laden` | Budget ring | Fortschrittsring für den verbrauchten Teil eines Budgets; der Kopf ist eine kleine Zelle, der Stand steht auch als Text. | `PMEL.E22.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 15.7 | bewegung 1, inseln | `plasmind/E22-budget-ring.html` |
+| F1 | `vorfuehrung` | Mini-Overseer | Ein Overseer-Blob zerlegt einen getippten Auftrag in Briefings für Agenten; einer wartet auf ein Ja. | Demo, Thema über `data-theme` | 18.7 | bewegung 1, statisch | `plasmind/F1-mini-overseer.html` |
+| F3 | `vorfuehrung` | Schritte auf Bildschirmfotos | Vier Schritte führen mit Hervorhebung, Zoom und Lupe über Fotos eines App-Fensters. | Demo, Thema über `data-theme` | 17.5 | bewegung 1, statisch | `plasmind/F3-screenshot-steps.html` |
+| F6 | `vorfuehrung` | Freigabe-Probe | Zeigt, dass der Agent vor jedem Senden neu um ein einmaliges Ja bittet. | Demo, Thema über `data-theme` | 12.0 | bewegung 1, statisch | `plasmind/F6-approval-rehearsal.html` |
+| F7 | `vorfuehrung` | Ablaufprotokoll | Ein Beispiel-Lauf wird Zeile für Zeile abgespielt, drei Prüfpunkte leuchten auf. | Demo, Thema über `data-theme` | 13.2 | bewegung 1, statisch | `plasmind/F7-run-log.html` |
+| F8 | `vorfuehrung` | Agentenkarte mit Budget | Ein Regler füllt den Budgetring, bei 80 % Warnung, bei 100 % Stopp. | Demo, Thema über `data-theme` | 16.7 | bewegung 1, statisch | `plasmind/F8-budget-card.html` |
+| F9 | `vorfuehrung` | Dateiraster | Pakete werden Dateien zugewiesen, jede Datei gehört genau einem Paket. | Demo, Thema über `data-theme` | 15.8 | bewegung 1, statisch | `plasmind/F9-file-grid.html` |
+| F10 | `vorfuehrung` | Schlafender Resident | Ein schlafender Agent wacht für eine kleine Aufgabe auf und schläft wieder ein. | Demo, Thema über `data-theme` | 16.8 | bewegung 1, statisch | `plasmind/F10-sleeping-resident.html` |
+| F11 | `vorfuehrung` | Maskierung | Zeigt live, was ein Modell statt eines getippten Schlüssels oder Passworts sieht. | Demo, Thema über `data-theme` | 10.5 | bewegung 1, statisch | `plasmind/F11-key-masking.html` |
+| F12 | `vorfuehrung` | Begleiter | Ein ziehbarer Blob rastet an einem Rand des Beispielfensters ein und zeigt Meldungen. | Demo, Thema über `data-theme` | 19.7 | bewegung 1, inseln | `plasmind/F12-companion.html` |
+
+## Layouts (`layout`)
+
+| Kennung | Unterart | Name | wofür | Parameter | KB | braucht | Datei |
+|---|---|---|---|---|---|---|---|
+| E19 | `seite` | Footer with cell pattern ★ | Fuß mit einem Raster kleiner Zellen, die nahe dem Zeiger anschwellen und wabern. | `PMEL.E19.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 15.1 | bewegung 2, inseln | `plasmind/E19-footer-with-cell-pattern.html` |
+
+## Animationsarten (`animation`)
+
+| Kennung | Unterart | Name | wofür | Parameter | KB | braucht | Datei |
+|---|---|---|---|---|---|---|---|
+| H10 | `bahn` | Colony with threads ★ | Agenten treiben als kleine Zellen, Fäden verbinden Nachbarn, Signale laufen darauf. | `PMEL.H10.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 16.3 | bewegung 2, inseln | `plasmind/H10-colony-with-threads.html` |
+| H7 | `scroll` | Depth parallax | Blobs in fünf Ebenen verschieben sich beim Scrollen verschieden schnell. | `PMEL.H7.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 14.6 | bewegung 3, inseln | `plasmind/H7-depth-parallax.html` |
+| H13 | `scroll` | Built: CSS 3D to WebGL | Scroll-Abschnitt mit vier Schritten (Design, Agenten, Kern, Fenster): Die Drahtkugel zieht sich zusammen, der echte Blob wächst heraus; rückwärts läuft es umgekehrt. Folgt dem Seitenthema. | `PMEL.H13.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 34.0 | bewegung 3, webgl | `plasmind/H13-built-css-3d-to-webgl.html` |
+| E8 | `uebergang` | Drag preview W7b/c/d | Ziehen: Platzhalter und Neigung am Ursprung, Geisterspur am gezogenen Teil, Einfügemarke am Ziel. | `PMEL.E8.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 17.9 | bewegung 1, inseln | `plasmind/E8-drag-preview-w7b-c-d.html` |
+| E20 | `uebergang` | Section transitions ★ | Drei Arten des Abschnittswechsels als Vorschau: Verwandlung, Wischen, Teilen. | `PMEL.E20.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 16.6 | bewegung 2, inseln | `plasmind/E20-section-transitions.html` |
+
+## Effekte (`effekt`)
+
+| Kennung | Unterart | Name | wofür | Parameter | KB | braucht | Datei |
+|---|---|---|---|---|---|---|---|
+| H1 | `hover` | Blobs follow the pointer | Weiche Zellen folgen dem Zeiger mit verschiedener Verzögerung und strecken sich in Bewegungsrichtung. **Nur als Muster in der Bibliothek; auf Seiten kein eigener Zeiger (S20).** | `PMEL.H1.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 14.4 | bewegung 2, inseln | `plasmind/H1-blobs-follow-the-pointer.html` |
+| H2 | `hover` | Blobs dodge the pointer | Zellen bleiben an ihrem Platz und weichen aus, wenn der Zeiger nahe kommt. | `PMEL.H2.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 14.8 | bewegung 2, inseln | `plasmind/H2-blobs-dodge-the-pointer.html` |
+| H3 | `hover` | Metaball fusion | Zellen verschmelzen bei Berührung zu einem Körper und lösen sich wieder; der Zeiger ist eine von ihnen. **Nur als Muster in der Bibliothek; auf Seiten kein eigener Zeiger (S20).** | `PMEL.H3.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 15.4 | bewegung 2, inseln | `plasmind/H3-metaball-fusion.html` |
+| H4 | `hover` | Inversion surface ★ | Ein Blob am Zeiger kehrt alle Farben darunter um; die Fläche bleibt lesbar. **Nur als Muster in der Bibliothek; auf Seiten kein eigener Zeiger (S20).** | `PMEL.H4.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 15.0 | bewegung 2, inseln | `plasmind/H4-inversion-surface.html` |
+| H8 | `hover` | 3D blob with light ★ | Geraymarchte, verformte Kugel mit Führungs- und Randlicht; sie blickt zum Zeiger und folgt ihm gedämpft. | `PMEL.H8.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 19.6 | bewegung 2, webgl | `plasmind/H8-3d-blob-with-light.html` |
+| H11 | `hover` | Contour lines | Höhenlinien eines bewegten Felds; der Zeiger hebt einen Hügel, um den sich die Linien legen. | `PMEL.H11.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 15.4 | bewegung 2, inseln | `plasmind/H11-contour-lines.html` |
+| H12 | `hover` | Cell trail ★ | Der Zeiger legt kleine Zellen ab, die anschwellen, zu einem Strang verschmelzen und vergehen. **Nur als Muster in der Bibliothek; auf Seiten kein eigener Zeiger (S20).** | `PMEL.H12.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 14.3 | bewegung 2, inseln | `plasmind/H12-cell-trail.html` |
+| E5 | `hover` | Tooltip W4d | Tooltip folgt dem Zeiger seitlich, zeigt Bezeichnung und Wert in Mono, erscheint auch bei Tastaturfokus. | `PMEL.E5.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 16.0 | bewegung 1, inseln | `plasmind/E5-tooltip-w4d.html` |
+| E15 | `hover` | Cursor CU1 | Ruhiger, straffer Blob am Zeiger: folgt, staucht beim Klick, verschmilzt mit Zellen. **Nur als Muster in der Bibliothek; auf Seiten kein eigener Zeiger (S20).** | `PMEL.E15.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 38.6 | bewegung 1, inseln | `plasmind/E15-cursor-cu1.html` |
+| H5 | `klick` | Cell division on click | Ein Klick teilt eine Zelle über einen schmaler werdenden Hals; ein Klick ins Leere setzt eine neue. | `PMEL.H5.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 16.4 | bewegung 2, inseln | `plasmind/H5-cell-division-on-click.html` |
+| E11 | `klick` | Tones W11d | Drei kurze Dreieckstöne durch einen Tiefpass wie ein Messgerät: Klick, Bestätigung, Hinweis. Nur nach einem Druck. | `PMEL.E11.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 15.4 | bewegung 1, inseln | `plasmind/E11-tones-w11d.html` |
+
+## Typografie (`typo`)
+
+| Kennung | Unterart | Name | wofür | Parameter | KB | braucht | Datei |
+|---|---|---|---|---|---|---|---|
+| K3 | `akzent` | Zeichen am Wort der H1 | Ein selbst gezeichnetes Gewerk-Zeichen (Fuge, Glühbirne, Zollstock) an genau einem Wort der H1, in der Markenfarbe. | Kein Skript: `span.zw` um das Wort, darin `svg.zeichen` (`aria-hidden`, `currentColor`) mit `zeichen--unter` oder `zeichen--hinter`. Größe in `em`, wächst mit der Schrift. | 14.6 | bewegung 0, statisch | `kunden/K3-zeichen-am-wort.html` |
+| E4 | `akzent` | Text selection W2d2 | Markierter Text bekommt eine Leuchtspur mit weicher, klar sichtbarer Kante an beiden Enden. | `PMEL.E4.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 16.3 | bewegung 1, inseln | `plasmind/E4-text-selection-w2d2.html` |
+| E16 | `wechsel` | Counting numbers | Zahlen zählen hoch, sobald sie ins Bild kommen, mit Wiederholung; reduziert sofort der Endwert. Geprüft 14.10.2026: Das Skript baut die Zahlen erst zur Laufzeit, der Endwert steht nicht im HTML. Nur mit Endwert im HTML einsetzen (S19, BE21). | `PMEL.E16.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 15.1 | bewegung 1, inseln | `plasmind/E16-counting-numbers.html` |
+| F5 | `wechsel` | Zahlentafel | Vier Kacheln mit zählenden Beispielzahlen und Verlaufslinien. | Demo, Thema über `data-theme` | 15.2 | bewegung 1, inseln | `plasmind/F5-live-board.html` |
+
+## Farbe und Material (`farbe`)
+
+| Kennung | Unterart | Name | wofür | Parameter | KB | braucht | Datei |
+|---|---|---|---|---|---|---|---|
+| H6 | `textur` | Soft noise | Langsames Wolkenrauschen in den Palettentönen mit feinem Korn; der Zeiger schiebt es beiseite. | `PMEL.H6.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 14.8 | bewegung 3, inseln | `plasmind/H6-soft-noise.html` |
+| B4 | `textur` | Cell pattern | Wabenraster aus kleinen Zellen für Fußzeilen und Flächen. SVG und PNG, dunkel und hell. | SVG und PNG, `-dark` und `-light` | 159.4 | bewegung 0, statisch | `plasmind/bilder/B4-dark.svg (+ -light, .png)` |
+
+## Art-Styles (`artstyle`)
+
+| Kennung | Unterart | Name | wofür | Parameter | KB | braucht | Datei |
+|---|---|---|---|---|---|---|---|
+| H9 | `wireframe` | CSS 3D blob | Drahtkugel aus Ringen in CSS 3D mit leuchtendem Kern; leichte Alternative ohne WebGL. | `PMEL.H9.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 16.1 | bewegung 2, inseln | `plasmind/H9-css-3d-blob.html` |
+
+## Medien (`medien`)
+
+| Kennung | Unterart | Name | wofür | Parameter | KB | braucht | Datei |
+|---|---|---|---|---|---|---|---|
+| B1 | `grafik` | Hero mit Logo W12 ★ | Logo W12 (gestapelt) auf einem Feld aus weichen Zellen. SVG und PNG, dunkel und hell. | SVG und PNG, `-dark` und `-light` | 10.2 | bewegung 0, statisch | `plasmind/bilder/B1-dark.svg (+ -light, .png)` |
+| B1a | `grafik` | Hero with logo, alive | Logo W12 auf der hellen Fläche: Der Blob atmet, die Augen folgen dem Zeiger ein wenig, die Zeile erscheint Reihe für Reihe, der erste Klick teilt den Blob. | `PMEL.B1a.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 13.6 | bewegung 2, inseln | `plasmind/B1a-hero-with-logo-alive.html` |
+| B2 | `grafik` | Colony field | 34 Zellen mit Augen, Fäden zu Nachbarn, Signalpunkte. SVG und PNG, dunkel und hell. | SVG und PNG, `-dark` und `-light` | 23.9 | bewegung 0, statisch | `plasmind/bilder/B2-dark.svg (+ -light, .png)` |
+| B3 | `grafik` | Growth rings | Wachstumsringe aus ineinanderliegenden Zellkonturen. SVG und PNG, dunkel und hell. | SVG und PNG, `-dark` und `-light` | 38.1 | bewegung 0, statisch | `plasmind/bilder/B3-dark.svg (+ -light, .png)` |
+| B5 | `grafik` | Rendered blob ★ | Glänzender Blob mit Augen, Verläufe für Licht, Randlicht, Glanz, Schatten. SVG und PNG, dunkel und hell. | SVG und PNG, `-dark` und `-light` | 2.6 | bewegung 0, statisch | `plasmind/bilder/B5-dark.svg (+ -light, .png)` |
+| B6 | `grafik` | Inversion plane | Dieselbe Szene zweimal, die zweite mit vertauschten Farben, mit drei Blobformen beschnitten. SVG und PNG, dunkel und hell. | SVG und PNG, `-dark` und `-light` | 103.6 | bewegung 0, statisch | `plasmind/bilder/B6-dark.svg (+ -light, .png)` |
+| B7 | `grafik` | Division strip | Fünf Phasen einer Zellteilung über einen schmaler werdenden Hals. SVG und PNG, dunkel und hell. | SVG und PNG, `-dark` und `-light` | 8.8 | bewegung 0, statisch | `plasmind/bilder/B7-dark.svg (+ -light, .png)` |
+| B8 | `grafik` | Metaball merge | Verschmelzende Zellen per SVG-Filter (Weichzeichnen plus Schwellwert). SVG und PNG, dunkel und hell. | SVG und PNG, `-dark` und `-light` | 0.9 | bewegung 0, statisch | `plasmind/bilder/B8-dark.svg (+ -light, .png)` |
+| K2 | `video` | Pause-Knopf mit Dauer am Video | Stummer Film als Schleife, links unten Pause und Ganzer Film mit der Dauer aus der Datei; bei reduzierter Bewegung steht das Standbild. | `figure[data-g8]` mit `video`, `button[data-g8-pause]` und `button[data-g8-ganz]`. Das Skript startet den Film (kein `autoplay`), hält ihn außerhalb des Bildes (unter 25 %) und im verdeckten Tab an und liest die Dauer aus der Datei. Ohne Skript steht das Poster. | 19.5 | bewegung 0, statisch | `kunden/K2-pause-knopf-am-video.html` |
+| F2 | `video` | Video bei Hover | Standbild der Blob-Ansicht, das bei Hover oder Fokus als stummes Video läuft (Bildfolge als Rückfall). | Demo, Thema über `data-theme` | 13.8 | bewegung 1, inseln | `plasmind/F2-video-hover.html` |
