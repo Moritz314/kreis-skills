@@ -6,14 +6,14 @@
   "plugins": [
     {
       "name": "arsenal",
-      "description": "Technical building blocks for ambitious UI: shaders, 3D, scroll choreography, curated free libraries, ready-made animated components, plus plan/build/critics commands.",
+      "description": "Webdesign-Regelwerk: Stamm, Module, zehn Regler, drei Stufen, Branchen; Befehle von Plan bis Politur, Code-Rezepte und Bausteine.",
       "source": "./plugins/arsenal",
       "category": "design",
       "homepage": "https://github.com/Moritz314/kreis-skills"
     },
     {
       "name": "impeccable",
-      "description": "Design skill for frontend interfaces: shape, critique, audit, polish, animate, harden, adapt and more (Apache-2.0, by Paul Bakaus).",
+      "description": "Design skill for frontend interfaces by Paul Bakaus (Apache-2.0), version 4.6.0: shape, critique, audit, polish, animate, harden, adapt and more, plus the deterministic detector (npx impeccable detect). In this marketplace its rules are folded into arsenal 3.",
       "source": "./plugins/impeccable",
       "category": "design",
       "homepage": "https://github.com/Moritz314/kreis-skills"

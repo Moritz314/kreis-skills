@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "name": "handwerk",
+  "titel": "Handwerk",
+  "kurz": "Gewerke mit eigener Werkstatt oder Baustelle: Tischler, Maler, Metallbau, Fliesenleger und andere.",
+  "regler": {
+    "auftreten": "werkstatt",
+    "bewegung": 2,
+    "dichte": "luftig",
+    "technik": "inseln",
+    "tonfall": "nuechtern",
+    "material": "bildstark",
+    "farbe": "zurueckhaltend",
+    "inszenierung": "vorfuehren",
+    "konversionsdruck": "direkt",
+    "schrift": "sachlich"
+  },
+  "gruende": {
+    "auftreten": "Ein Betrieb, der das lange macht: echte Arbeit, schlichte Wörter, Preise oder Lieferzeiten.",
+    "bewegung": "Stufe Kunde hochwertig verlangt bewegung 2 oder 3; das Leitmotiv kommt aus dem Gewerk.",
+    "technik": "Inseln nur, wo das Leitmotiv sie braucht; Video geht auf jeder Stufe.",
+    "material": "Werkstoff und eigene Arbeit sind der stärkste Beleg.",
+    "farbe": "Die Farbe kommt aus dem Werkstoff, dazu ein Akzent.",
+    "konversionsdruck": "Ziel ist die Anfrage; Telefon und Terminweg gehören nach vorn."
+  },
+  "regeln": [
+    {
+      "id": "handwerk-1",
+      "regel": "Das Gewerk steht in der ersten oder zweiten Bildschirmhöhe als Wort (für wen) und als Werkstoff, nicht nur als Kulisse oder Person.",
+      "pruefung": "Foto 1440 und 390",
+      "quelle": "B36"
+    },
+    {
+      "id": "handwerk-2",
+      "regel": "Bilder der Arbeit zeigen Arbeitsschutz und Wertigkeit: Schutzausrüstung, Sauberkeit, geordnete Werkstatt, wertiges Licht.",
+      "pruefung": "Kontaktbogen und Bezugssatz je Bild in MEDIEN.md (ME07): Schutzausrüstung, Ordnung und Licht erkennbar",
+      "quelle": "B81"
+    },
+    {
+      "id": "handwerk-3",
+      "regel": "Ein Beweis aus dem Handwerk steht in Worten: Gewerk, Ort, Ergebnis.",
+      "pruefung": "Textprobe",
+      "quelle": "B37"
+    }
+  ],
+  "geaendert": "2026-10-18",
+  "von": "arsenal-regelwerk"
+}

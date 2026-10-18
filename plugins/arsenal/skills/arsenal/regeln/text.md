@@ -1,0 +1,13 @@
+# Modul Text und Tonfall
+
+Laden für jede Website-Art und für Anwendungen. Wie der Text klingt, stellt der Regler `tonfall` ein. Grundlagen im Stamm: Inhalt vor Layout (S05), nichts erfinden (S06), Mikrotypografie (S29).
+
+- **TX01 Reihenfolge der Botschaft:** Klarheit, Bedeutung, Wert, Unterschied. Für Überflieger schreiben: Das Wichtigste steht vorn in Satz und Abschnitt.
+- **TX02 Drei Proben.** Ein-Satz-Probe: Die H1 sagt in einem Satz, was der Betrieb für wen tut. Gegenteil-Probe: Ein Versprechen, dessen Gegenteil niemand sagen würde („Qualität“), ist leer. Wettbewerber-Probe: Könnte ein Wettbewerber denselben Satz schreiben?
+- **TX03 Konkret.** Zahlen, Abläufe und Zeiträume statt Adjektiven; aktiv; die Wörter der Kunden; kürzen, bis nichts mehr fehlt. Ein Superlativ braucht einen Beleg im selben Abschnitt.
+- **TX04 Für Laien.** Kein Fachwort ohne Erklärung („Internetadresse“ statt Domain; Hosting, Onepage, Ladezeit erklären). Probe: Fachwortliste mit 0 Treffern; Lesbarkeit nach Flesch (deutsch, Amstad) mindestens 60.
+- **TX05 Stimme.** Eine menschliche Zeile je Seite. Kundentexte sprechen den Leser mit „Sie“ an.
+- **TX06 KI-Muster prüfen.** Nicht verboten, aber die Häufung verrät den Text: Einleitungs- und Schlussfloskeln („In der heutigen Welt …“, „Zusammenfassend …“), die Formel „nicht nur X, sondern Y“, Dreier-Reflexe, Ausweichen statt „ist“ („fungiert als“, „stellt dar“), angehängte Partizipien, Absicherung („könnte helfen“), Berufung ohne Quelle („Experten sind sich einig“), Werbe-Superlative, Verdachtswörter (essenziell, nahtlos, maßgeschneidert, ganzheitlich, umfassend, eintauchen, unterstreichen, im digitalen Zeitalter; englisch delve, seamless, leverage, robust). Prüffrage: Würde eine echte Person das genau so sagen?
+- **TX07 Knöpfe nennen das Ergebnis** („Website-Check starten“, nicht „Absenden“). Lade- und Erfolgstexte sind konkret. Die Hauptaktion ist überall gleich beschriftet (KO01). Der Mikrotext zur Hürde hat höchstens acht Wörter.
+- **TX08 Fehler und Leere.** Fehlermeldungen stehen am Feld, sagen klar, was los ist und was als Nächstes zu tun ist, ohne Schuld; die Eingabe bleibt erhalten; geprüft wird nach dem Verlassen des Feldes, nicht beim Tippen. Leerzustände nennen Stand und Weg; „leer“ und „zum ersten Mal hier“ sind verschieden.
+- **TX09 Ratgeber** (Kundenseiten mit Inhalten): Bereich `/ratgeber/` mit Fragen der Kunden und Antworten aus deren Arbeit, Autor und Datum sichtbar, strukturierte Daten (Article, FAQ). Ein Nebenknopf „Bei Google als bevorzugte Quelle“ (`https://www.google.com/preferences/source?q=<domain>`) im Kopf des Ratgebers und am Ende jedes Beitrags. Auf der Startseite ein Anriss mit drei Beitragstiteln aus der Akte; kein erfundener Beitrag.

@@ -20,9 +20,10 @@ cat > "$STAGE/san.pl" <<'PERL'
 use strict; use warnings;
 my $root = shift;
 my @files = map { chomp; $_ } <STDIN>;
-# [label, regex, replacement, internal?]  internal? = file in planung/ with such a hit is dropped entirely
+# [label, regex, replacement, internal?, only-in-files?]  internal? = file in planung/ with such a hit is dropped entirely
 my @rep = (
  ['Pfad (Windows-Nutzerordner)', qr{[A-Za-z]:[\\/]+Users[\\/]+Spaek(?:[\\/][^\s`"'\)<>,;]*)?}, '<dein-ordner>', 1],
+ ['Pfad (Linux privat, in Backticks, auch mit Leerzeichen)', qr{`/(?:home/moritz|srv/syncthing|root/sync)(?:/[^`\n]*)?`}, '`<dein-ordner>`', 1],
  ['Pfad (Linux privat)',         qr{/(?:home/moritz|srv/syncthing|root/sync)(?:/[^\s`"'\)<>,;]*)?}, '<dein-ordner>', 1],
  ['Vault-Verweis',               qr{claude-mem}, '<memory-vault>', 1],
  ['Server-IP',                   qr{\b(?:217\.160|87\.106|31\.70|85\.215)\.\d+\.\d+|\b100\.(?:6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.\d+\.\d+}, '<server-ip>', 1],
@@ -30,10 +31,12 @@ my @rep = (
  ['Domain (privat)',             qr{\b(?:[\w-]+\.)?(?:moritzkreis\.de|topcharge\.tech|noctus\.events|kreissystems[\w.]*)\b}i, '<deine-domain>', 1],
  ['Projekt-/Kundenname',         qr{\b(?:TopCharge|Kontor|Stadtreklame|Noctus|Signalbox|SCCS|DRAGui|Schul-Tools)\b}, '<internal-project>', 1],
  ['Infrastruktur-Name',          qr{\b(?:Kraken|Powerhouse|Tailscale|Syncthing|Obsidian|Wachhund)\b}, '<infrastructure>', 1],
+ ['Vorname Nutzer (Arsenal, deutsch)', qr{\bMoritz}i, '<dein-name>', 0, qr{^arsenal/}],
  ['Vorname Nutzer (de)',         qr{von Moritz\b}, 'vom Nutzer', 0],
  ['Vorname Nutzer',              qr{\bMoritz(?:\x{2019}s|\'s)?}, 'the user', 0],
  ['Firmenname',                  qr{\bKreis[ -]Systems\b}, '<studio>', 0],
  ['Beispiel-Token (Demo) ersetzt', qr{\bghp_[A-DF-Za-z0-9][A-Za-z0-9]{19,}}, 'ghp_EXAMPLE000000000000000000000000000', 0],
+ ['Begriff harnesses (Mehrzahl)', qr{harnesses}i, 'testbeds', 0],
  ['Begriff harness (Testumgebung in impeccable)', qr{harness}i, 'testbed', 0],
 );
 # line deletions: [label, file regex, line regex]
@@ -72,6 +75,7 @@ for my $f (@files) {
     my $n = ($t =~ s/$e->[2]/$e->[3]/mg); $rows{$rel}{$e->[0]} += $n if $n;
   }
   for my $r (@rep) {
+    next if $r->[4] && $rel !~ $r->[4];
     my $re = $r->[1]; my $to = $r->[2];
     my $n = ($t =~ s/$re/$to/g); $rows{$rel}{$r->[0]} += $n if $n;
   }
@@ -110,8 +114,8 @@ echo "Pruefung bestanden: keine sensiblen Reste."
 
 # ---- install into repo
 declare -A DESC=(
- [arsenal]="Technical building blocks for ambitious UI: shaders, 3D, scroll choreography, curated free libraries, ready-made animated components, plus plan/build/critics commands."
- [impeccable]="Design skill for frontend interfaces: shape, critique, audit, polish, animate, harden, adapt and more (Apache-2.0, by Paul Bakaus)."
+ [arsenal]="Webdesign-Regelwerk: Stamm, Module, zehn Regler, drei Stufen, Branchen; Befehle von Plan bis Politur, Code-Rezepte und Bausteine."
+ [impeccable]="Design skill for frontend interfaces by Paul Bakaus (Apache-2.0), version 4.6.0: shape, critique, audit, polish, animate, harden, adapt and more, plus the deterministic detector (npx impeccable detect). In this marketplace its rules are folded into arsenal 3."
  [web-design-guidelines]="Review UI code against the Web Interface Guidelines (accessibility, UX, best practices). MIT, by Vercel."
 )
 declare -A LIC=([arsenal]=MIT [impeccable]=Apache-2.0 [web-design-guidelines]=MIT)
@@ -120,11 +124,13 @@ mkdir -p "$HERE/plugins" "$HERE/dist" "$HERE/.claude-plugin"
 for s in "${SKILLS[@]}"; do
   P="$HERE/plugins/$s"; mkdir -p "$P/skills/$s" "$P/.claude-plugin"
   rsync -a --delete "$STAGE/out/$s/" "$P/skills/$s/"
+  # plugin version = top-level "version:" of SKILL.md, else 1.0.0
+  VER=$(grep -m1 -oP '^version:\s*["'"'"']?\K[0-9][0-9.]*' "$STAGE/out/$s/SKILL.md" || true); VER=${VER:-1.0.0}
   cat > "$P/.claude-plugin/plugin.json" <<JSON
 {
   "name": "$s",
   "description": "${DESC[$s]}",
-  "version": "1.0.0",
+  "version": "$VER",
   "author": { "name": "Kreis Systems", "url": "$OWNER_URL" },
   "homepage": "$OWNER_URL",
   "repository": "$OWNER_URL",

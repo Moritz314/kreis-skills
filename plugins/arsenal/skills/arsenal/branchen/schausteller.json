@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "name": "schausteller",
+  "titel": "Schausteller",
+  "kurz": "Einzelne Schaustellerbetriebe (Familienbetriebe mit Fahrgeschäft, Imbiss, Ausschank oder Verkauf), keine Verbände.",
+  "regler": {
+    "auftreten": "haus",
+    "bewegung": 2,
+    "dichte": "ausgewogen",
+    "technik": "statisch",
+    "tonfall": "direkt",
+    "material": "bildstark",
+    "farbe": "voll",
+    "inszenierung": "zeigen",
+    "konversionsdruck": "klar",
+    "schrift": "sachlich"
+  },
+  "gruende": {
+    "auftreten": "Die Seite zeigt, dass der Betrieb geführt wird: zeitgemäß und seriös (<dein-name> 13.09.2026).",
+    "bewegung": "Der Festplatz ist lebendig; <dein-name> wählte das lebendigere Motiv.",
+    "dichte": "Datenblätter mit Fakten je Geschäft brauchen Platz für Zahlen.",
+    "technik": "Paket „Die Schausteller-Seite“: eine Seite ohne Pflege; Video geht trotzdem.",
+    "tonfall": "Direkte Kommunikation mit Menschen ist eine der fünf Kernbotschaften.",
+    "farbe": "Vier Themenfarben aus dem Foto, jede mit fester Aufgabe.",
+    "inszenierung": "Geschäfte mit Datenblatt zeigen, keine Vorführstrecke. Auf kunde-hochwertig hebt der Rahmen auf vorfuehren, etwa eine Bildfolge je Geschäft."
+  },
+  "regeln": [
+    {
+      "id": "schausteller-1",
+      "regel": "Je Geschäft ein Datenblatt mit acht Feldern: Art, Front × Tiefe, Höhe, Strom (kW und Stecker), Wasser, Aufbauzeit, letzte Prüfung (gültig bis), Bild.",
+      "pruefung": "Zählung Datenblätter gegen Geschäfte im Befund",
+      "quelle": "Vault Akquise Schausteller; METHODE R26"
+    },
+    {
+      "id": "schausteller-2",
+      "regel": "Herkunft durch Branchendetails belegen (Strom, Aufbauzeit, Prüfung), nicht behaupten.",
+      "pruefung": "Textprobe",
+      "quelle": "METHODE R24"
+    },
+    {
+      "id": "schausteller-3",
+      "regel": "Die erste Ansicht sagt, dass der Betrieb geführt wird (Geschäfte, Familie, Kontakt), nicht die Bewerbung um einen Platz.",
+      "pruefung": "Fünf-Sekunden-Frage am Foto",
+      "quelle": "Vault Akquise Schausteller, <dein-name> 13.09.2026"
+    },
+    {
+      "id": "schausteller-4",
+      "regel": "Termine der laufenden Saison nur, wenn jemand sie pflegt. Wer pflegt sie? Ohne Pflege stehen vergangene Plätze.",
+      "pruefung": "Frage im Befund beantwortet",
+      "quelle": "Vault Akquise Schausteller"
+    },
+    {
+      "id": "schausteller-5",
+      "regel": "Farbe eher auf Zeichen, Ziffern und Linien als auf großen Flächen. Trägt eine Fläche, ist das begründet?",
+      "pruefung": "Ganzseitenfoto",
+      "quelle": "Vault Akquise Schausteller (Vorgabe <dein-name> für das Druckmaterial)"
+    }
+  ],
+  "geaendert": "2026-10-18",
+  "von": "arsenal-regelwerk"
+}

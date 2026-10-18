@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "name": "dienstleister",
+  "titel": "Dienstleister",
+  "kurz": "Dienstleister mit eigener Haltung; erste Belegung ist <studio> selbst (Hausseite kreis.systems).",
+  "regler": {
+    "auftreten": "studio",
+    "bewegung": 3,
+    "dichte": "luftig",
+    "technik": "inseln",
+    "tonfall": "direkt",
+    "material": "ausgewogen",
+    "farbe": "voll",
+    "inszenierung": "buehne",
+    "konversionsdruck": "klar",
+    "schrift": "ausdruck"
+  },
+  "gruende": {
+    "auftreten": "Demo 1 und Demo 2 (beide von <dein-name> gelobt): Haltung durch Typografie und Material, Arbeit als Fall.",
+    "bewegung": "Stufe Award für die Hausseite; Demo 1 und 2 mit Pin und Choreografie.",
+    "technik": "Demo 1 und 2: Video, SVG und GSAP als Inseln, kein WebGL nötig.",
+    "tonfall": "Demo 2, von <dein-name> bevorzugt: kurze Sätze, nennt das Versprechen.",
+    "farbe": "Kalibrierung B60: eine Bühne, eine Handlungsfarbe, höchstens zwei weitere mit fester Aufgabe.",
+    "schrift": "Kalibrierung B63: Chivo als Hausschrift, Fraunces als Bühnenstimme; Plakatwörter in Demo 2."
+  },
+  "regeln": [
+    {
+      "id": "dienstleister-1",
+      "regel": "<studio>: Positionierung „Sie machen Ihre gute Arbeit. Wir kümmern uns um den Rest.“; Hauptaktion „Website-Check starten“ mit Mikrotext „Höchstens acht Fragen, rund zwei Minuten, kostenlos.“",
+      "pruefung": "Textprobe",
+      "quelle": "B62"
+    },
+    {
+      "id": "dienstleister-2",
+      "regel": "<studio>: <dein-name> spricht in Ich-Form; Fakten kommen aus befund.md und texte.md des Laufs vom 15.10.2026 (`<dein-ordner>`).",
+      "pruefung": "Textprobe gegen befund.md und texte.md",
+      "quelle": "B62"
+    },
+    {
+      "id": "dienstleister-3",
+      "regel": "<studio>: Die fünf Aufgaben des Erstklick-Tests (KO07) sind Preis der Betreuung, Handwerker-Beispiel, Software, wer dahintersteckt, Anfragen; Ziel 5 von 5 (verschärft KO07).",
+      "pruefung": "Erstklick-Probe mit diesen fünf Aufgaben, 5 von 5",
+      "quelle": "B78"
+    },
+    {
+      "id": "dienstleister-4",
+      "regel": "<studio>: Das Zeichen (Kreis, Umlaufbahn, Planet) ist in der Bühne bewegt und kehrt in jedem Abschnitt als System wieder.",
+      "pruefung": "Ganzseitenfoto",
+      "quelle": "B61"
+    },
+    {
+      "id": "dienstleister-5",
+      "regel": "<studio>: Hausfarben aus ks.css (<dein-ordner>) nach Rang, die Handlungsfarbe in Hell und Dunkel gleich; Hell und Dunkel nach System plus Umschalter; Schrift Chivo, Fraunces als Bühnenstimme (begründet nach E5).",
+      "pruefung": "Farbprobe, Netzsumme Schriften",
+      "quelle": "B60, B63, E5"
+    },
+    {
+      "id": "dienstleister-6",
+      "regel": "Preise nur aus der Vault-Notiz „Pakete und Preise“.",
+      "pruefung": "Textprobe gegen die Notiz",
+      "quelle": "Vault Pakete und Preise; <dein-name>-2026-10-16"
+    }
+  ],
+  "geaendert": "2026-10-18",
+  "von": "arsenal-regelwerk"
+}

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "arsenal-branche-1",
+  "title": "Arsenal 3 Branche",
+  "description": "Format von branchen/<name>.json. Texte je Reglerstufe stehen in regler.md. Neue Felder nur optional (abwaertskompatibel).",
+  "type": "object",
+  "required": ["schema", "name", "titel", "kurz", "regler", "regeln", "geaendert", "von"],
+  "properties": {
+    "schema": { "const": 1 },
+    "name": { "type": "string", "pattern": "^[a-z0-9-]{2,40}$" },
+    "titel": { "type": "string", "maxLength": 40 },
+    "kurz": { "type": "string", "maxLength": 160 },
+    "regler": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["auftreten", "bewegung", "dichte", "technik", "tonfall", "material", "farbe", "inszenierung", "konversionsdruck", "schrift"],
+      "properties": {
+        "auftreten": { "enum": ["werkstatt", "haus", "studio", "labor"] },
+        "bewegung": { "enum": [0, 1, 2, 3] },
+        "dichte": { "enum": ["luftig", "ausgewogen", "verdichtet"] },
+        "technik": { "enum": ["statisch", "inseln", "webgl"] },
+        "tonfall": { "enum": ["nuechtern", "direkt", "selbstbewusst"] },
+        "material": { "enum": ["typografisch", "ausgewogen", "bildstark"] },
+        "farbe": { "enum": ["zurueckhaltend", "bekennend", "voll", "getraenkt"] },
+        "inszenierung": { "enum": ["zeigen", "vorfuehren", "buehne"] },
+        "konversionsdruck": { "enum": ["leise", "klar", "direkt"] },
+        "schrift": { "enum": ["sachlich", "redaktionell", "ausdruck"] }
+      }
+    },
+    "gruende": {
+      "type": "object",
+      "propertyNames": { "enum": ["auftreten", "bewegung", "dichte", "technik", "tonfall", "material", "farbe", "inszenierung", "konversionsdruck", "schrift"] },
+      "additionalProperties": { "type": "string", "maxLength": 200 }
+    },
+    "regeln": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "regel", "pruefung", "quelle"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9-]+-[0-9]+$" },
+          "regel": { "type": "string" },
+          "pruefung": { "type": "string" },
+          "quelle": { "type": "string" }
+        }
+      }
+    },
+    "module": {
+      "type": "array",
+      "items": { "enum": ["bewegung", "praesentation", "medien", "erzeugt", "text", "konversion", "technik", "software"] },
+      "uniqueItems": true
+    },
+    "geaendert": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+    "von": { "type": "string" }
+  }
+}
