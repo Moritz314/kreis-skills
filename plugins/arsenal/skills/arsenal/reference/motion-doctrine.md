@@ -4,34 +4,6 @@ This file answers whether motion belongs on a page at all, and if it does, which
 
 All claims trace to a checked research pass (2026-09-08). Citations below are inline and brief; consult the research file for full source URLs. A point marked unverified carries no rule weight and must not be treated as settled.
 
-## 0. Must-haves (Moritz, 2026-10-18)
-
-These rules apply to every animation, on websites, in apps and in navigation, before anything else in this file:
-
-1. **Easing, never linear.** Elements that move, scale or fade in a UI never use `linear` timing (exceptions: progress that maps to real time or scroll position, continuous loops like a spinner or marquee). Entrances decelerate (ease-out), exits accelerate (ease-in), moves on screen use ease-in-out; the curves come from section 3.
-2. **Spatial consistency (origin and home).** Every element has a place it lives in, and motion shows it. What opens from a control grows out of that control and shrinks back into it (`transform-origin` at the trigger, or a shared-element/view transition); a panel that lives at the top slides in from the top and leaves the same way; a dialog opened from a card expands from the card. Open and close are mirror images of each other. Reference: iOS volume indicator next to the hardware button, app launch zooming out of its icon, Control Center pulled down from the top, Dynamic Island expanding and collapsing. Check question: could a user tell from the motion alone where the element lives and how to get it back or away?
-3. **Exit faster than entrance.** An exit runs at roughly 70 percent of the matching entrance duration; the user has already decided, the element only needs to get out of the way.
-4. **Duration scales with distance and size.** Small, short moves (a toggle, a tooltip) sit at the short tier (about 100 to 200 ms); large surfaces and long travel (a sheet, a full-screen panel) at the medium tier (about 250 to 400 ms). Never one duration for everything.
-5. **Continuity (object permanence).** When an element changes state or place, it transforms (a thumbnail becomes the hero image, a card becomes the detail view) instead of vanishing and reappearing; use shared-element or view transitions for the one or two elements that carry the meaning.
-6. **Interruptible and direct.** Motion follows the finger or pointer, can be reversed midway from its current position and velocity, and never blocks input.
-7. **Stagger for order.** Lists and groups may enter slightly offset (about 20 to 40 ms per item, capped so the whole group finishes quickly) so the reading order is visible; never stagger something the user is waiting to use.
-8. **Instant feedback.** Every tap, click or key press shows a visible response within 100 ms, even if the result takes longer.
-
-### When NOT to animate (Moritz, 2026-10-18, equally binding)
-
-Frequent, deliberate actions the user takes to get somewhere fast get **no animation at all**; they happen instantly. Motion is for orientation in rare or new moments; on high-frequency paths it turns into waiting. The more often an action happens, the less motion it gets; at "many times a day" the answer is zero.
-
-- Switching tabs, views or panes the user switches between constantly (e.g. Agent Control Center and Graph View in plasmind): instant.
-- Keyboard shortcuts and command-palette actions: instant, including the palette opening.
-- Context menus (right click), dropdowns, menus opened by the user: appear instantly; at most a very short fade on close.
-- App or tool start: as fast as it can technically be; no artificial delay, intro or splash animation that makes anyone wait longer than loading takes.
-- Typing, text selection, scrolling the user drives themselves, drag of the pointer itself: never smoothed, delayed or eased (no custom smooth-scroll hijacking on tools, no custom animated cursor; the system cursor stays).
-- Repeated actions in bulk (deleting list items, ticking checkboxes, paging through results): instant or at most a short-tier state change.
-- Undo/redo and error correction: instant.
-- Anything on a hot path for power users: if an expert would do it ten times a minute, it does not animate.
-
-Check question: does the user do this often and on purpose to reach a goal? Then no animation; if in doubt, measure how often the action happens.
-
 ## 1. The twelve principles, honestly sorted
 
 Frank Thomas and Ollie Johnston set out twelve principles of animation for hand-drawn Disney characters on a cinema screen (*The Illusion of Life*, Disney Editions, 1981): Squash and Stretch, Anticipation, Staging, Straight Ahead Action and Pose to Pose, Follow Through and Overlapping Action, Slow In and Slow Out, Arcs, Secondary Action, Timing, Exaggeration, Solid Drawing, Appeal. They were built for drawn characters, not for surfaces that acknowledge user input, and they do not transfer evenly.
@@ -145,10 +117,6 @@ stand, animations almost all gone. Limits: R23 on <studio> sites.
 
 Verifiable against a finished page, not a spec document:
 
-- [ ] No UI element moves on a `linear` curve (section 0, rule 1).
-- [ ] No frequent, deliberate action (tab/view switch, shortcut, context menu, app start, typing, scrolling) is animated or delayed (section 0, "When NOT to animate").
-- [ ] Exits are faster than entrances, durations scale with distance, every input shows feedback within 100 ms (section 0, rules 3, 4, 8).
-- [ ] Every opening element comes out of its trigger or its home edge and returns there on close (section 0, rule 2).
 - [ ] Every animation on the page can name which of the four functions (orientation, spatial relationship, feedback, attention) it serves.
 - [ ] For each one: is the page measurably harder to understand without it, or was it added to fill a moment that felt unfinished?
 - [ ] No animation blocks input; every animation stays interruptible.
