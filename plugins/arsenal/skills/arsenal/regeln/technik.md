@@ -14,7 +14,7 @@ Laden ab `technik: inseln`, bei Video und bei den Befehlen `bauen` und `audit`. 
 - **TE05 Weg festlegen, bevor gebaut wird.** Ohne `<ClientRouter />`: `security.csp: true` plus `build.inlineStylesheets: 'never'`; jede Seite trägt ihre CSP als `<meta>`. Trotzdem setzt nginx die übrigen Kopfzeilen aus S10 und `Content-Security-Policy: frame-ancestors 'self'`, denn `frame-ancestors` wirkt im `<meta>` nicht. Mit `<ClientRouter />`: CSP als nginx-Kopfzeile (`script-src 'self'`, `style-src 'self' 'unsafe-inline'`, `frame-ancestors 'self'`), kein `security.csp`, trotzdem `inlineStylesheets: 'never'`.
 - **TE06 Kein rohes `<script>` in `.astro`.** Astro schreibt kleine Skripte ins HTML. Skripte als eigene Dateien einbinden. Radix (Unterbau von shadcn) setzt Inline-Styles; mit strengem `style-src` diese Teile meiden oder `'unsafe-inline'` für Styles hinnehmen.
 - **TE07 Probe:** gebautes HTML nach `<script>` ohne `src` durchsuchen (0 Treffer; `type="application/ld+json"` zählt nicht, es wird nicht ausgeführt), aktiven CSP-Weg per `curl` prüfen, jede Insel im Browser auslösen und die Konsole auf „Refused“ lesen.
-- **TE08 Thema-Skript** unter 1 KB, vor dem ersten Zeichnen (Form: Vorliebe in `behavior.md`, S10) (kein Aufblitzen des falschen Modus). Es wertet `?thema=hell` und `?thema=dunkel` aus (Messung im `audit`), sonst die gespeicherte Wahl, sonst den Systemmodus.
+- **TE08 Thema-Skript** unter 1 KB, als externe, synchrone Datei im `head` (S10, kein Inline-Skript), vor dem ersten Zeichnen (kein Aufblitzen des falschen Modus). Es wertet `?thema=hell` und `?thema=dunkel` aus (Messung im `audit`), sonst die gespeicherte Wahl, sonst den Systemmodus.
 
 ## Laden und Laufen
 
@@ -25,8 +25,9 @@ Laden ab `technik: inseln`, bei Video und bei den Befehlen `bauen` und `audit`. 
 
 ## Bedienung im Gerät
 
-- **TE13 Eingabearten.** Hover-Effekte nur unter `(hover: hover)`; Ziele für `(pointer: coarse)` groß genug (S16). Was bei Hover erscheint, erscheint auch bei `:focus-within`.
-- **TE14 Telefon-Feinheiten:** `touch-action: manipulation` an Bedienelementen, `overscroll-behavior: contain` in Overlays und Schubladen, `env(safe-area-inset-*)` an festen Leisten, `theme-color` passend zu Hell und Dunkel.
+- **TE13 Eingabearten.** Hover-Effekte nur unter `(hover: hover)`; Ziele für `(pointer: coarse)` groß genug (S16). Was bei Hover erscheint, erscheint auch bei `:focus-within`. Eigene Zieh-Bedienelemente (Regler, Vergleichsschieber, Ziehen und Ablegen) überstehen einen zweiten Finger, `pointercancel`, `lostpointercapture`, Loslassen außerhalb und Fensterverlust (`blur`): Der Zustand wird zurückgesetzt, der nächste Zug funktioniert ohne Neuladen. Probe: Zug abbrechen, danach neu ziehen.
+- **TE14 Telefon-Feinheiten:** `touch-action: manipulation` an Bedienelementen, `overscroll-behavior: contain` in Overlays und Schubladen, `env(safe-area-inset-*)` an festen Leisten (mit `viewport-fit=cover` im Viewport-Meta, sonst bleibt `env()` wirkungslos), `theme-color` passend zu Hell und Dunkel; `scroll-margin-top` an Ankerzielen, sobald eine feste Kopfleiste steht, sonst verdeckt sie das Sprungziel.
+- **TE18 Anzeigemodi (Ermessen).** Hochkontrast (`forced-colors: active`) und `prefers-contrast: more` gehören zur Probe im `audit`: Kein Bedienteil verliert Rand oder Fokus, Information hängt an keiner Hintergrundfarbe allein (S15).
 - **TE15 Sprache und Zahlen:** Datum, Zahl und Währung über `Intl`; Marken- und Produktnamen mit `translate="no"`.
 
 ## Vorschau als Claude-Artefakt

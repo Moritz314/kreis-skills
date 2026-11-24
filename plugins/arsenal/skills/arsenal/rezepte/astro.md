@@ -1,6 +1,6 @@
 # Rezept: Astro, Tailwind und Inseln
 
-Gerüst, Inseln, fremde Komponenten und Auslieferung an nginx. Regeln: TE01 bis TE09, S10, S36, S40, Budgets in `regler.md`. Ab `technik: statisch`. Versionen nur in TE02.
+Gerüst, Inseln, fremde Komponenten und Auslieferung an nginx. Regeln: TE01 bis TE09, S10, S36, S40, Budgets in `regler.md`. Ab `technik: statisch` und mehr als fünf Seiten (TE01). Versionen nur in TE02; dieses Rezept nennt keine Nummern.
 
 ## Start
 
@@ -46,7 +46,7 @@ Pflicht sind nur `src/` und `package.json`. In `src/` ist nur `src/pages` reserv
 ```
 src/
   pages/                 # reserved: one route per file
-  layouts/               # base layout(s); import global.css, <ClientRouter />
+  layouts/               # base layout(s); import global.css; <ClientRouter /> nur nach Wahl des CSP-Wegs (TE05)
   components/            # .astro components; islands live here too
     ui/                  # shadcn lands here as source, not a package
   content/               # markdown/MDX/JSON, read by content.config.ts
@@ -56,12 +56,12 @@ public/                  # unprocessed static files
 astro.config.mjs
 ```
 
-Sammlungen stehen in `src/content.config.ts` (nicht mehr `src/content/config.ts`, seit Astro 5):
+Sammlungen stehen in `src/content.config.ts` (nicht mehr `src/content/config.ts`):
 
 ```ts
 import { defineCollection } from "astro:content";
 import { glob, file } from "astro/loaders";
-import { z } from "astro/zod"; // since Astro 6, not from astro:content
+import { z } from "astro/zod"; // nicht aus astro:content
 
 const artikel = defineCollection({
   loader: glob({ base: "./src/content/artikel", pattern: "**/*.md" }),
@@ -165,7 +165,7 @@ location / {
 ```js
 // astro.config.mjs, without <ClientRouter />
 export default defineConfig({
-  security: { csp: true },               // since Astro 6.0, SHA-256 hashes in <meta>
+  security: { csp: true },               // SHA-256-Hashes in <meta>
   build: { inlineStylesheets: "never" },
 });
 ```
@@ -204,7 +204,7 @@ import foto from "../assets/werkstatt.jpg";
 
 `<Image />` kennt `width`/`height`, `widths`, `densities`, `sizes`, `format` (Standard `webp`), `quality` (`low`/`mid`/`high`/`max`), `layout` (`constrained`/`full-width`/`fixed`/`none`), `priority` (Standard `false`), `fit` (Standard `cover`). Mit `layout` erzeugt Astro `srcset`, `sizes`, `loading`, `decoding` und feste Maße gegen Layoutsprung. `<Picture />` liefert mehrere Formate mit Rückfall (Standard `formats: ['webp']`). `priority` nur für das LCP-Bild.
 
-Schriften über die Fonts API von Astro (`astro:assets`; Quellen: lokale Dateien, Google, Fontsource, Bunny, Fontshare). Sie lädt die Schrift herunter, hält sie lokal und liefert sie selbst aus, mit Preload. Die Doku führt sie nicht mehr als experimentell; seit wann, ist ungeprüft (experimentell ab Astro 5.7, April 2025). Eigenes `@font-face` unter `public/fonts/` geht weiter, ist aber nicht mehr der empfohlene Weg. Schriftformat und Budget: TE09.
+Schriften über die Fonts API von Astro (`astro:assets`; Quellen: lokale Dateien, Google, Fontsource, Bunny, Fontshare). Sie lädt die Schrift herunter, hält sie lokal und liefert sie selbst aus, mit Preload. Die Doku führt sie nicht mehr als experimentell; seit wann, ist ungeprüft. Eigenes `@font-face` unter `public/fonts/` geht weiter, ist aber nicht mehr der empfohlene Weg. Schriftformat und Budget: TE09.
 
 Core Web Vitals messen gegen `regler.md`. Eine feste Zahl für Astro-Seiten gibt es nicht, der Wert ist je Seite.
 

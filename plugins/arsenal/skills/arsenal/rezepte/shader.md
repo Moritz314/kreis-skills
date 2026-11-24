@@ -30,6 +30,7 @@ const canvas = document.getElementById('grain');
 const pauseButton = document.querySelector('button.grain-pause');
 const gl = canvas.getContext('webgl');
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const motionQuery = matchMedia('(prefers-reduced-motion: reduce)'); // S17: listen for `change`
 // TE10: at most 1.5, phones 1
 const dpr = matchMedia('(pointer: coarse)').matches ? 1 : Math.min(devicePixelRatio, 1.5);
 
@@ -43,7 +44,7 @@ const fragSrc = `
 precision highp float;
 uniform vec2 uResolution;
 uniform float uTime;
-uniform float uIntensity; // 0.0-0.2 is a usable range
+uniform float uIntensity; // 0.02-0.12 is the usable range (fine grain to coarse noise)
 
 float random(vec2 st) {
   return fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
@@ -51,7 +52,7 @@ float random(vec2 st) {
 
 void main() {
   vec2 uv = gl_FragCoord.xy / uResolution.xy;
-  // re-seed the hash every frame so grain flickers instead of scrolling
+  // re-seed the hash every frame so grain flickers instead of scrolling (low intensity keeps it below the S18 flash threshold)
   float grain = random(uv * uResolution.xy + floor(uTime * 24.0));
   vec3 base = vec3(0.055, 0.055, 0.075); // background token in linear sRGB
   vec3 color = base + (grain - 0.5) * uIntensity;
@@ -89,6 +90,7 @@ if (gl) {
   let visible = false;
   let paused = reduceMotion; // reduced motion: one still frame
   pauseButton?.setAttribute('aria-pressed', String(paused));
+  motionQuery.addEventListener('change', (e) => { paused = e.matches; pauseButton?.setAttribute('aria-pressed', String(paused)); restart(); });
 
   function frame(t) {
     gl.uniform2f(uResolution, canvas.width, canvas.height);
@@ -119,10 +121,13 @@ if (gl) {
     pauseButton.setAttribute('aria-pressed', String(paused));
     restart();
   });
+
+  // TE10: clean up when leaving
+  addEventListener('pagehide', () => { cancelAnimationFrame(raf); gl.getExtension('WEBGL_lose_context')?.loseContext(); });
 }
 ```
 
-Stellschrauben: `base` ist der Hintergrund-Token in linearem sRGB, nicht der OKLCH-Text. `uIntensity` 0,02 bis 0,04 ergibt feines Filmkorn, ab 0,12 grobes Rauschen. Hinter das Canvas eine ruhige Fläche oder einen Verlauf legen, kein unruhiges Bild.
+Stellschrauben: `base` ist der Hintergrund-Token in linearem sRGB, nicht der OKLCH-Text. `uIntensity` 0,02 bis 0,04 ergibt feines Filmkorn, ab 0,12 grobes Rauschen; höher geht nicht (S18: die Körnung wechselt je Bild und darf nie großflächig blitzen). Hinter das Canvas eine ruhige Fläche oder einen Verlauf legen, kein unruhiges Bild.
 
 ## 2. paper-shaders (`@paper-design/shaders-react`)
 
@@ -139,7 +144,7 @@ import { SceneFrame } from './SceneFrame'; // rezepte/3d.md: in view only, still
 
 export default function Hero() {
   return (
-    <SceneFrame still="/hero-still.webp">
+    <SceneFrame still="/hero-still.webp" w={1280} h={720}>
       {() => (
         <MeshGradient
           colors={['#5100ff', '#00ff80', '#ffcc00', '#ea00ff']} // replace with 3-4 stops from the project palette
@@ -170,7 +175,7 @@ import { SceneFrame } from './SceneFrame'; // rezepte/3d.md: in view only, still
 
 export default function Hero() {
   return (
-    <SceneFrame still="/hero-still.webp">
+    <SceneFrame still="/hero-still.webp" w={1280} h={720}>
       {() => (
         <ShaderGradientCanvas style={{ position: 'absolute', inset: 0 }}>
           <ShaderGradient type="sphere" color1="#52ff89" color2="#dbba95" color3="#d0bce1" uSpeed={0.4} />
@@ -185,7 +190,7 @@ Stellschrauben: `type` und Kamera (`cAzimuthAngle`, `cPolarAngle`, `cDistance`).
 
 ## 4. Three.js `ShaderMaterial` (Verzerrung)
 
-Eigener Vertex- und Fragment-Shader auf einem Mesh, wenn fertige Bausteine den Effekt nicht haben: Welle unter dem Zeiger über einem Bild, verschobene Fläche. Lizenz MIT (`mrdoob/three.js`).
+Eigener Vertex- und Fragment-Shader auf einem Mesh, wenn fertige Bausteine den Effekt nicht haben: Welle unter dem Zeiger über einem Bild, verschobene Fläche. Grenze nach S20: Die Fläche reagiert, am Zeiger bleibt keine sichtbare Form oder Spur (Ring, Punkt); sonst ist es ein eigener Zeiger und nur Muster. Lizenz MIT (`mrdoob/three.js`).
 
 ```bash
 npm install three
@@ -196,6 +201,7 @@ import * as THREE from 'three';
 
 const host = document.querySelector('.distortion');
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const motionQuery = matchMedia('(prefers-reduced-motion: reduce)'); // S17: listen for `change`
 const dpr = matchMedia('(pointer: coarse)').matches ? 1 : Math.min(devicePixelRatio, 1.5);
 
 const scene = new THREE.Scene();
@@ -252,6 +258,7 @@ let raf = 0;
 let visible = false;
 let paused = reduceMotion; // reduced motion: one still frame
 pauseButton?.setAttribute('aria-pressed', String(paused));
+motionQuery.addEventListener('change', (e) => { paused = e.matches; pauseButton?.setAttribute('aria-pressed', String(paused)); restart(); });
 
 function animate(t) {
   uniforms.uTime.value = t * 0.001;

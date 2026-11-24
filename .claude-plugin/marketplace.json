@@ -10,20 +10,6 @@
       "source": "./plugins/arsenal",
       "category": "design",
       "homepage": "https://github.com/Moritz314/kreis-skills"
-    },
-    {
-      "name": "impeccable",
-      "description": "Design skill for frontend interfaces by Paul Bakaus (Apache-2.0), version 4.6.0: shape, critique, audit, polish, animate, harden, adapt and more, plus the deterministic detector (npx impeccable detect). In this marketplace its rules are folded into arsenal 3.",
-      "source": "./plugins/impeccable",
-      "category": "design",
-      "homepage": "https://github.com/Moritz314/kreis-skills"
-    },
-    {
-      "name": "web-design-guidelines",
-      "description": "Review UI code against the Web Interface Guidelines (accessibility, UX, best practices). MIT, by Vercel.",
-      "source": "./plugins/web-design-guidelines",
-      "category": "development",
-      "homepage": "https://github.com/Moritz314/kreis-skills"
     }
   ]
 }

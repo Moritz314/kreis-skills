@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><title>iPhone 17 Pro Max Attrappe</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+/* 1 pt = 1 CSS-px im Display (440x956). Rahmen: Display 72,89 mm = 440 px -> 6,0362 px je mm. */
+:root{--s:6.0362;--w:78;--h:163.4;--dw:72.891;--dh:158.36}
+body{margin:0;min-height:100vh;background:#e9e9ec;display:grid;place-items:center;font:14px system-ui}
+.bar{position:fixed;top:8px;left:8px;display:flex;gap:6px;z-index:5}
+.bar a{padding:4px 10px;border:1px solid #888;border-radius:6px;background:#fff;color:#111;text-decoration:none}
+.geraet{position:relative;transform-origin:center;transform:scale(var(--z,1))}
+.geraet img{display:block;position:relative;z-index:2;pointer-events:none}
+.geraet iframe{position:absolute;border:0;background:#fff;z-index:1}
+/* hoch */
+.hoch{width:calc(var(--w)*var(--s)*1px);height:calc(var(--h)*var(--s)*1px)}
+.hoch img{width:100%;height:100%}
+.hoch iframe{left:calc((var(--w) - var(--dw))/2*var(--s)*1px);top:calc((var(--h) - var(--dh))/2*var(--s)*1px);width:440px;height:956px}
+/* quer */
+.quer{width:calc(var(--h)*var(--s)*1px);height:calc(var(--w)*var(--s)*1px)}
+.quer img{width:100%;height:100%}
+.quer iframe{left:calc((var(--h) - var(--dh))/2*var(--s)*1px);top:calc((var(--w) - var(--dw))/2*var(--s)*1px);width:956px;height:440px}
+/* Bildschirmrundung nachziehen: iframe liegt unter dem Rahmen, Ecken deckt das Gehäuse ab. */
+</style></head><body>
+<div class="bar"><a href="?">hoch</a><a href="?quer">quer</a></div>
+<div id="g" class="geraet"><img id="rahmen" alt=""><iframe id="f" title="Seite in der Attrappe"></iframe></div>
+<script>
+/* Aufruf: attrappe.html?url=<Seite>[&quer][&z=0.8]  – Standard-URL: https://kreis.systems
+   Hinweis: env(safe-area-inset-*) setzt ein iframe nicht. Das Shot-Skript setzt --sat/--sar/--sab/--sal
+   (hoch 62/0/34/0, quer 20/62/20/62); Seiten nutzen env(safe-area-inset-top, var(--sat,0px)). */
+const q = new URLSearchParams(location.search), quer = q.has('quer');
+const g = document.getElementById('g'); g.className = 'geraet ' + (quer ? 'quer' : 'hoch');
+document.getElementById('rahmen').src = quer ? 'frame-quer.svg' : 'frame-hoch.svg';
+document.getElementById('f').src = q.get('url') || 'https://kreis.systems';
+const z = q.get('z') || Math.min(1, (innerHeight - 20) / (quer ? 78 : 163.4) / 6.0362, (innerWidth - 20) / (quer ? 163.4 : 78) / 6.0362);
+g.style.setProperty('--z', z);
+</script></body></html>

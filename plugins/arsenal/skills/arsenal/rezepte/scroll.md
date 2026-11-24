@@ -1,6 +1,6 @@
 # Rezept: Scroll-Choreografie, Textsplit, Zeiger-Effekte, View Transitions
 
-Wie man Scroll-Bewegung baut. Regeln: S17 bis S20, S42, S45, S48, BE07, BE12 bis BE17, TE10, TE11, TE13. Natives CSS ab `technik: statisch`, GSAP ab `technik: inseln`, Shader und 3D ab `technik: webgl`; Pins ab `bewegung: 3` (`regler.md`). Prüffrage vor jedem Effekt: Passt es ins Budget der Stufe (`regler.md`), gibt es ein Standbild und eine Telefonfassung (TE10)?
+Wie man Scroll-Bewegung baut. Regeln: S17 bis S20, S42, S45, S48, BE07, BE12 bis BE17, TE10, TE11, TE13. Natives CSS ab `technik: statisch`, GSAP ab `technik: inseln`, Shader und 3D ab `technik: webgl`; Einblendungen beim Scrollen ab `bewegung: 2`, Pins ab `bewegung: 3` (`regler.md`). Prüffrage vor jedem Effekt: Passt es ins Budget der Stufe (`regler.md`), gibt es ein Standbild und eine Telefonfassung (TE10)?
 
 ## Werkzeug: natives CSS oder GSAP
 
@@ -32,7 +32,7 @@ Der Ruhezustand ist der Endzustand. Animiert wird nur, wenn der Browser es kann 
 
 ## GSAP und ScrollTrigger
 
-Lizenz, geprüft 09.2026: Seit 29.04.2025 ist GSAP mit allen Plugins kostenlos (ScrollTrigger, ScrollSmoother, SplitText, MorphSVG, DrawSVG, Draggable, Flip, Physics2D). gsap.com/pricing: „GSAP is now 100% free for all users, thanks to Webflow's support.“ Frei nutzbar, nicht Open Source: kein Umverpacken, kein Konkurrenzprodukt; Kundenseiten und SaaS sind erlaubt. Notizen, die ScrollTrigger oder SplitText „kostenpflichtig“ nennen, sind veraltet.
+Lizenz, geprüft 09.2026: Seit 29.04.2025 ist GSAP mit allen Plugins kostenlos (ScrollTrigger, ScrollSmoother, SplitText, MorphSVG, DrawSVG, Draggable, Flip, Physics2D). gsap.com/pricing: „GSAP is now 100% free for all users, thanks to Webflow's support.“ Frei nutzbar, nicht Open Source: kein Umverpacken, kein Konkurrenzprodukt; Kundenseiten und SaaS sind erlaubt. Notizen, die ScrollTrigger oder SplitText „kostenpflichtig“ nennen, sind veraltet. ScrollSmoother ist frei, aber verboten: kein weiches Scrollen (BE17).
 
 ```bash
 npm install gsap
@@ -45,9 +45,9 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
-const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const mm = gsap.matchMedia();   // hört auf `change` (S17)
 
-if (!reduce) {   // sonst bleibt der Ruhezustand stehen, alles sichtbar (S17)
+mm.add("(prefers-reduced-motion: no-preference)", () => {   // sonst bleibt der Ruhezustand stehen, alles sichtbar (S17)
   const tl = gsap.timeline({
     defaults: { ease: "none" },   // Scroll-Kopplung linear (BE12)
     scrollTrigger: {
@@ -61,7 +61,7 @@ if (!reduce) {   // sonst bleibt der Ruhezustand stehen, alles sichtbar (S17)
   tl.to(".chapter-2 .headline", { yPercent: -20 })
     .to(".chapter-2 .diagram", { scale: 1.15, rotate: 3 }, "<")   // "<" = mit dem vorigen starten
     .from(".chapter-2 .caption", { y: 24 }, "-=0.3");             // überlappt den vorigen Tween
-}
+});
 ```
 
 Tiefe entsteht über verschiedene Wege je Ebene bei `scrub: true`; ein Nachlauf (`scrub` als Zahl) nur auf reinen Schmuck-Ebenen ohne Text (BE12). `pin: true` setzt das Element auf `position: fixed`; ein Pin-Spacer hält seinen Platz im Fluss.
@@ -120,20 +120,20 @@ import { CustomEase } from "gsap/CustomEase";
 gsap.registerPlugin(SplitText, CustomEase);
 CustomEase.create("enter", "0.05,0.7,0.1,1"); // entry curve from the table in the stamm (BE04)
 
-if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", () => {   // S17: gilt auch bei offener Seite
   SplitText.create(".hero-headline", {
     type: "lines, words",
     autoSplit: true,   // teilt bei Größenänderung und Schriftladen neu (API ab v3.13)
     onSplit(self) {
       return gsap.from(self.words, {
         y: 24,
-        duration: 0.8,   // staging token, from bewegung: 2 (BE04)
+        duration: 0.8,   // = --dauer-inszenierung aus dem MASK (BE04), hier als Zahl
         stagger: 0.03,   // S48
         ease: "enter",
       });
     },
   });
-}
+});
 ```
 
 Nur echten, fertigen Text teilen: Zeilenumbrüche bestimmen den Rhythmus. Wortweise ist billiger als zeichenweise. Ohne Abhängigkeit: Wörter von Hand in `<span>` legen, IntersectionObserver plus `element.animate()` (Web Animations API), wenn nur ein einmaliger Wort-Einstieg gebraucht wird.
@@ -165,7 +165,7 @@ function ScrollProgress() {
 }
 ```
 
-Fortschritt an etwas Echtes binden: Artikellänge, nummerierte Schritte. Kinder staffeln mit `transition: { delayChildren: i * 0.03 }` (S48).
+Fortschritt an etwas Echtes binden: Artikellänge, nummerierte Schritte. Kinder staffeln (Deckel nach S48) mit `transition: { delayChildren: Math.min(i, 8) * 0.03 }` (S48).
 
 ## Magnetknopf und Zeiger-Effekte
 
@@ -179,8 +179,8 @@ Ohne Bibliothek. Der Effekt folgt dem Zeiger, der Systemzeiger bleibt sichtbar (
 .magnetic span { display: inline-block; transition: transform var(--dauer-klein) var(--kurve-ort); }
 ```
 ```js
-const ok = matchMedia("(hover: hover)").matches &&
-           !matchMedia("(prefers-reduced-motion: reduce)").matches;
+const reduce = matchMedia("(prefers-reduced-motion: reduce)");   // live gelesen (S17)
+const ok = matchMedia("(hover: hover)").matches;
 
 if (ok) document.querySelectorAll(".magnetic").forEach((el) => {
   const strength = 0.35;      // Hülle bewegt sich weniger
@@ -188,6 +188,7 @@ if (ok) document.querySelectorAll(".magnetic").forEach((el) => {
   const span = el.querySelector("span");
 
   el.addEventListener("pointermove", (e) => {
+    if (reduce.matches) return;
     const r = el.getBoundingClientRect();
     const x = e.clientX - (r.left + r.width / 2);
     const y = e.clientY - (r.top + r.height / 2);
@@ -201,45 +202,49 @@ if (ok) document.querySelectorAll(".magnetic").forEach((el) => {
 });
 ```
 
-Zugbereich begrenzen: Listener auf etwa das 1,5-Fache der Knopffläche, nicht auf das ganze Fenster.
+Zugbereich begrenzen: Der Listener hängt am Knopf oder an einer Hülle von etwa dem 1,5-Fachen der Knopffläche, nie am ganzen Fenster.
 
 ## Hintergrund am Zeiger, Canvas im Bild
 
-Bausteine: Pointer Events für die Position, `<canvas>` oder WebGL, ein Uniform reicht die Zeigerposition an den Fragment-Shader (Muster belegt in Fachartikeln, z. B. Codrops zur Bulge-Verzerrung, nicht in einer Norm). Lokal am Knopf oder an der Karte kostet es wenig. Ein Vollbild-Shader rechnet jedes Pixel in jedem Bild neu und zieht auf dem Telefon Akku; Shader-Code in `rezepte/shader.md`.
+Bausteine: Pointer Events für die Position, `<canvas>` oder WebGL, ein Uniform reicht die Zeigerposition an den Fragment-Shader (Muster belegt in Fachartikeln, z. B. Codrops zur Bulge-Verzerrung, nicht in einer Norm). Grenze nach S20: Die Fläche reagiert auf den Zeiger, es hängt keine sichtbare Form oder Spur an ihm; sonst ist es ein eigener Zeiger und nur Muster. Lokal am Knopf oder an der Karte kostet es wenig. Ein Vollbild-Shader rechnet jedes Pixel in jedem Bild neu und zieht auf dem Telefon Akku; Shader-Code in `rezepte/shader.md`.
 
 ```js
 const canvas = document.querySelector(".shader-bg");
-const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const pauseButton = document.querySelector(".shader-bg-pause");   // S18: läuft länger als 5 s von selbst
+const reduce = matchMedia("(prefers-reduced-motion: reduce)");     // S17: hört auf `change`
 const dpr = matchMedia("(pointer: coarse)").matches ? 1 : Math.min(devicePixelRatio, 1.5);
 canvas.width = canvas.clientWidth * dpr;
 canvas.height = canvas.clientHeight * dpr;
 
 let rafId = null;
+let visible = false;
+let paused = reduce.matches;   // reduziert: Standbild, der Knopf startet bei Wunsch
+pauseButton?.setAttribute("aria-pressed", String(paused));
+
 function renderLoop(t) {
   draw(t);
-  rafId = requestAnimationFrame(renderLoop);
+  rafId = visible && !paused ? requestAnimationFrame(renderLoop) : null;
+}
+function sync() {
+  if (visible && !paused) { if (!rafId) rafId = requestAnimationFrame(renderLoop); }
+  else { cancelAnimationFrame(rafId); rafId = null; draw(0); }   // Standbild (S17, TE10)
 }
 
-if (reduce) {
-  draw(0);   // Standbild (S17, TE10)
-} else {
-  const io = new IntersectionObserver(([entry]) => {
-    if (entry.isIntersecting) {
-      if (!rafId) rafId = requestAnimationFrame(renderLoop);
-    } else if (rafId) {
-      cancelAnimationFrame(rafId);
-      rafId = null;
-    }
-  }, { threshold: 0 });
-  io.observe(canvas);
-}
+new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; sync(); }, { threshold: 0 }).observe(canvas);
+reduce.addEventListener("change", (e) => { paused = e.matches; pauseButton?.setAttribute("aria-pressed", String(paused)); sync(); });
+pauseButton?.addEventListener("click", () => {
+  paused = !paused;
+  pauseButton.setAttribute("aria-pressed", String(paused));
+  sync();
+});
+addEventListener("pagehide", () => cancelAnimationFrame(rafId));   // TE10: Bei WebGL zusätzlich Geometrie und Texturen freigeben
 ```
 
-`requestAnimationFrame` pausiert in Hintergrund-Tabs von selbst (MDN); der Observer pausiert zusätzlich außerhalb des Bildes. Bei WebGL beim Verlassen Geometrie und Texturen freigeben (TE10, `rezepte/3d.md`).
+`requestAnimationFrame` pausiert in Hintergrund-Tabs von selbst (MDN); der Observer pausiert zusätzlich außerhalb des Bildes. Der Pause-Knopf ist Pflicht (S18). Bei WebGL beim Verlassen Geometrie und Texturen freigeben (TE10, `rezepte/3d.md`).
 
 ## View Transitions
 
-Browser-eigener Übergang zwischen DOM-Zuständen (SPA) oder Seiten (MPA), gemeinsame Elemente über `view-transition-name`. Kein Skript für den Mechanismus.
+Browser-eigener Übergang zwischen DOM-Zuständen (SPA) oder Seiten (MPA), gemeinsame Elemente über `view-transition-name`. Kein Skript für den Mechanismus. Nur für seltene Wechsel; was man ständig wechselt (Tabs, Ansichten, Bereiche), geschieht sofort ohne Übergang (S50).
 
 Stand 09.2026 (caniuse): global etwa 91,75 %. Im Dokument: Chrome/Edge 111+, Safari 18+. Zwischen Dokumenten: Chrome/Edge 126+, Safari 18.2+. Firefox ab 144 (in 143 hinter Schalter); Firefox zwischen Dokumenten ist sehr neu, vor dem Einsatz an caniuse prüfen. Immer Funktion abfragen.
 

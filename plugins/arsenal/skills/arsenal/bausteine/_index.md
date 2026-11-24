@@ -4,12 +4,12 @@ Status: **ungeprüft**. Art, Unterart, `braucht` und Größe sind aus Kopfkommen
 
 Die Heimat aller Bausteine ist die Galerie im Zustandsordner (`library/galerie/`, Index `library/galerie/_index.md`; Arten und Unterarten wie dort und in `library/galerie/_ordnung.json`). Hier liegen nur zwei Sätze als Vorlagen: der **plasmind-Satz** (Kennungen H, E, F, B; Hausmarke plasmind, aus der Elementeschau vom 03.10.2026) und die **Kunden-Bausteine** K1 bis K4 (eigene Gestalt, angeregt durch Seiten der German Web Awards 2026, BAUPLAN G5 bis G11 in `<dein-ordner>`). Die Planung wählt per `wofür` und `braucht`; die Gestalt kommt aus dem MASK (PR15).
 
-- Jede Datei ist in sich geschlossen: CSS und JS inline, keine fremden Abrufe, keine Abhängigkeiten (Ausnahme: F2 und F3 lesen kleine Medien aus `plasmind/medien/`, K2 aus `kunden/medien/`). Schrift fällt auf Systemschrift zurück; Martian Mono (OFL) bei Bedarf selbst einbinden.
+- Jede Datei ist in sich geschlossen: CSS und JS inline, keine fremden Abrufe, keine Abhängigkeiten (Ausnahme: F2 und F3 lesen kleine Medien aus `plasmind/medien/`, K2 aus `kunden/medien/`). Schrift fällt auf Systemschrift zurück; im Projekt gilt die Projektschrift (S25).
 - Beim Einbau ins Projekt: CSS und JS in eigene Dateien (S10), Kurven und Dauern aus dem Satz des Projekts (BE04), die Gestalt aus dem MASK.
-- Thema: dunkel als Standard, hell über `[data-theme=light]` (Demo: `?theme=light`); im Projekt gilt das Thema-Skript nach TE08. H- und E-Dateien pausieren außerhalb des Bildes und zeigen bei reduzierter Bewegung ein Standbild.
+- Thema: dunkel als Standard, hell über `[data-theme=light]` (Demo: `?thema=hell`, TE08); im Projekt gilt das Thema-Skript nach TE08. H- und E-Dateien pausieren außerhalb des Bildes und zeigen bei reduzierter Bewegung ein Standbild.
 - Vorschau: `<ordner>/vorschau/<Kennung>.webp` (F1 bis F12: `.png`). Bildquellen: `plasmind/bilder/QUELLEN.md` (eigenes Werk).
 - ★ = von <dein-name> ausgewählt. `braucht` = niedrigste passende Reglerstufe (Vorschlag).
-- Zeiger-Effekte: Flächen, die auf den Zeiger reagieren (H2, H6, H8, H11), und Tooltips mit Information (E5) sind erlaubt. Schmuck, der als Form oder Spur am Zeiger hängt (E15, H1, H3, H4, H12), ist ein eigener Zeiger und darum nur Muster (S20).
+- Zeiger-Effekte: Flächen, die auf den Zeiger reagieren (H2, H6, H11), und Tooltips mit Information (E5) sind erlaubt. Schmuck, der als Form oder Spur am Zeiger hängt (E15, H1, H3, H4, H8, H12), ist ein eigener Zeiger und darum nur Muster (S20); H8 (Kugel folgt dem Zeiger) bleibt Muster, bis sie nur noch Licht und Neigung auf den Zeiger reagieren lässt.
 - `ux`/`vorfuehrung` (F1, F3, F6 bis F12) gibt es in der Galerie noch nicht; Vorschlag an die Bauleitung.
 
 ## UI-Elemente (`ui`)
@@ -58,7 +58,7 @@ Die Heimat aller Bausteine ist die Galerie im Zustandsordner (`library/galerie/`
 
 | Kennung | Unterart | Name | wofür | Parameter | KB | braucht | Datei |
 |---|---|---|---|---|---|---|---|
-| H10 | `bahn` | Colony with threads ★ | Agenten treiben als kleine Zellen, Fäden verbinden Nachbarn, Signale laufen darauf. | `PMEL.H10.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 16.3 | bewegung 2, inseln | `plasmind/H10-colony-with-threads.html` |
+| H10 | `bahn` | Colony with threads ★ | Agenten treiben als kleine Zellen, Fäden verbinden Nachbarn, Signale laufen darauf. | `PMEL.H10.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 16.3 | bewegung 3, inseln | `plasmind/H10-colony-with-threads.html` |
 | H7 | `scroll` | Depth parallax | Blobs in fünf Ebenen verschieben sich beim Scrollen verschieden schnell. | `PMEL.H7.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 14.6 | bewegung 3, inseln | `plasmind/H7-depth-parallax.html` |
 | H13 | `scroll` | Built: CSS 3D to WebGL | Scroll-Abschnitt mit vier Schritten (Design, Agenten, Kern, Fenster): Die Drahtkugel zieht sich zusammen, der echte Blob wächst heraus; rückwärts läuft es umgekehrt. Folgt dem Seitenthema. | `PMEL.H13.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 34.0 | bewegung 3, webgl | `plasmind/H13-built-css-3d-to-webgl.html` |
 | E8 | `uebergang` | Drag preview W7b/c/d | Ziehen: Platzhalter und Neigung am Ursprung, Geisterspur am gezogenen Teil, Einfügemarke am Ziel. | `PMEL.E8.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 17.9 | bewegung 1, inseln | `plasmind/E8-drag-preview-w7b-c-d.html` |
@@ -72,10 +72,10 @@ Die Heimat aller Bausteine ist die Galerie im Zustandsordner (`library/galerie/`
 | H2 | `hover` | Blobs dodge the pointer | Zellen bleiben an ihrem Platz und weichen aus, wenn der Zeiger nahe kommt. | `PMEL.H2.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 14.8 | bewegung 2, inseln | `plasmind/H2-blobs-dodge-the-pointer.html` |
 | H3 | `hover` | Metaball fusion | Zellen verschmelzen bei Berührung zu einem Körper und lösen sich wieder; der Zeiger ist eine von ihnen. **Nur als Muster in der Bibliothek; auf Seiten kein eigener Zeiger (S20).** | `PMEL.H3.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 15.4 | bewegung 2, inseln | `plasmind/H3-metaball-fusion.html` |
 | H4 | `hover` | Inversion surface ★ | Ein Blob am Zeiger kehrt alle Farben darunter um; die Fläche bleibt lesbar. **Nur als Muster in der Bibliothek; auf Seiten kein eigener Zeiger (S20).** | `PMEL.H4.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 15.0 | bewegung 2, inseln | `plasmind/H4-inversion-surface.html` |
-| H8 | `hover` | 3D blob with light ★ | Geraymarchte, verformte Kugel mit Führungs- und Randlicht; sie blickt zum Zeiger und folgt ihm gedämpft. | `PMEL.H8.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 19.6 | bewegung 2, webgl | `plasmind/H8-3d-blob-with-light.html` |
+| H8 | `hover` | 3D blob with light ★ | Geraymarchte, verformte Kugel mit Führungs- und Randlicht; sie blickt zum Zeiger und folgt ihm gedämpft (Muster, S20). | `PMEL.H8.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 19.6 | bewegung 2, webgl | `plasmind/H8-3d-blob-with-light.html` |
 | H11 | `hover` | Contour lines | Höhenlinien eines bewegten Felds; der Zeiger hebt einen Hügel, um den sich die Linien legen. | `PMEL.H11.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 15.4 | bewegung 2, inseln | `plasmind/H11-contour-lines.html` |
 | H12 | `hover` | Cell trail ★ | Der Zeiger legt kleine Zellen ab, die anschwellen, zu einem Strang verschmelzen und vergehen. **Nur als Muster in der Bibliothek; auf Seiten kein eigener Zeiger (S20).** | `PMEL.H12.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 14.3 | bewegung 2, inseln | `plasmind/H12-cell-trail.html` |
-| E5 | `hover` | Tooltip W4d | Tooltip folgt dem Zeiger seitlich, zeigt Bezeichnung und Wert in Mono, erscheint auch bei Tastaturfokus. | `PMEL.E5.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 16.0 | bewegung 1, inseln | `plasmind/E5-tooltip-w4d.html` |
+| E5 | `hover` | Tooltip W4d | Tooltip folgt dem Zeiger seitlich, zeigt Bezeichnung und Wert in der Projektschrift (Tabellenziffern), erscheint auch bei Tastaturfokus. | `PMEL.E5.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 16.0 | bewegung 1, inseln | `plasmind/E5-tooltip-w4d.html` |
 | E15 | `hover` | Cursor CU1 | Ruhiger, straffer Blob am Zeiger: folgt, staucht beim Klick, verschmilzt mit Zellen. **Nur als Muster in der Bibliothek; auf Seiten kein eigener Zeiger (S20).** | `PMEL.E15.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 38.6 | bewegung 1, inseln | `plasmind/E15-cursor-cu1.html` |
 | H5 | `klick` | Cell division on click | Ein Klick teilt eine Zelle über einen schmaler werdenden Hals; ein Klick ins Leere setzt eine neue. | `PMEL.H5.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 16.4 | bewegung 2, inseln | `plasmind/H5-cell-division-on-click.html` |
 | E11 | `klick` | Tones W11d | Drei kurze Dreieckstöne durch einen Tiefpass wie ein Messgerät: Klick, Bestätigung, Hinweis. Nur nach einem Druck. | `PMEL.E11.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 15.4 | bewegung 1, inseln | `plasmind/E11-tones-w11d.html` |
@@ -100,7 +100,7 @@ Die Heimat aller Bausteine ist die Galerie im Zustandsordner (`library/galerie/`
 
 | Kennung | Unterart | Name | wofür | Parameter | KB | braucht | Datei |
 |---|---|---|---|---|---|---|---|
-| H9 | `wireframe` | CSS 3D blob | Drahtkugel aus Ringen in CSS 3D mit leuchtendem Kern; leichte Alternative ohne WebGL. | `PMEL.H9.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 16.1 | bewegung 2, inseln | `plasmind/H9-css-3d-blob.html` |
+| H9 | `wireframe` | CSS 3D blob | Drahtkugel aus Ringen in CSS 3D mit leuchtendem Kern; leichte Alternative ohne WebGL. | `PMEL.H9.init(el,{theme})`, `setTheme`, `destroy`; Farben als CSS-Variablen | 16.1 | bewegung 3, inseln | `plasmind/H9-css-3d-blob.html` |
 
 ## Medien (`medien`)
 

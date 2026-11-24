@@ -332,3 +332,57 @@ Art: `übernommen`, `geschärft` (Zahl oder Probe dazu), `gelockert` (Verbot →
 | Fünf Award-Haltungen als Planfrage | ersetzt durch Regler, Stufen, `branchen/` |
 | Interview in drei Runden, Typ zuerst | ersetzt durch drei bis vier Fragen je Runde (`befehle/plan.md`) |
 | IBM Carbon als zweites Kurven- und Dauernsystem (A motion-doctrine) | ein System: Material Design 3 (Stamm-Tabelle, BE04) |
+
+## Nachtrag aus Lightmind (Steinbruch, 2026-11-20)
+
+Kürzel L = Lightmind-Fassung (`reference/` der 2.1-Linie, Stand 2026-11-18); V und G dort sind die Nummern der Anti-KI-Liste, nicht die Kürzel oben. Protokoll je Fundstück: `Arsenal-Auffrischung/ergebnis/Übernahme aus Lightmind.md`.
+
+| Datei | Kennungen | Quelle | Art |
+|---|---|---|---|
+| `regeln/anti-ki.md` | AK01 bis AK26 | L `anti-ki-regeln.md` V5, V6, V8, V9, V11, V12, V13, V14, V15, V17, V18, V20 bis V24, V27, V28, G1 bis G4, G7 bis G9; Recherche 2026-11-03/04 | übernommen; AK12 bis AK14 mit „Entscheidung <dein-name> offen“ |
+| `werkzeuge/anti-ki-pruefung.md` | | L `anti-ki-regeln.md` Abschnitt 5 (Befehle, Schnipsel R, S, F, A) | übernommen |
+| `regeln/software-arbeit.md` | SA01 bis SA11 | L `software.md` Regeln 19 bis 29 (Commits 57d494d, c9d6785, 2029f49 auf origin) | übernommen |
+| `planung/arbeitsanalyse.md` | | L `work-analysis.md`, `work-walkthrough.md`, `work-patterns.md` | zusammengeführt |
+| `regeln/website-idee.md` | WI01 bis WI08 | L `website-idea.md` (Regeln 14 bis 19 von `website.md`); Regel 13 (erfundene „plausible“ Angaben) nicht übernommen, sie widerspricht S06 | geschärft |
+| `regeln/bewertung.md` | BW01 bis BW14 | L `heuristics-scoring.md`, daraus impeccable `critique.md` (Apache-2.0) | übernommen |
+| `planung/aus-reels-nachtrag.md` | | L `aus-reels.md`, vier Einträge ab „Scroll-Storytelling Hautpflege“ | übernommen |
+| `werkzeuge/*.py`, `werkzeuge/vorlagen/` | | L `scripts/` (ohne `load_context.py`); `check_refs.py` ohne Ersetzungstabelle | angepasst |
+| `bausteine/iphone-17-pro-max/` | | L `bausteine/iphone-17-pro-max` (Verweise auf Lightmind-Werkzeuge entfernt) | übernommen |
+
+## Auflösungen intern (2026-11-20)
+
+Widersprüche innerhalb von Arsenal 3.0.0 aufgelöst; Protokoll `Arsenal-Auffrischung/ergebnis/Auflösungen intern.md`. Es entfiel keine Kennung. Geändert im Wortlaut, Kennung und Zählung gleich:
+
+| Kennung | Änderung | Grund |
+|---|---|---|
+| S04 | Werkzeug `npx impeccable detect` ersetzt durch `werkzeuge/scan_antipatterns.py` | impeccable ist abgeschaltet (W5); eigener Scanner aus dem Lightmind-Nachtrag |
+| S10, TE08 | Thema- und Intro-Skript sind externe, synchrone Skripte; Ausnahme steht nicht mehr in einer Vorliebe | Pflicht gegen Vorliebe (W2) |
+| S17 | Abfrage hört auf `change` | W25, B1 |
+| S18 | Blitzen als großflächiger Helligkeitswechsel nach 2.3.1 | W14, A1 |
+| S37, KO02 | feste Leiste erst ab `konversionsdruck: direkt` | W9 |
+| S51 | Ermessen, nicht Pflicht; `round` nur auf kleinen Flächen | W19, A23 |
+| Dauern nach S51 | 1.200 ms als Stufe der Inszenierung, drei Austrittsvariablen genannt | W15, A6 |
+
+
+## Letzte Durchsicht impeccable 4.6.0 und Vercel Web Interface Guidelines (2026-11-20)
+
+Vor dem endgültigen Löschen beider Skills wurden deren Regeln ein letztes Mal gegen Arsenal gelesen (Protokoll `Arsenal-Auffrischung/ergebnis/Durchsicht impeccable und Guidelines.md`: 41 Kandidaten, 8 hoch, 20 mittel, 13 gering). Übernommen sind die acht mit hohem Mehrwert und vier mittlere (nur, was in Arsenal ganz fehlte, keiner Regel widerspricht und technisch prüfbar ist). Kürzel: I = impeccable 4.6.0, V = Vercel Web Interface Guidelines.
+
+| Kennung | Quelle | Art |
+|---|---|---|
+| S12 | V Accessibility (`aria-live`) | geschärft |
+| S14 | I `colorize.md` (Kontrast, Überlagerungsketten) | geschärft |
+| S52 | I `harden.md`, `adapt.md` (16 px an Eingabefeldern, iOS-Zoom) | geschärft |
+| TE13 | I `harden.md`, `audit.md` (unterbrochene Gesten) | geschärft |
+| TE14 | V Accessibility (`scroll-margin-top`), I `adapt.md` (`viewport-fit=cover`) | geschärft |
+| TE18 | I `harden.md` (Hochkontrast) | neu |
+| SA06 | V Content Handling, I `harden.md` (Textüberlauf, `min-width: 0`) | geschärft |
+| SA12 | V Forms (`beforeunload`) | neu |
+| SW18 | V Navigation & State (Zustand in der Adresse) | neu |
+| ME17 | V Accessibility, I `audit.md` (Untertitel, Transkript) | neu |
+| BW08 | I `critique.md` (Cognitive Load, Richtwert je Entscheidungspunkt) | geschärft |
+| `werkzeuge/scan_antipatterns.py` | V Anti-patterns, I `audit.md`, `hooks.md` (16 statische Regeln) | neu |
+
+Nicht übernommen: Geschmacksfragen (Emojis, Verläufe, Mindestschrift im Fließtext, Leerraum, Dauern und Kurven), englische Typografie (Title Case), React-Hydration, native Pfade, die `.impeccable/`-Ablage, der Live-Variantenmodus.
+
+Beide Skills (`impeccable`, `web-design-guidelines`) sind danach gelöscht worden. Letzter Stand: Git-Historie des Skills-Repos, Commit `b5423a0`; Sicherung `<dein-ordner>` (dort auch `impeccable.vor-3/`); die Vercel-Regeln liegen öffentlich unter `https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md`.

@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "arsenal/werkzeuge/vorlagen/durchgang.schema.json",
+  "title": "Work walkthrough of one variant or of the built state (durchgang.json), see reference/work-walkthrough.md; scripts/arbeit_check.py recomputes the sums from the protocol. Field 'richtung' holds the variant id, or 'build' for the built state",
+  "type": "object",
+  "required": ["richtung", "urteil", "aufgaben", "proben", "befunde", "zusammenfassung"],
+  "properties": {
+    "richtung": { "type": "string", "minLength": 1 },
+    "adresse": { "type": "string" },
+    "breite": { "type": "integer", "description": "Breite des Arbeitsplatzes aus der Szene, px" },
+    "urteil": { "enum": ["freigabe", "nacharbeit", "verwerfen", "ungeprueft"] },
+    "aufgaben": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["aufgabe", "budget", "schritte", "handwechsel", "blickwechsel", "wartepunkte", "fehlgriffe", "bestanden", "protokoll"],
+        "properties": {
+          "aufgabe": { "type": "string", "description": "Kennung und Name wie in ARBEIT.md, zum Beispiel 'K1 Rückruf erfassen'" },
+          "budget": { "type": ["integer", "null"], "description": "Schrittbudget aus ARBEIT.md; null ohne ARBEIT.md" },
+          "schritte": { "type": "integer" },
+          "handwechsel": { "type": "integer" },
+          "blickwechsel": { "type": "integer" },
+          "wartepunkte": { "type": "integer" },
+          "fehlgriffe": { "type": "integer" },
+          "bestanden": { "type": ["boolean", "null"] },
+          "protokoll": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["nr", "handlung", "eingabe", "bereich", "rueckmeldung"],
+              "properties": {
+                "nr": { "type": "integer" },
+                "handlung": { "type": "string", "minLength": 1 },
+                "eingabe": { "enum": ["tastatur", "zeiger", "touch"] },
+                "bereich": { "enum": ["navigation", "kopf", "liste", "detail", "dialog", "formular"] },
+                "rueckmeldung": { "type": "string" },
+                "fehlgriff": { "type": "boolean" },
+                "warten": { "type": "boolean" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "proben": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["probe", "ergebnis", "beleg"],
+        "properties": {
+          "probe": { "enum": ["wiederholung", "neuladen", "falscheingabe", "zerstoerung", "zustaende", "sammelaktion"] },
+          "ergebnis": { "enum": ["bestanden", "durchgefallen", "entfaellt", "ungeprueft"] },
+          "beleg": { "type": "string", "minLength": 5 }
+        }
+      }
+    },
+    "befunde": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["stufe", "regel", "ort", "befund", "korrektur"],
+        "properties": {
+          "stufe": { "enum": ["muss", "soll", "geschmack"] },
+          "regel": { "type": "string", "pattern": "^([A-Z]{1,2}[0-9]{1,3}|keine)$" },
+          "ort": { "type": "string", "minLength": 1 },
+          "befund": { "type": "string", "minLength": 1 },
+          "korrektur": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "zusammenfassung": { "type": "string", "maxLength": 600 }
+  }
+}

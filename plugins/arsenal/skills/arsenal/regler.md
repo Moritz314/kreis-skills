@@ -4,7 +4,7 @@ Wird immer geladen. Ein Vorhaben läuft mit zehn Reglern, einer Stufe, einer Web
 
 ## Woher die Werte kommen
 
-1. **Branche** (`branchen/<name>.json`): Startwerte aller zehn Regler und kurze Branchenregeln. Gepflegt in der Arsenal-App. Die Art `anwendung` hat keine Branche (`branche: keine`): `plan` setzt die Startwerte aus dem Modul `software` (SW02, SW10, SW16) und S50, jeden mit Grund.
+1. **Branche** (`branchen/<name>.json`): Startwerte aller zehn Regler und kurze Branchenregeln. Gepflegt in der Arsenal-App. Die Art `anwendung` hat keine Branche (`branche: keine`): `plan` setzt die Startwerte aus dem Modul `software` (SW02, SW10, SW16) und S50, jeden mit Grund. Das ist die einzige Liste dafür.
 2. **Stufe** (unten): Rahmen für einzelne Regler. Liegt ein Startwert außerhalb, gilt die nächste Grenze des Rahmens.
 3. **ARMOURY.md** des Vorhabens: die endgültigen Werte, je mit einem Satz Grund. Eine Abweichung von Branche oder Rahmen steht dort mit Datum und Grund. Ein Regler ändert sich mitten im Vorhaben nur so; danach prüft `kritik` gegen die neue Stellung.
 
@@ -21,7 +21,7 @@ Wird immer geladen. Ein Vorhaben läuft mit zehn Reglern, einer Stufe, einer Web
 | `studio` | bewusste Typografie, redaktionelles Layout, Zurückhaltung als Signal, Arbeiten als Fälle | Merkmallisten statt Fällen |
 | `labor` | Vorführung vor Beschreibung, dichte Produktfläche, technische Sicherheit | Beschreibung, wo eine Vorführung geht |
 
-**bewegung** (wie viel Bewegung das Vorhaben ausgibt; Stamm S42 bis S51 gelten auf jeder Stufe)
+**bewegung** (wie viel Bewegung das Vorhaben ausgibt; Stamm S42 bis S50 (Pflicht) und S51 (Ermessen) gelten auf jeder Stufe)
 
 | Stufe | erlaubt | nicht auf dieser Stufe |
 |---|---|---|
@@ -43,7 +43,7 @@ Wird immer geladen. Ein Vorhaben läuft mit zehn Reglern, einer Stufe, einer Web
 | Stufe | erlaubt | nicht auf dieser Stufe |
 |---|---|---|
 | `statisch` | HTML und CSS, wenige Zeilen Skript als Verbesserung, CSS- und SVG-Bewegung, Video | Skript-Bibliotheken, Inseln, WebGL |
-| `inseln` | Inseln nur für die Teile, die sie brauchen (z. B. GSAP, Canvas, Lottie) | Shader- und 3D-Ebenen |
+| `inseln` | Inseln nur für die Teile, die sie brauchen (z. B. GSAP, Canvas, Lottie); bei Hand-HTML ein eigenes Skript je Teil (S10) | Shader- und 3D-Ebenen |
 | `webgl` | dazu Shader und 3D, nie im kritischen Pfad, mit Standbild und Telefonfassung | nichts vom Regler her; Budgets gelten |
 
 **tonfall** (wie der Text spricht)
@@ -107,7 +107,7 @@ Wird immer geladen. Ein Vorhaben läuft mit zehn Reglern, einer Stufe, einer Web
 
 Ein Brief, der Bewegung ganz verbietet, ist auf den Stufen `kunde-hochwertig` und `award` der Fehler, nicht der Regler.
 
-Der Rahmen der Regler je Stufe (unten) gilt für Websites (`website`, `onepage`, `landingpage`). Für die Art `anwendung` sind die Regler auf jeder Stufe frei; dort gelten SW02 und S50.
+Der Rahmen der Regler je Stufe (unten) gilt für Websites (`website`, `onepage`, `landingpage`). Für die Art `anwendung` sind die Regler auf jeder Stufe frei; die Startwerte stehen unter „Woher die Werte kommen“.
 
 ## Stufen
 
@@ -154,7 +154,7 @@ Was die Kalibrierung „Landingpage“ nannte, ist hier die Startseite der Art `
 | `mockup` | Entwurf zur Wahl, gehostet | erste Ansichten oder Seiten unter `app.plasmind.dev/mockups-<zufall>/` |
 | `bau` | fertige Website oder Ausbau einer gewählten Demo | ausgelieferte Seite |
 
-**Module nach Reglern** (zusätzlich zur Art): `bewegung` ab `bewegung: 1`; `medien`, sobald Fotos, Filme oder fremde Dateien vorkommen; `erzeugt`, sobald Material selbst erzeugt wird (SVG, Film, Shader, 3D, Textur); `technik` ab `technik: inseln`, bei Video und bei `bauen` und `audit`. Dazu die Liste `module` der Branche.
+**Module nach Reglern** (zusätzlich zur Art): `bewegung` ab `bewegung: 1`; `medien`, sobald Fotos, Filme oder fremde Dateien vorkommen; `erzeugt`, sobald Material selbst erzeugt wird (SVG, Film, Shader, 3D, Textur); `technik` ab `technik: inseln`, bei Video und bei `bauen` und `audit`. Dazu, falls vorhanden, die Liste `module` der Branche.
 
 ## Block im ARMOURY
 

@@ -12,7 +12,7 @@ Drei erste Ansichten, eine Wahl, danach das MASK. Gilt für jeden Lauf (KONFLIKT
 2. Je Konzept die erste Ansicht gebaut und poliert, bei 1440 und bei 390; 390 ist eine eigene Komposition (S37). Regeln: Stamm; bei Website-Arten Modul `praesentation` (PR01 bis PR04, PR16), bei `anwendung` Modul `software`.
 3. Fotos `L/konzepte/k<1-3>-1440.png` und `k<1-3>-390.png` (`deviceScaleFactor` 2), gehostet unter `app.plasmind.dev/mockups-<zufall>/` mit `noindex`.
 4. Wahl durch Kunde, <dein-name> oder Overseer. Ergebnis `L/WAHL.md` mit Grund.
-5. `L/MASK.md` aus dem gewählten Konzept (wie es aussieht): Farben je mit Gegenstand und Kontrastwerten, Schrift und Skala, Raster, Abstände, Radius (höchstens drei Werte), Leitmotiv, kühne Stelle, Bewegungsthese mit Kurven und Dauern als CSS-Variablen, Ebenenplan (was liegt worüber).
+5. `L/MASK.md` aus dem gewählten Konzept (wie es aussieht): Farben je mit Gegenstand und Kontrastwerten, Schrift und Skala, Raster, Abstände, Radius (S23), Leitmotiv, kühne Stelle, Bewegungsthese mit Kurven und Dauern als CSS-Variablen, Ebenenplan (was liegt worüber).
 
 ## Abnahme
 

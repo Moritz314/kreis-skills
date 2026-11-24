@@ -22,10 +22,11 @@ Laden nach `regler.md` (Module nach Reglern). Grundlagen im Stamm: scharf (S34),
 
 ## Video
 
-- **ME13 Klassen:** Größe nach S34: Jede ausgelieferte Datei ist mindestens so breit wie ihre größte Anzeige × 2, der Master ebenso (Vollbild bei 1440 CSS-px: 2880 px, also eine 4K-Quelle). Drei Klassen nach Fensterbreite (ab 1280 px je Datei bis 8 MB, Tablet und Telefon je bis 3 MB), gewählt über `media` an den `source`-Elementen. Gehen Schärfe und Gewicht nicht zugleich, wird das Motiv ruhiger, nicht die Datei kleiner (ME09). Das Videobudget je Seite in `regler.md` geht vor; auf `betrieb` ist es enger.
+- **ME13 Klassen:** Größe nach S34: Jede ausgelieferte Datei ist mindestens so breit wie ihre größte Anzeige × 2, der Master ebenso (Vollbild bei 1440 CSS-px: 2880 px, also eine 4K-Quelle). Drei Klassen nach Fensterbreite (ab 1280 px je Datei bis 8 MB, Tablet und Telefon je bis 3 MB), gewählt über `media` an den `source`-Elementen. Gehen Schärfe und Gewicht nicht zugleich, wird das Motiv ruhiger, nicht die Datei kleiner (ME09). Das Videobudget je Seite in `regler.md` geht vor; auf `betrieb` begrenzt es auch die Desktop-Datei.
 - **ME14 Poster** ist genau Bild 0 des ausgelieferten Films, je Fensterklasse eines (`picture` und `preload` mit `media`), mobil unter 30 KB. Abschnitte, die dasselbe Material nutzen, nutzen dieselbe Posterdatei. Probe: PSNR gegen Bild 0 über 35 dB (`rezepte/erzeugt.md`).
 - **ME15 Laden:** Bühne `preload="metadata"`, unter der ersten Ansicht `preload="none"`; immer `width` und `height`. Der Film startet nach `load` und nach der Ladefolge ab Bild 0. `autoplay` nur stumm und mit Pause-Knopf fest am Bühnenrand. Außerhalb des Fensters pausiert er (IntersectionObserver). Bei reduzierter Bewegung steht das Poster. Video statt GIF.
 - **ME16 Kein Mischmodus über laufendem Film im Pin** (`mix-blend-mode`): Chromium zeichnet dort weiße und schwarze Rechtecke. Licht auf Material kommt aus Ebenen mit Deckkraft oder aus dem Film selbst.
+- **ME17 Alternativen für Medien mit Aussage (Pflicht, WCAG 1.2).** Film oder Ton, der etwas sagt (Kundenvideo mit Sprache, Erklärfilm), hat Untertitel oder Transkript und Bedienung per Tastatur (Pause, Ton nach S18). Reiner Schmuck (stumme Schleife, Bühnenfilm) ist für Hilfstechnik ausgeblendet (`aria-hidden="true"`, leeres `alt`, nicht fokussierbar).
 
 ## Zugänge
 

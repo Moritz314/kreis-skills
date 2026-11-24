@@ -56,7 +56,7 @@ Wechselt das Element wirklich seinen Platz im Layout (Karte wird Detail, Listene
 .ctl__label {                            /* own layer: no filter, no clip, no scale */
   position: relative;
   opacity: 0;
-  transition: opacity var(--dauer-rueckmeldung) var(--kurve-raus);
+  transition: opacity var(--dauer-rueckmeldung-raus) var(--kurve-raus);
 }
 .ctl[data-open="true"] .ctl__label {
   opacity: 1;
@@ -115,7 +115,7 @@ Deckt der offene Inhalt mehr als etwa ein Drittel der Fensterhöhe, ist es ein S
   clip-path: inset(0 round var(--radius-m));
   transition: clip-path var(--dauer-klein) var(--kurve-rein);
 }
-.bar__content { position: relative; opacity: 0; transition: opacity var(--dauer-rueckmeldung) var(--kurve-raus); }
+.bar__content { position: relative; opacity: 0; transition: opacity var(--dauer-rueckmeldung-raus) var(--kurve-raus); }
 .bar[data-open="true"] .bar__content { opacity: 1; transition: opacity var(--dauer-rueckmeldung) var(--kurve-rein); }
 .bar[data-instant] .bar__ground,
 .bar[data-instant] .bar__content { transition: none; }   /* shortcut or command palette: instant (S50) */
@@ -206,7 +206,7 @@ scrim?.addEventListener('pointerdown', closeSheet)   // only the modal variant r
 
 Probe: `document.activeElement` erfüllt den Vertrag nach Öffnen, nach einem `Tab`-Durchlauf, nach `Escape` und nach Klick außerhalb. Modal: Ein voller `Tab`-Durchlauf verlässt das Blatt nie. Nicht modal: `Tab` vom letzten Ziel im Blatt landet auf dem nächsten Ziel dahinter. Die Breite der Hauptspalte ist offen und geschlossen gleich.
 
-## Zustandsfarben: drei bis fünf Rollen
+## Zustandsfarben: drei bis vier Rollen
 
 Rollen zur Auswahl: Eingabe und Bestätigung, Optionen, Hinweise, Abbrechen und Schließen, Automatik (was das System selbst tat), Neutralgrau für Vergangenes (erledigt, abgelaufen, archiviert). Jede Rolle hat genau drei Stufen in OKLCH (S30): **Fläche** (wenig Chroma, Grund von Chips, Zeilen, Bannern), **Linie** (Rand, Trenner, Symbolstrich), **voll** (gefüllter Knopf, Punkt, Balken). Kontrast je Rolle und je Thema nach S14, Bedeutung nie allein über Farbe (S15). Farbstrategie: SW16. Läuft ein Projekt mit Website davor und Anwendung dahinter, gibt es zwei Paletten; das steht im MASK.
 
@@ -299,7 +299,7 @@ new PerformanceObserver((l) => tasks.push(...l.getEntries().map((e) => e.duratio
 
 ## Reduzierte Bewegung je Muster
 
-Jedes Muster hat seinen eigenen Endzustand, kein globaler Block (S17). `clip-path`-Weg, `transform`-Weg und Überschwingen entfallen, das Element steht sofort in seiner Endgeometrie. Ein Überblenden unter 100 ms (`--dauer-rueckmeldung`) darf bleiben. Die Abfrage hört mit `change` mit, denn die Einstellung kann sich bei offener Seite ändern. Laufende Web-Animations werden abgebrochen, sonst ignorieren sie die CSS-Regel.
+Jedes Muster hat seinen eigenen Endzustand, kein globaler Block (S17). `clip-path`-Weg, `transform`-Weg und Überschwingen entfallen, das Element steht sofort in seiner Endgeometrie. Rückmeldung und Überblenden bleiben (`--dauer-rueckmeldung`); die Probe aus S17 (höchstens 20 % der Animationen oder zwei) gilt. Die Abfrage hört mit `change` mit, denn die Einstellung kann sich bei offener Seite ändern. Laufende Web-Animations werden abgebrochen, sonst ignorieren sie die CSS-Regel.
 
 ```js
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)')

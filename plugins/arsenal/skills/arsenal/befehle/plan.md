@@ -22,7 +22,7 @@ Legt einen Lauf an: Start, Befund, SOUL und ARMOURY. `plan --bestand` übernimmt
 
 - Fehlt Wesentliches, fragen: höchstens drei bis vier Fragen je Runde, nur was Akte und Befund nicht beantworten. Ein Satz Brief ist keine Antwort; nie selbst ergänzen. Vor dem Schreiben die Zusammenfassung bestätigen lassen.
 - `L/SOUL.md` (wer und warum): Identität, Positionierung in einem Satz, Versprechen, Zielgruppe, Nutzungsszene (wer, wo, welches Licht; S31), Inventar mit Quelle, 3 bis 5 Referenzen mit je einem Merkmal, Anti-Referenzen, tragender Satz, Wortliste, „Die Seite sieht so aus, weil …“.
-- `L/ARMOURY.md` (womit gebaut wird): Block aus `regler.md` mit Art, Lauf, Branche, Stufe und zehn Reglern, je ein Satz Grund. Startwerte aus `branchen/<name>.json` (bei `anwendung`: `regler.md`), Rahmen der Stufe, Leitplanken prüfen. Dazu: geladene Module, gewählte Techniken (höchstens zwei), Bausteine, Ausnahmen mit Datum.
+- `L/ARMOURY.md` (womit gebaut wird): Block aus `regler.md` mit Art, Lauf, Branche, Stufe und zehn Reglern, je ein Satz Grund. Startwerte aus `branchen/<name>.json` (bei `anwendung`: Startwerte nach `regler.md`, „Woher die Werte kommen“), Rahmen der Stufe, Leitplanken prüfen. Dazu: geladene Module, gewählte Techniken (höchstens zwei), Bausteine, Ausnahmen mit Datum.
 - Abnahme: Der Satz „… weil …“ nennt die Leistung des Kunden (S02); keine Behauptung ohne Beleg in `befund.md`; alle zehn Regler gesetzt.
 
 `MASK.md` entsteht erst nach der Wahl (`entwurf`).

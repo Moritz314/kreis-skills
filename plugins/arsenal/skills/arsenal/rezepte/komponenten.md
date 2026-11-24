@@ -14,6 +14,7 @@ Nachgeprüft am 09.09.2026 gegen npm und GitHub (genutzt in `3d.md` und `shader.
 | `@react-three/drei` | `rezepte/3d.md` | MIT |
 | `@shadergradient/react` | – | MIT |
 | `@paper-design/shaders` | – | Apache-2.0 |
+| `@paper-design/shaders-react` | `rezepte/shader.md` | Apache-2.0 (laut `rezepte/shader.md`, ungeprüft) |
 | `@splinetool/react-spline` | – | MIT |
 | `@heroui/react` | – | uneinheitlich, siehe HeroUI |
 

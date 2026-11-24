@@ -4,7 +4,7 @@
 set -euo pipefail
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 SRC=${KREIS_SKILLS_SRC:-$HOME/.claude/skills}
-SKILLS=(arsenal impeccable web-design-guidelines)
+SKILLS=(arsenal)
 OWNER_URL="https://github.com/Moritz314/kreis-skills"
 STAGE=$(mktemp -d); trap 'rm -rf "$STAGE"' EXIT
 mkdir -p "$STAGE/out"

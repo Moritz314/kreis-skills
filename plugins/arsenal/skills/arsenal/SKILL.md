@@ -3,7 +3,7 @@ name: arsenal
 description: Der Webdesign-Skill von <studio>, für Websites, Onepages, Landingpages und Web-Anwendungen von der Planung bis zur Politur. Ein Regelwerk aus Stamm, Modulen, zehn Reglern, drei Stufen und Branchen; dazu Befehle für Plan, Material, Entwurf, Bau, Bewegung, Audit, Kritik, Politur, Bibliothek, Lernen und Vorlieben, Code-Rezepte (Shader, 3D, Scroll, Astro) und Bausteine. Nutzen bei jeder Gestaltung, jedem Bau und jeder Prüfung einer Weboberfläche, auch für Mockups, Demos und einzelne Fragen zu Gestaltung, Bewegung oder Technik. Ersetzt impeccable und web-design-guidelines.
 version: 3.0.0
 user-invocable: true
-argument-hint: "plan|material|entwurf|bauen|bewegung|audit|kritik|politur|bibliothek|lernen|vorlieben [argumente]"
+argument-hint: "plan|material|entwurf|bauen|bewegung|audit|kritik|politur|live|bibliothek|lernen|vorlieben [argumente]"
 ---
 
 # Arsenal
@@ -34,6 +34,7 @@ Gilt für jeden Lauf (`demo`, `mockup`, `bau`). Jeder Schritt hinterlässt eine 
 | `bibliothek` | Muster, Bausteine, Medien | `befehle/bibliothek.md` |
 | `lernen` | neue Regeln | `befehle/lernen.md` |
 | `vorlieben` | stehende Vorlieben | `befehle/vorlieben.md` |
+| `live` | Änderungen im offenen Browser, Element wählen | `befehle/live.md` |
 
 Alte Namen: `build` = `bauen`, `hero` = `entwurf`, `critics` = `kritik`, `loot` = `bibliothek`, `behavior` = `vorlieben`, `register` = `plan --bestand`.
 
@@ -45,12 +46,16 @@ Alte Namen: `build` = `bauen`, `hero` = `entwurf`, `critics` = `kritik`, `loot` 
 | `entwurf`, `bauen` | dazu `library/galerie/_index.md` und `bausteine/_index.md` |
 | Art `website`, `onepage`, `landingpage` | `regeln/praesentation.md`, `regeln/text.md`, `regeln/konversion.md` |
 | Art `anwendung` | `regeln/software.md`, `regeln/text.md` |
-| nach Reglern und Material | `regeln/bewegung.md`, `regeln/medien.md`, `regeln/erzeugt.md`, `regeln/technik.md` (Bedingungen in `regler.md`; Technik immer bei `bauen` und `audit`), dazu die Liste `module` der Branche |
+| nach Reglern und Material | `regeln/bewegung.md`, `regeln/medien.md`, `regeln/erzeugt.md`, `regeln/technik.md` (Bedingungen in `regler.md`; Technik immer bei `bauen` und `audit`), dazu, falls vorhanden, die Liste `module` der Branche |
+| `entwurf`, `audit`, `kritik`, `politur` | `regeln/anti-ki.md` (Prüfung: `werkzeuge/anti-ki-pruefung.md`) |
+| `plan`, `entwurf` für Kundenseiten der Art `website`, `onepage`, `landingpage` | `regeln/website-idee.md` |
+| Art `anwendung` | `regeln/software-arbeit.md`; bei `plan`, `entwurf`, `kritik` dazu `planung/arbeitsanalyse.md` |
+| `audit`, `kritik` bei Anwendungen und bedienenden Seiten | `regeln/bewertung.md` (Skala 0 bis 4, P0 bis P3) |
 | je Befehl | nur `befehle/<befehl>.md` |
 | je gewählter Technik | `rezepte/<technik>.md` |
 | Kritiker | Stamm, `regler.md` und die Module ihrer Rolle |
 
-Ohne Befehl und ohne ARMOURY (Nachschlagen) gelten keine Tore: Antwort aus Stamm und passendem Modul.
+Ohne Befehl und ohne ARMOURY (Nachschlagen) gelten keine Tore (kein Plan, keine Prüfschritte): Antwort aus Stamm und passendem Modul; die Pflichtregeln gelten trotzdem.
 
 **Rezepte** (Code, nur bei gewählter Technik): `shader.md` (WebGL-Hintergründe), `3d.md` (Three.js, React Three Fiber), `scroll.md` (Scroll-Szenen, Pins, Text), `oberflaeche.md` (Bewegung in Anwendungen), `layouts.md` (Aufbau jenseits des Kachelrasters), `astro.md` (Gerüst, Inseln, Auslieferung), `komponenten.md` (freie Bibliotheken), `erzeugt.md` (Film mit ffmpeg, SVG).
 
@@ -59,7 +64,7 @@ Ohne Befehl und ohne ARMOURY (Nachschlagen) gelten keine Tore: Antwort aus Stamm
 1. **Pflicht** (Recht, Datenschutz, Sicherheit, Barrierefreiheit, Lizenz, feste Regeln von <dein-name>): gilt immer.
 2. **Ausnahme im ARMOURY** mit Datum und Grund.
 3. **Vorlieben** (`behavior.md`).
-4. **Stamm**, dann **Modul**, dann **Branche**. Widerspricht ein Modul dem Stamm, ist das ein Fehler im Regelwerk: melden.
+4. **Stamm**, dann **Regler und Stufe** (`regler.md`: schalten Module, setzen Budgets), dann **Modul**, dann **Branche**. Eine Branche oder ein Modul darf eine Zahl verschärfen (die strengere Angabe gilt), nie lockern. Widerspricht ein Modul dem Stamm sonst, ist das ein Fehler im Regelwerk: melden.
 5. **Rezepte** zeigen Wege; widerspricht ein Rezept einer Regel, gilt die Regel.
 
 Herkunft jeder Regel: `HERKUNFT.md`.
@@ -100,4 +105,6 @@ Inhalt: `behavior.md`, `library/galerie/<slug>/` (Bausteine und Medien, Index `l
 | Lighthouse und axe | `<dein-ordner>` |
 | Messfilm und Standbilder (`audit`, Echtzeit) | `<dein-ordner>` |
 | Film mit virtueller Uhr (Projekt- und Bildschirmfilme, ER06) | `<dein-ordner>` |
-| Muster | `npx impeccable detect` (Telemetrie aus, siehe `befehle/audit.md`) |
+| Muster | `python3 -I werkzeuge/scan_antipatterns.py` (Quelltext-Scan, siehe `befehle/audit.md`) |
+| Prüfskripte (nur Standardbibliothek, `python3 -I werkzeuge/<name>.py`) | `werkzeuge/`: `scan_antipatterns.py` (Quelltext-Scan, P0 bis P3), `website_check.py` (Website-Abgabe), `arbeit_check.py` (Arbeitsanalyse und Durchgang, Vorlagen in `werkzeuge/vorlagen/`), `check_refs.py` (Verweise im Skill) |
+| Attrappe für Handyansichten | `bausteine/iphone-17-pro-max/` (Rahmen hoch und quer, `attrappe.py`) |

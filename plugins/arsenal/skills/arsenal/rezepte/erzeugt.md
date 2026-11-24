@@ -81,11 +81,13 @@ Ohne `autoplay`: Das Skript startet den Film nach `load`, lässt bei reduzierter
 // /js/film.js
 const video = document.querySelector('video.stage');
 const button = document.querySelector('button.pause');
-let paused = matchMedia('(prefers-reduced-motion: reduce)').matches; // reduced motion: poster stays
+const motionQuery = matchMedia('(prefers-reduced-motion: reduce)');   // S17: listen for `change`
+let paused = motionQuery.matches; // reduced motion: poster stays
 let inView = false;
 button.setAttribute('aria-pressed', String(paused));
 
 const update = () => (inView && !paused ? video.play().catch(() => {}) : video.pause());
+motionQuery.addEventListener('change', (e) => { paused = e.matches; button.setAttribute('aria-pressed', String(paused)); update(); });
 
 // start after load; with an intro, start after the intro instead (ME15)
 addEventListener('load', () => {

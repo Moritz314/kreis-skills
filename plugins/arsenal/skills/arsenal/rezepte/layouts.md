@@ -33,6 +33,12 @@ Bild und Text überlappen an genau einer Stelle, alles andere sitzt auf dem Rast
   grid-row: 1;
   align-self: start;
 }
+
+/* 390 px ist eigens gestaltet (S37): eine Spalte, kein Überlapp */
+@media (max-width: 600px) {
+  .broken-grid { grid-template-columns: minmax(0, 1fr); }
+  .broken-grid__image, .broken-grid__text, .broken-grid__eyebrow { grid-column: 1; grid-row: auto; }
+}
 ```
 
 ## Bento
@@ -57,6 +63,12 @@ Kachelgröße folgt der Wichtigkeit.
 .bento__item--hero { grid-column: span 2; grid-row: span 2; }
 .bento__item--wide { grid-column: span 2; grid-row: span 1; }
 .bento__item--tall { grid-column: span 1; grid-row: span 2; }
+
+/* 390 px ist eigens gestaltet (S37): zwei Spalten, die großen Kacheln über die ganze Breite */
+@media (max-width: 600px) {
+  .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 140px; }
+  .bento__item--hero, .bento__item--wide { grid-column: span 2; }
+}
 ```
 
 Fallen:
@@ -217,8 +229,10 @@ for (const root of document.querySelectorAll('.marquee')) {
   }
 
   // under the pointer: slow down, never stop (BE22)
-  root.addEventListener('pointerenter', () => anim?.updatePlaybackRate(0.65));
-  root.addEventListener('pointerleave', () => anim?.updatePlaybackRate(1));
+  if (matchMedia('(hover: hover)').matches) {   // TE13: Hover nur mit Hover-Gerät
+    root.addEventListener('pointerenter', () => anim?.updatePlaybackRate(0.65));
+    root.addEventListener('pointerleave', () => anim?.updatePlaybackRate(1));
+  }
 
   // real pause button (S18)
   button.addEventListener('click', () => {
@@ -261,7 +275,7 @@ Vollbreite Bänder (Bild, Farbfläche, Film) wechseln mit einer schmalen Textspa
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
-  min-height: 80vh;
+  min-height: 80dvh;
 }
 
 .story-section:nth-of-type(even) { direction: rtl; }
